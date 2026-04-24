@@ -1,0 +1,88 @@
+import { Injectable } from '@angular/core';
+import Papa from 'papaparse';
+import { Card } from '../models/card';
+import { SrsService } from './srs.service';
+import { inject } from '@angular/core';
+
+export interface ImportResult {
+  imported: Omit<Card, 'id'>[];
+  skipped: { row: number; reason: string }[];
+  warnings: string[];
+}
+
+@Injectable({ providedIn: 'root' })
+export class ImportService {
+  private srs = inject(SrsService);
+
+  parse(file: File, deckId: number): Promise<ImportResult> {
+    return new Promise((resolve, reject) => {
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        reject(new Error('File must be a .csv'));
+        return;
+      }
+
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          resolve(this.processRows(result.data as Record<string, string>[], result.meta.fields ?? [], deckId));
+        },
+        error: (err) => reject(new Error(err.message)),
+      });
+    });
+  }
+
+  private processRows(
+    rows: Record<string, string>[],
+    fields: string[],
+    deckId: number
+  ): ImportResult {
+    const imported: Omit<Card, 'id'>[] = [];
+    const skipped: { row: number; reason: string }[] = [];
+    const warnings: string[] = [];
+
+    const lowerFields = fields.map(f => f.toLowerCase().trim());
+    if (!lowerFields.includes('question') || !lowerFields.includes('answer')) {
+      throw new Error('CSV must have "question" and "answer" columns');
+    }
+
+    const knownCols = ['question', 'answer', 'notes', 'tags'];
+    const unknownCols = lowerFields.filter(f => !knownCols.includes(f));
+    if (unknownCols.length) {
+      warnings.push(`Unknown columns ignored: ${unknownCols.join(', ')}`);
+    }
+
+    rows.forEach((row, idx) => {
+      const rowNum = idx + 2; // 1-indexed + header
+      const question = (row['question'] ?? row['Question'] ?? '').trim();
+      const answer = (row['answer'] ?? row['Answer'] ?? '').trim();
+
+      if (!question) {
+        skipped.push({ row: rowNum, reason: 'empty question' });
+        return;
+      }
+      if (!answer) {
+        skipped.push({ row: rowNum, reason: 'empty answer' });
+        return;
+      }
+
+      const rawTags = (row['tags'] ?? row['Tags'] ?? '').trim();
+      const tags = rawTags
+        ? rawTags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean)
+        : [];
+
+      const notes = (row['notes'] ?? row['Notes'] ?? '').trim() || undefined;
+
+      imported.push({
+        deckId,
+        question,
+        answer,
+        notes,
+        tags,
+        ...this.srs.newCardDefaults() as Required<Pick<Card, 'interval' | 'easeFactor' | 'repetitions' | 'nextReviewDate'>>,
+      });
+    });
+
+    return { imported, skipped, warnings };
+  }
+}

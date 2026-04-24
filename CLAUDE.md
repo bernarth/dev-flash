@@ -38,17 +38,46 @@ pnpm install / pnpm add <pkg> / pnpm add -D <pkg> / pnpm run <script>
 
 ---
 
+## Code Design Principles
+
+These apply to every file in this project. They are not optional.
+
+### SOLID
+| Principle | How it applies here |
+|---|---|
+| **S**ingle Responsibility | One component per file. Services own one domain (DbService = storage, SrsService = algorithm, ThemeService = theme). Components render UI only — no business logic. |
+| **O**pen/Closed | Extend behaviour via new components / services, not by editing existing ones. Shared components accept `input()` to vary behaviour without internal branching. |
+| **L**iskov Substitution | Shared components honour their contract (inputs/outputs) regardless of context. A `df-icon` anywhere must always render the requested icon. |
+| **I**nterface Segregation | Keep interfaces small and focused (see models). Never force a component to accept inputs it doesn't use. |
+| **D**ependency Inversion | Components depend on service abstractions (injected via `inject()`), never on concrete DB or storage calls directly. |
+
+### DRY
+- Every icon lives once — in `shared/components/icon/`. Never copy-paste an SVG into a component.
+- Every reusable visual pattern becomes a shared component before the second usage.
+- Shared styles live in `styles.scss` as CSS custom properties or utility classes.
+
+### KISS
+- Default to the simplest solution that satisfies requirements. Add complexity only when needed.
+- Prefer `computed()` over derived state in templates. Prefer plain method calls over `effect()`.
+- `effect()` is a last resort — use it only when no signal/computed/direct-call alternative exists, and add a comment explaining why.
+- Avoid abstractions for single use-cases.
+
+---
+
 ## Angular 21 — Non-Negotiable Patterns
 
-- **Standalone only.** Zero NgModules. 
+- **Standalone only.** Zero NgModules.
 - **`input()` / `output()` / `model()`** — never `@Input()` / `@Output()` decorators.
 - **`inject()`** — never constructor injection.
-- **`signal()` / `computed()` / `effect()`** for all reactive state.
+- **`signal()` / `computed()`** for all reactive state. **`effect()` is a last resort** — prefer calling methods directly (see KISS above).
 - **`resource()`** for component-level async data loading (experimental, intentionally chosen).
 - **No `async/await` anywhere.** Use RxJS (`from()`, `switchMap`, etc.) for Dexie calls in services. Use `resource()` in components.
 - **`loadComponent()`** for all feature routes — never eagerly import feature components.
 - Services: `providedIn: 'root'`, injected with `inject()`.
 - RxJS only where operators are genuinely needed (e.g. debounced search). Signals for everything else.
+- **No animations package.** All transitions are native CSS (`transition`, `opacity`, `transform`).
+- **No `@HostListener`.** Use the `host` property on `@Component` instead: `host: { '(window:keydown)': 'onKey($event)' }`.
+- **No `@ViewChild` / `@ViewChildren` / `@ContentChild` / `@ContentChildren`.** Use signal queries: `viewChild()`, `viewChildren()`, `contentChild()`, `contentChildren()`.
 
 ```typescript
 // Correct Angular 21 style
@@ -132,6 +161,10 @@ src/app/
 
   shared/
     components/
+      icon/                   # df-icon — single source for ALL SVG icons
+        icon-names.ts         #   IconName union type (compiler-enforced)
+        icon-paths.ts         #   SVG content keyed by IconName
+        icon.component.ts     #   <df-icon name="..." [size]="20" />
       card-flip/
       code-block/
       markdown-viewer/
@@ -263,7 +296,7 @@ Deck List — deck cards showing name, count, due today, last studied. FAB to cr
 
 Study Session — question -> "Show Answer" -> flip -> rating buttons (Again/Hard/Good/Easy).
 Progress bar at top. "Show notes" toggle after flip (hidden by default).
-Keyboard shortcuts: Space=flip, 1-4=rate. Nav hidden in this screen (focus mode).
+Nav hidden in this screen (focus mode).
 
 Study Summary — reviewed count, rating breakdown, next session estimate.
 
@@ -311,7 +344,6 @@ Settings — sliders for new/day, reviews/day, ease. Theme toggle. Export/import
 - [ ] CSV Import wizard
 - [ ] Settings
 - [ ] PWA manifest + service worker tuned
-- [ ] Keyboard shortcuts (desktop)
 - [ ] Offline tested Android Chrome
 - [ ] Offline tested iOS Safari
 
@@ -330,6 +362,8 @@ Settings — sliders for new/day, reviews/day, ease. Theme toggle. Export/import
 | No Web Worker for CSV | Files are small; revisit for 10k+ row bulk import |
 | No difficulty labels on cards | SRS ratings handle this implicitly |
 | Layout shell pattern | Nav persists across routes, no re-mount flicker |
+| Centralised icon component | DRY — all SVGs live in `shared/components/icon/`. `IconName` union type enforces valid names at compile time. `bypassSecurityTrustHtml` is safe because content comes from a hardcoded constant, not user input. |
+| No `effect()` in ThemeService | KISS — `setMode()` calls `applyTheme()` directly; `effect()` would add reactive indirection for a plain DOM class toggle. |
 
 ---
 
@@ -373,7 +407,7 @@ Generates Angular code and provides architectural guidance. Trigger when creatin
 - `.claude/skills/angular-developer/references/defining-providers.md`: Angular offers automatic and manual ways to provide dependencies to its Dependency Injection (DI) system.
 - `.claude/skills/angular-developer/references/di-fundamentals.md`: Dependency Injection (DI) is a design pattern used to organize and share code across an application by allowing you to "inject" features into different parts. This improves code maintainability, scalability, and testability.
 - `.claude/skills/angular-developer/references/e2e-testing.md`: This project uses [Cypress](https://www.cypress.io/) for end-to-end (E2E) testing, which simulates real user interactions in a browser. The E2E tests are located primarily within the `devtools/` package.
-- `.claude/skills/angular-developer/references/effects.md`: In Angular, an **effect** is an operation that runs whenever one or more signal values it tracks change.
+- `.claude/skills/angular-developer/references/effects.md`: In Angular, an **effect** is an operation that runs whenever one or more signal values it tracks change. Do not use unless it is really necessary it should be the last resource.
 - `.claude/skills/angular-developer/references/hierarchical-injectors.md`: Angular's dependency injection system is hierarchical, meaning services can be scoped to different levels of the application.
 - `.claude/skills/angular-developer/references/host-elements.md`: The **host element** is the DOM element that matches a component's selector. The component's template renders inside this element.
 - `.claude/skills/angular-developer/references/injection-context.md`: The `inject()` function can only be used when code is executing within an **injection context**.
