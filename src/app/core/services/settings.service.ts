@@ -1,5 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { AppSettings, DEFAULT_SETTINGS } from '../models';
+import { AppSettings, DEFAULT_SETTINGS } from '@models';
 import { DbService } from './db.service';
 import { ThemeService } from './theme.service';
 

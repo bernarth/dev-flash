@@ -1,11 +1,11 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin, switchMap, of, map } from 'rxjs';
-import { DbService } from '../../../core/services/db.service';
-import { Deck } from '../../../core/models';
-import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
-import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { DbService } from '@services/db.service';
+import { Deck } from '@models';
+import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 interface DeckViewModel extends Deck {
   cardCount: number;

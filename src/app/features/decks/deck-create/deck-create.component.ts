@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DbService } from '../../../core/services/db.service';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { DbService } from '@services/db.service';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-deck-create',

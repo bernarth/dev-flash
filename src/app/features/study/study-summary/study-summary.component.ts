@@ -1,9 +1,9 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DbService } from '../../../core/services/db.service';
-import { ReviewLog, Rating } from '../../../core/models';
-import { RATING_CONFIG } from '../../../core/constants/rating-config';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { DbService } from '@services/db.service';
+import { ReviewLog, Rating } from '@models';
+import { RATING_CONFIG } from '@core/constants/rating-config';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-study-summary',

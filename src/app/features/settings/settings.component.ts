@@ -1,11 +1,11 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SettingsService } from '../../core/services/settings.service';
-import { DbService } from '../../core/services/db.service';
-import { ExportService } from '../../core/services/export.service';
-import { AppSettings } from '../../core/models';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { IconComponent } from '../../shared/components/icon/icon.component';
+import { SettingsService } from '@services/settings.service';
+import { DbService } from '@services/db.service';
+import { ExportService } from '@services/export.service';
+import { AppSettings } from '@models';
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 interface StorageItem {
   label: string;

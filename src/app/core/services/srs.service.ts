@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Card } from '../models/card';
-import { Rating } from '../models/rating';
-import { startOfDay } from '../utils/date.utils';
+import { Card } from '@models/card';
+import { Rating } from '@models/rating';
+import { startOfDay } from '@utils/date.utils';
 
 @Injectable({ providedIn: 'root' })
 export class SrsService {

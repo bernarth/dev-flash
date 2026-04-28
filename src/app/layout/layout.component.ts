@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { BottomNavComponent } from './bottom-nav/bottom-nav.component';
-import { SideNavComponent } from './side-nav/side-nav.component';
-import { SettingsService } from '../core/services/settings.service';
+import { BottomNavComponent } from '@layout/bottom-nav/bottom-nav.component';
+import { SideNavComponent } from '@layout/side-nav/side-nav.component';
+import { SettingsService } from '@services/settings.service';
 
 @Component({
   selector: 'df-layout',

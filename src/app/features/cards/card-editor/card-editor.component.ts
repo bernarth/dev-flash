@@ -1,10 +1,10 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DbService } from '../../../core/services/db.service';
-import { SrsService } from '../../../core/services/srs.service';
-import { Card } from '../../../core/models';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { DbService } from '@services/db.service';
+import { SrsService } from '@services/srs.service';
+import { Card } from '@models';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-card-editor',

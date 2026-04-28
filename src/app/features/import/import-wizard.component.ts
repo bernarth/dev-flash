@@ -1,11 +1,11 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ImportService, ImportResult } from '../../core/services/import.service';
-import { DbService } from '../../core/services/db.service';
-import { Deck } from '../../core/models';
+import { ImportService, ImportResult } from '@services/import.service';
+import { DbService } from '@services/db.service';
+import { Deck } from '@models';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { IconComponent } from '../../shared/components/icon/icon.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-import-wizard',

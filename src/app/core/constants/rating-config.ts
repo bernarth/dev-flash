@@ -1,4 +1,4 @@
-import { Rating } from '../models/rating';
+import { Rating } from '@models/rating';
 
 export interface RatingMeta {
   key: Rating;

@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
-import { IconComponent } from '../icon/icon.component';
-import { IconName } from '../icon/icon-names';
+import { IconComponent } from '@shared/components/icon/icon.component';
+import { IconName } from '@shared/components/icon/icon-names';
 
 export type ConfirmDialogVariant = 'danger' | 'warning' | 'default';
 

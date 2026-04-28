@@ -1,12 +1,12 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { DbService } from '../../../core/services/db.service';
-import { SrsService } from '../../../core/services/srs.service';
-import { SettingsService } from '../../../core/services/settings.service';
-import { Card, Rating } from '../../../core/models';
-import { RATING_CONFIG } from '../../../core/constants/rating-config';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { DbService } from '@services/db.service';
+import { SrsService } from '@services/srs.service';
+import { SettingsService } from '@services/settings.service';
+import { Card, Rating } from '@models';
+import { RATING_CONFIG } from '@core/constants/rating-config';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-study-session',

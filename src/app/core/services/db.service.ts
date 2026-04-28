@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { from, Observable } from 'rxjs';
-import { Card, Deck, ReviewLog, AppSettings, DEFAULT_SETTINGS } from '../models';
-import { endOfDay } from '../utils/date.utils';
+import { Card, Deck, ReviewLog, AppSettings, DEFAULT_SETTINGS } from '@models';
+import { endOfDay } from '@utils/date.utils';
 
 class DevFlashDb extends Dexie {
   decks!: Table<Deck, number>;

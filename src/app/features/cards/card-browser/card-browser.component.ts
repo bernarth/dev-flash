@@ -1,10 +1,10 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DbService } from '../../../core/services/db.service';
-import { Card } from '../../../core/models';
-import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { DbService } from '@services/db.service';
+import { Card } from '@models';
+import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-card-browser',

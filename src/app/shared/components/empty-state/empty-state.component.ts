@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { IconComponent } from '../icon/icon.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-empty-state',

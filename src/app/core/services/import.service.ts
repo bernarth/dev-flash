@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import Papa from 'papaparse';
-import { Card } from '../models/card';
+import { Card } from '@models/card';
 import { SrsService } from './srs.service';
 import { inject } from '@angular/core';
 
