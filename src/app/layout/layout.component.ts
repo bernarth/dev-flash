@@ -48,18 +48,15 @@ import { SettingsService } from '@services/settings.service';
       /* positioned at bottom via flex column in app-shell on mobile */
     }
 
-    /* Mobile: vertical stack */
-    @media (max-width: 767px) {
+    /* Mobile (< 768px): vertical stack */
+    @media (max-width: 47.9375rem) {
       .app-shell {
         flex-direction: column;
       }
-      .side-nav-desktop {
-        display: none;
-      }
     }
 
-    /* Desktop: horizontal layout */
-    @media (min-width: 768px) {
+    /* Desktop (>= 768px): horizontal layout */
+    @media (min-width: 48rem) {
       .app-shell {
         flex-direction: row;
       }

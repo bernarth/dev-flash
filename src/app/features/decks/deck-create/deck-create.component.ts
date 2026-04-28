@@ -1,79 +1,67 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { form, FormField, submit, required } from '@angular/forms/signals';
 import { DbService } from '@services/db.service';
 import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-deck-create',
   standalone: true,
-  imports: [FormsModule, IconComponent],
+  imports: [IconComponent, FormField],
   template: `
-    <div class="screen">
-      <header class="top-bar">
-        <button class="icon-btn" (click)="cancel()">
+    <form class="df-screen" (submit)="$event.preventDefault(); save()">
+      <header class="df-top-bar">
+        <button type="button" class="icon-btn" (click)="cancel()" aria-label="Cancel">
           <df-icon name="close" />
         </button>
         <div class="title">New deck</div>
-        <button class="save-btn" [disabled]="!name().trim()" (click)="save()">Save</button>
+        <button type="submit" class="df-save-btn" [disabled]="deckForm().invalid()">Save</button>
       </header>
 
       <div class="content">
-        <div class="field">
-          <div class="df-label">Name</div>
-          <input class="df-input"
-            [ngModel]="name()" (ngModelChange)="name.set($event)"
-            placeholder="e.g. C# Fundamentals" autofocus />
-        </div>
+        <label class="field">
+          <span class="df-label">Name</span>
+          <input class="df-input" [formField]="deckForm.name" placeholder="e.g. C# Fundamentals" autofocus />
+        </label>
 
-        <div class="field">
-          <div class="df-label">Description (optional)</div>
-          <textarea class="df-textarea"
-            [ngModel]="description()" (ngModelChange)="description.set($event)"
-            rows="3" placeholder="What's this deck for?"></textarea>
-        </div>
+        <label class="field">
+          <span class="df-label">Description <span class="optional">(optional)</span></span>
+          <textarea class="df-textarea" [formField]="deckForm.description" rows="3" placeholder="What's this deck for?"></textarea>
+        </label>
       </div>
-    </div>
+    </form>
   `,
   styles: [`
-    .screen { display: flex; flex-direction: column; height: 100%; }
-    .top-bar {
-      display: flex; align-items: center; padding: 12px 20px;
-      border-bottom: 1px solid var(--df-outline-soft); gap: 12px; flex-shrink: 0;
-    }
-    .title { flex: 1; font-weight: 600; font-size: 16px; letter-spacing: -0.02em; }
-    .save-btn {
-      height: 32px; padding: 0 14px; border-radius: 10px; border: 0;
-      background: var(--df-primary); color: var(--df-primary-ink);
-      font-family: inherit; font-weight: 500; font-size: 13px; cursor: pointer;
-    }
-    .save-btn:disabled { opacity: 0.45; cursor: default; }
-    .content { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-    .df-input, .df-textarea {
-      width: 100%; background: var(--df-surface-1); color: var(--df-text);
-      border: 1px solid var(--df-outline-soft); border-radius: 12px;
-      padding: 12px 14px; font-family: inherit; font-size: 14px;
-      outline: none; transition: border-color 120ms; resize: none;
-    }
-    .df-input:focus, .df-textarea:focus { border-color: var(--df-primary); }
+    .title { flex: 1; font-weight: 600; font-size: 1rem; letter-spacing: -0.02em; }
+    .content { flex: 1; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    label.field { display: flex; flex-direction: column; }
+    .optional { font-weight: 400; color: var(--df-text-faint); }
   `],
 })
 export class DeckCreateComponent {
   private db     = inject(DbService);
   private router = inject(Router);
 
-  name        = signal('');
-  description = signal('');
+  deckModel = signal({ name: '', description: '' });
+  deckForm  = form(this.deckModel, (s) => {
+    required(s.name);
+  });
 
-  save(): void {
-    const now = new Date();
-    this.db.createDeck({
-      name: this.name().trim(),
-      description: this.description().trim() || undefined,
-      tags: [],
-      createdAt: now,
-      updatedAt: now,
-    }).subscribe(() => this.router.navigate(['/decks']));
+  async save(): Promise<void> {
+    const success = await submit(this.deckForm, async () => {
+      const { name, description } = this.deckModel();
+      const now = new Date();
+      await this.db.createDeck({
+        name: name.trim(),
+        description: description.trim() || undefined,
+        tags: [],
+        createdAt: now,
+        updatedAt: now,
+      });
+    });
+    if (success) {
+      this.router.navigate(['/decks']);
+    }
   }
 
   cancel(): void {

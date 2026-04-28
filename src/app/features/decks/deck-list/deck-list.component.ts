@@ -1,6 +1,5 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { forkJoin, switchMap, of, map } from 'rxjs';
 import { DbService } from '@services/db.service';
 import { Deck } from '@models';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
@@ -19,7 +18,7 @@ const DECK_COLORS = ['#38D9E0', '#C678DD', '#F2A84A', '#6FD78B', '#F26D6D', '#61
   standalone: true,
   imports: [RouterLink, RelativeDatePipe, EmptyStateComponent, IconComponent],
   template: `
-    <div class="screen">
+    <div class="df-screen">
       <header class="top-bar">
         <div class="top-bar-title">
           <div class="title">Decks</div>
@@ -66,87 +65,74 @@ const DECK_COLORS = ['#38D9E0', '#C678DD', '#F2A84A', '#6FD78B', '#F26D6D', '#61
         }
       </div>
 
-      <button class="fab" (click)="createDeck()">
+      <button class="df-fab df-fab--extended" (click)="createDeck()">
         <df-icon name="plus" [size]="20" />
         <span>New deck</span>
       </button>
     </div>
   `,
   styles: [`
-    .screen {
-      display: flex; flex-direction: column;
-      height: 100%; position: relative; overflow: hidden;
-    }
     .top-bar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px 12px;
+      padding: 1rem 1.25rem 0.75rem;
       background: var(--df-bg); border-bottom: 1px solid var(--df-outline-soft);
       flex-shrink: 0;
     }
-    .title { font-size: 22px; font-weight: 600; letter-spacing: -0.025em; }
-    .subtitle { font-size: 12px; color: var(--df-text-faint); margin-top: 2px; }
-    .top-bar-actions { display: flex; gap: 4px; }
-    .content { flex: 1; overflow-y: auto; padding: 16px 20px 100px; }
-    .deck-list { display: flex; flex-direction: column; gap: 10px; }
+    .title { font-size: 1.375rem; font-weight: 600; letter-spacing: -0.025em; }
+    .subtitle { font-size: 0.75rem; color: var(--df-text-faint); margin-top: 0.125rem; }
+    .top-bar-actions { display: flex; gap: 0.25rem; }
+    .content { flex: 1; overflow-y: auto; padding: 1rem 1.25rem var(--df-space-fab); }
+    .deck-list { display: flex; flex-direction: column; gap: 0.625rem; }
     .deck-card {
-      padding: 14px; display: flex; gap: 14px; align-items: flex-start;
-      cursor: pointer; transition: background 120ms;
+      padding: 0.875rem; display: flex; gap: 0.875rem; align-items: flex-start;
+      cursor: pointer; transition: background var(--df-transition-base);
     }
     .deck-card:hover { background: var(--df-surface-1); }
     .deck-icon {
-      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      width: 2.5rem; height: 2.5rem; border-radius: 10px; flex-shrink: 0;
       border: 1px solid; display: flex; align-items: center; justify-content: center;
     }
     .deck-info { flex: 1; min-width: 0; }
     .deck-header {
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
     }
     .deck-name {
-      font-weight: 600; font-size: 15px; letter-spacing: -0.015em;
+      font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.015em;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .due-chip {
-      font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+      font-size: 0.6875rem; font-weight: 600; padding: 0.1875rem 0.5rem;
+      border-radius: var(--df-radius-pill);
       background: var(--df-primary-container); color: var(--df-on-primary-container);
       white-space: nowrap; flex-shrink: 0;
     }
     .deck-meta {
-      display: flex; gap: 10px; margin-top: 8px;
-      font-size: 12px; color: var(--df-text-muted);
+      display: flex; gap: 0.625rem; margin-top: 0.5rem;
+      font-size: 0.75rem; color: var(--df-text-muted);
     }
     .dot { color: var(--df-text-faint); }
-    .fab {
-      position: absolute; right: 20px; bottom: 20px;
-      height: 56px; min-width: 56px; padding: 0 20px; border-radius: 18px;
-      background: var(--df-primary); color: var(--df-primary-ink); border: 0;
-      cursor: pointer; font-family: inherit; font-weight: 600; font-size: 14px;
-      display: inline-flex; align-items: center; gap: 8px;
-      box-shadow: 0 10px 24px -8px rgba(56,217,224,0.55), 0 2px 0 rgba(0,0,0,0.2);
-      letter-spacing: -0.01em; white-space: nowrap; transition: transform 120ms;
-    }
-    .fab:active { transform: scale(0.97); }
   `],
 })
-export class DeckListComponent {
+export class DeckListComponent implements OnInit {
   private db     = inject(DbService);
   private router = inject(Router);
 
   decks    = signal<DeckViewModel[]>([]);
   totalDue = computed(() => this.decks().reduce((a, d) => a + d.dueCount, 0));
 
-  constructor() {
-    this.db.getAllDecks().pipe(
-      switchMap(rawDecks =>
-        rawDecks.length
-          ? forkJoin(rawDecks.map(deck =>
-              forkJoin({
-                cardCount: this.db.getCardCount(deck.id!),
-                dueCount:  this.db.getDueCount(deck.id!),
-              }).pipe(map(counts => ({ ...deck, ...counts })))
-            ))
-          : of([])
-      )
-    ).subscribe(result => this.decks.set(result));
+  async ngOnInit(): Promise<void> {
+    const rawDecks = await this.db.getAllDecks();
+    if (!rawDecks.length) return;
+    const decks = await Promise.all(
+      rawDecks.map(async deck => {
+        const [cardCount, dueCount] = await Promise.all([
+          this.db.getCardCount(deck.id!),
+          this.db.getDueCount(deck.id!),
+        ]);
+        return { ...deck, cardCount, dueCount };
+      })
+    );
+    this.decks.set(decks);
   }
 
   deckColor(deck: Deck): string {

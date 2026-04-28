@@ -1,20 +1,18 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { ImportService, ImportResult } from '@services/import.service';
 import { DbService } from '@services/db.service';
 import { Deck } from '@models';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-import-wizard',
   standalone: true,
-  imports: [FormsModule, IconComponent],
+  imports: [IconComponent],
   template: `
-    <div class="screen">
-      <header class="top-bar">
-        <button class="icon-btn" (click)="cancel()">
+    <div class="df-screen">
+      <header class="df-top-bar">
+        <button type="button" class="icon-btn" (click)="cancel()" aria-label="Cancel import">
           <df-icon name="close" [size]="20" />
         </button>
         <div class="top-bar-center">
@@ -24,9 +22,11 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       </header>
 
       <!-- Stepper -->
-      <div class="stepper">
+      <div class="stepper" role="list" aria-label="Import steps">
         @for (s of steps; track s.n) {
-          <div class="step-item" [class.done]="step() > s.n" [class.current]="step() === s.n">
+          <div class="step-item" role="listitem"
+            [class.done]="step() > s.n" [class.current]="step() === s.n"
+            [attr.aria-current]="step() === s.n ? 'step' : null">
             <div class="step-dot">
               @if (step() > s.n) {
                 <df-icon name="check" [size]="14" [strokeWidth]="2" />
@@ -50,25 +50,29 @@ import { IconComponent } from '@shared/components/icon/icon.component';
               <div class="step-sub">Columns: <span class="df-mono">question, answer, tags, notes</span></div>
 
               <!-- Target deck picker -->
-              <div class="field">
-                <div class="df-label">Target deck</div>
-                <select class="df-select"
-                  [ngModel]="selectedDeckId()"
-                  (ngModelChange)="selectedDeckId.set(+$event)">
+              <label class="field" for="deck-select">
+                <span class="df-label">Target deck</span>
+                <select id="deck-select" class="df-select"
+                  [value]="selectedDeckId()"
+                  (change)="onDeckSelect($event)">
                   <option value="0" disabled>Select a deck…</option>
                   @for (deck of decks(); track deck.id) {
                     <option [value]="deck.id">{{ deck.name }}</option>
                   }
                 </select>
-              </div>
+              </label>
 
               <!-- Drop zone -->
               <div class="drop-zone df-dots"
+                role="button" tabindex="0"
+                aria-label="Drop a CSV file here or press Enter to browse"
                 [class.has-file]="selectedFile()"
                 (click)="fileInput.click()"
+                (keydown.enter)="fileInput.click()"
+                (keydown.space)="$event.preventDefault(); fileInput.click()"
                 (dragover)="$event.preventDefault()"
                 (drop)="onDrop($event)">
-                <div class="drop-icon">
+                <div class="drop-icon" aria-hidden="true">
                   <df-icon name="upload" [size]="22" />
                 </div>
                 <div class="drop-title">Drop a .csv file here</div>
@@ -77,8 +81,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
                   Choose file
                 </button>
               </div>
-              <input #fileInput type="file" accept=".csv" style="display:none"
-                (change)="onFileSelect($event)" />
+              <input #fileInput type="file" accept=".csv" class="visually-hidden"
+                aria-label="CSV file" (change)="onFileSelect($event)" />
 
               @if (selectedFile()) {
                 <div class="file-preview df-card">
@@ -89,7 +93,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
                     <div class="df-mono file-name">{{ selectedFile()!.name }}</div>
                     <div class="file-size">{{ formatSize(selectedFile()!.size) }}</div>
                   </div>
-                  <df-icon name="check" [size]="18" [strokeWidth]="2" style="color: var(--df-good)" />
+                  <df-icon name="check" [size]="18" [strokeWidth]="2" class="icon-good" />
                 </div>
               }
 
@@ -167,7 +171,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
               @if (importResult() && importResult()!.skipped.length) {
                 <div class="df-card skipped-log">
-                  <div class="df-label" style="padding:12px 14px 8px;margin:0">Skipped rows</div>
+                  <div class="df-label skipped-log-label">Skipped rows</div>
                   <div class="df-hr"></div>
                   @for (s of importResult()!.skipped; track s.row) {
                     <div class="skipped-row">
@@ -185,238 +189,173 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       <!-- Footer nav -->
       <div class="footer">
         @if (step() > 1 && step() < 3) {
-          <button class="btn-outline" (click)="prevStep()">Back</button>
+          <button type="button" class="df-btn-outline footer-back" (click)="prevStep()">Back</button>
         }
         @if (step() < 3) {
-          <button class="btn-filled"
+          <button type="button" class="df-btn-primary footer-next"
             [disabled]="!canAdvance()"
             (click)="nextStep()">
             {{ step() === 2 ? 'Import ' + (importResult() ? importResult()!.imported.length : '') + ' cards' : 'Continue' }}
           </button>
         } @else {
-          <button class="btn-filled" (click)="done()">Done</button>
+          <button type="button" class="df-btn-primary footer-next" (click)="done()">Done</button>
         }
       </div>
     </div>
   `,
   styles: [`
-    .screen {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    .top-bar {
-      display: flex;
-      align-items: center;
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--df-outline-soft);
-      gap: 12px;
-      flex-shrink: 0;
-    }
     .top-bar-center { flex: 1; }
-    .title { font-weight: 600; font-size: 16px; }
-    .subtitle { font-size: 11px; color: var(--df-text-faint); }
+    .title { font-weight: 600; font-size: 1rem; }
+    .subtitle { font-size: 0.6875rem; color: var(--df-text-faint); }
     .stepper {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 12px 20px;
+      gap: 0.375rem;
+      padding: 0.75rem 1.25rem;
       flex-shrink: 0;
     }
     .step-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
+      display: flex; align-items: center; gap: 0.5rem;
+      flex: 1; min-width: 0;
     }
     .step-dot {
-      width: 28px; height: 28px; border-radius: 10px;
+      width: 1.75rem; height: 1.75rem; border-radius: 10px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 600;
+      font-size: 0.75rem; font-weight: 600;
       font-family: 'JetBrains Mono', ui-monospace, monospace;
-      background: var(--df-surface-1);
-      color: var(--df-text-faint);
+      background: var(--df-surface-1); color: var(--df-text-faint);
       border: 1px solid var(--df-outline-soft);
     }
     .step-item.current .step-dot {
-      background: var(--df-primary-container);
-      color: var(--df-on-primary-container);
-      border-color: var(--df-primary);
+      background: var(--df-primary-container); color: var(--df-on-primary-container); border-color: var(--df-primary);
     }
     .step-item.done .step-dot {
-      background: var(--df-primary);
-      color: var(--df-primary-ink);
-      border-color: var(--df-primary);
+      background: var(--df-primary); color: var(--df-primary-ink); border-color: var(--df-primary);
     }
-    .step-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--df-text-faint);
-      white-space: nowrap;
-    }
-    .step-item.current .step-label, .step-item.done .step-label {
-      color: var(--df-text);
-    }
-    .step-connector {
-      height: 1px;
-      width: 14px;
-      background: var(--df-outline-soft);
-      flex-shrink: 0;
-    }
+    .step-label { font-size: 0.75rem; font-weight: 500; color: var(--df-text-faint); white-space: nowrap; }
+    .step-item.current .step-label, .step-item.done .step-label { color: var(--df-text); }
+    .step-connector { height: 1px; width: 0.875rem; background: var(--df-outline-soft); flex-shrink: 0; }
     .step-connector.done { background: var(--df-primary); }
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 20px 20px;
-    }
-    .step-content {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .step-title {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-    .step-sub {
-      font-size: 13px;
-      color: var(--df-text-muted);
-    }
-    .df-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--df-text-faint); margin-bottom: 8px; }
+    .content { flex: 1; overflow-y: auto; padding: 0.5rem 1.25rem 1.25rem; }
+    .step-content { display: flex; flex-direction: column; gap: 0.875rem; }
+    .step-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; }
+    .step-sub { font-size: 0.8125rem; color: var(--df-text-muted); }
     .field { display: flex; flex-direction: column; }
-    .df-select {
-      width: 100%; background: var(--df-surface-1); color: var(--df-text);
-      border: 1px solid var(--df-outline-soft); border-radius: 12px;
-      padding: 12px 14px; font-family: inherit; font-size: 14px; outline: none;
-    }
     .drop-zone {
       border: 1.5px dashed var(--df-outline);
       border-radius: 16px;
-      padding: 28px 20px;
+      padding: 1.75rem 1.25rem;
       text-align: center;
       background: var(--df-surface);
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
+      display: flex; flex-direction: column; align-items: center; gap: 0.375rem;
     }
     .drop-icon {
-      width: 52px; height: 52px; border-radius: 16px;
-      background: var(--df-primary-container);
-      color: var(--df-on-primary-container);
+      width: 3.25rem; height: 3.25rem; border-radius: 16px;
+      background: var(--df-primary-container); color: var(--df-on-primary-container);
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 6px;
+      margin-bottom: 0.375rem;
     }
-    .drop-title { font-size: 14px; font-weight: 500; }
-    .drop-sub { font-size: 12px; color: var(--df-text-faint); }
+    .drop-title { font-size: 0.875rem; font-weight: 500; }
+    .drop-sub { font-size: 0.75rem; color: var(--df-text-faint); }
     .tonal-btn {
-      margin-top: 10px; height: 38px; padding: 0 18px; border-radius: 12px;
-      border: 0; background: var(--df-primary-container);
-      color: var(--df-on-primary-container);
-      font-family: inherit; font-size: 13px; cursor: pointer;
+      margin-top: 0.625rem; height: 2.375rem; padding: 0 1.125rem; border-radius: 12px;
+      border: 0; background: var(--df-primary-container); color: var(--df-on-primary-container);
+      font-family: inherit; font-size: 0.8125rem; cursor: pointer;
     }
-    .file-preview {
-      display: flex; align-items: center; gap: 12px; padding: 12px;
-    }
+    .file-preview { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; }
     .file-icon {
-      width: 36px; height: 36px; border-radius: 10px;
+      width: 2.25rem; height: 2.25rem; border-radius: 10px;
       background: var(--df-surface-1); border: 1px solid var(--df-outline-soft);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--df-text-muted);
+      display: flex; align-items: center; justify-content: center; color: var(--df-text-muted);
     }
     .file-info { flex: 1; min-width: 0; }
-    .file-name { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .file-size { font-size: 11px; color: var(--df-text-faint); }
-    .error-msg { font-size: 13px; color: var(--df-again); padding: 8px 12px; background: color-mix(in srgb, var(--df-again) 12%, transparent); border-radius: 10px; }
-    .warn-msg { font-size: 12px; color: var(--df-text-faint); }
-    .column-map { display: flex; gap: 6px; flex-wrap: wrap; }
+    .file-name { font-size: 0.781rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-size { font-size: 0.6875rem; color: var(--df-text-faint); }
+    .icon-good { color: var(--df-good); }
+    .error-msg {
+      font-size: 0.8125rem; color: var(--df-again);
+      padding: 0.5rem 0.75rem;
+      background: color-mix(in srgb, var(--df-again) 12%, transparent); border-radius: 10px;
+    }
+    .warn-msg { font-size: 0.75rem; color: var(--df-text-faint); }
+    .column-map { display: flex; gap: 0.375rem; flex-wrap: wrap; }
     .col-chip {
-      display: inline-flex; align-items: center; gap: 4px;
-      height: 30px; padding: 0 12px; border-radius: 999px;
-      font-size: 12px; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      height: 1.875rem; padding: 0 0.75rem; border-radius: var(--df-radius-pill);
+      font-size: 0.75rem; font-weight: 500;
     }
-    .col-chip.on {
-      background: var(--df-primary-container);
-      color: var(--df-on-primary-container);
-    }
+    .col-chip.on { background: var(--df-primary-container); color: var(--df-on-primary-container); }
     .preview-table { overflow: hidden; }
     .preview-header {
-      display: grid; grid-template-columns: 32px 1fr;
-      font-size: 11px; font-family: 'JetBrains Mono', ui-monospace, monospace;
+      display: grid; grid-template-columns: 2rem 1fr;
+      font-size: 0.6875rem; font-family: 'JetBrains Mono', ui-monospace, monospace;
       color: var(--df-text-faint);
       border-bottom: 1px solid var(--df-outline-soft);
-      background: var(--df-surface-1);
-      padding: 8px 12px;
+      background: var(--df-surface-1); padding: 0.5rem 0.75rem;
     }
     .preview-row {
-      display: grid; grid-template-columns: 32px 1fr;
-      padding: 10px 12px;
+      display: grid; grid-template-columns: 2rem 1fr;
+      padding: 0.625rem 0.75rem;
       border-bottom: 1px solid var(--df-outline-soft);
     }
     .preview-row:last-child { border-bottom: 0; }
-    .preview-row-num { font-size: 11px; color: var(--df-text-faint); font-family: 'JetBrains Mono', ui-monospace, monospace; padding-top: 2px; }
+    .preview-row-num {
+      font-size: 0.6875rem; color: var(--df-text-faint);
+      font-family: 'JetBrains Mono', ui-monospace, monospace; padding-top: 0.125rem;
+    }
     .preview-cell { min-width: 0; }
-    .preview-q { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .preview-a { font-size: 12px; color: var(--df-text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .preview-tags { font-size: 10.5px; color: var(--df-primary); margin-top: 4px; }
-    .import-success { text-align: center; padding: 16px 0 12px; }
+    .preview-q { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .preview-a { font-size: 0.75rem; color: var(--df-text-muted); margin-top: 0.125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .preview-tags { font-size: 0.656rem; color: var(--df-primary); margin-top: 0.25rem; }
+    .import-success { text-align: center; padding: 1rem 0 0.75rem; }
     .success-icon {
-      width: 64px; height: 64px; margin: 0 auto 14px;
+      width: 4rem; height: 4rem; margin: 0 auto 0.875rem;
       border-radius: 20px; background: var(--df-primary-container);
       color: var(--df-on-primary-container);
       display: flex; align-items: center; justify-content: center;
     }
-    .success-title { font-size: 22px; font-weight: 600; letter-spacing: -0.025em; }
-    .success-sub { font-size: 13px; color: var(--df-text-muted); margin-top: 4px; }
-    .import-stats {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    }
-    .stat-box { padding: 14px; text-align: center; }
-    .stat-num { font-size: 26px; font-weight: 600; line-height: 1; }
-    .good { color: var(--df-good); }
-    .hard { color: var(--df-hard); }
+    .success-title { font-size: 1.375rem; font-weight: 600; letter-spacing: -0.025em; }
+    .success-sub { font-size: 0.8125rem; color: var(--df-text-muted); margin-top: 0.25rem; }
+    .import-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .stat-box { padding: 0.875rem; text-align: center; }
+    .stat-num { font-size: 1.625rem; font-weight: 600; line-height: 1; }
+    .good  { color: var(--df-good); }
+    .hard  { color: var(--df-hard); }
     .faint { color: var(--df-text-faint); }
     .skipped-log { overflow: hidden; }
+    .skipped-log-label { padding: 0.75rem 0.875rem 0.5rem; margin: 0; }
     .skipped-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px;
+      display: flex; align-items: center; gap: 0.625rem;
+      padding: 0.625rem 0.875rem;
       border-bottom: 1px solid var(--df-outline-soft);
     }
     .skipped-row:last-child { border-bottom: 0; }
-    .skip-rownum { font-size: 11px; color: var(--df-text-faint); width: 44px; }
-    .skip-reason { font-size: 13px; flex: 1; }
+    .skip-rownum { font-size: 0.6875rem; color: var(--df-text-faint); width: 2.75rem; }
+    .skip-reason { font-size: 0.8125rem; flex: 1; }
     .footer {
-      padding: 12px 20px 24px;
+      padding: 0.75rem 1.25rem 1.5rem;
       border-top: 1px solid var(--df-outline-soft);
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
+      display: flex; gap: 0.5rem; flex-shrink: 0;
     }
-    .btn-filled {
-      flex: 2; height: 46px; border-radius: 13px;
-      border: 0; background: var(--df-primary); color: var(--df-primary-ink);
-      font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
-    }
-    .btn-filled:disabled { opacity: 0.45; cursor: default; }
-    .btn-outline {
-      flex: 1; height: 46px; border-radius: 13px;
-      border: 1px solid var(--df-outline); background: transparent;
-      color: var(--df-text); font-family: inherit; font-size: 14px; cursor: pointer;
-    }
+    /* Footer button sizing — flex proportion only; appearance from global classes */
+    .footer-back { flex: 1; }
+    .footer-next { flex: 2; }
   `],
 })
-export class ImportWizardComponent {
+export class ImportWizardComponent implements OnInit {
   protected String = String;
 
   private importService = inject(ImportService);
   private db = inject(DbService);
   private router = inject(Router);
 
-  decks = toSignal(this.db.getAllDecks(), { initialValue: [] as Deck[] });
+  decks = signal<Deck[]>([]);
+
+  async ngOnInit(): Promise<void> {
+    this.decks.set(await this.db.getAllDecks());
+  }
 
   step = signal(1);
   selectedDeckId = signal(0);
@@ -459,6 +398,10 @@ export class ImportWizardComponent {
     return true;
   });
 
+  onDeckSelect(event: Event): void {
+    this.selectedDeckId.set(+(event.target as HTMLSelectElement).value);
+  }
+
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files?.[0]) {
@@ -476,11 +419,11 @@ export class ImportWizardComponent {
     }
   }
 
-  nextStep(): void {
+  async nextStep(): Promise<void> {
     if (this.step() === 1) {
-      this.parseFile();
+      await this.parseFile();
     } else if (this.step() === 2) {
-      this.doImport();
+      await this.doImport();
     }
   }
 
@@ -488,25 +431,23 @@ export class ImportWizardComponent {
     this.step.update(s => s - 1);
   }
 
-  private parseFile(): void {
+  private async parseFile(): Promise<void> {
     const file = this.selectedFile();
     if (!file) return;
-
-    this.importService.parse(file, this.selectedDeckId()).then(result => {
+    try {
+      const result = await this.importService.parse(file, this.selectedDeckId());
       this.importResult.set(result);
       this.step.set(2);
-    }).catch(err => {
-      this.error.set(err.message);
-    });
+    } catch (err) {
+      this.error.set(err instanceof Error ? err.message : 'Parse failed');
+    }
   }
 
-  private doImport(): void {
+  private async doImport(): Promise<void> {
     const result = this.importResult();
     if (!result) return;
-
-    this.db.bulkAddCards(result.imported).subscribe(() => {
-      this.step.set(3);
-    });
+    await this.db.bulkAddCards(result.imported);
+    this.step.set(3);
   }
 
   formatSize(bytes: number): string {

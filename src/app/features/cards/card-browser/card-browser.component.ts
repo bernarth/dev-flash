@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { DbService } from '@services/db.service';
 import { Card } from '@models';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
@@ -9,11 +8,11 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 @Component({
   selector: 'df-card-browser',
   standalone: true,
-  imports: [FormsModule, EmptyStateComponent, IconComponent],
+  imports: [EmptyStateComponent, IconComponent],
   template: `
-    <div class="screen">
+    <div class="df-screen">
       <header class="top-bar">
-        <button class="icon-btn" (click)="goBack()">
+        <button type="button" class="icon-btn" (click)="goBack()" aria-label="Go back">
           <df-icon name="back" [size]="22" />
         </button>
         <div class="top-bar-center">
@@ -24,23 +23,25 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
       <!-- Search -->
       <div class="search-wrap">
-        <div class="search-box">
+        <label class="search-box">
           <df-icon name="search" [size]="18" class="search-icon" />
           <input
             class="search-input"
-            [ngModel]="query()"
-            (ngModelChange)="query.set($event)"
+            [value]="query()"
+            (input)="onSearchInput($event)"
             placeholder="Search cards"
+            aria-label="Search cards"
           />
-          <span class="search-hint df-mono">⌘K</span>
-        </div>
+          <span class="search-hint df-mono" aria-hidden="true">⌘K</span>
+        </label>
       </div>
 
-      <!-- Tag chips -->
-      <div class="tags-row df-scroll">
+      <!-- Tag filter chips -->
+      <div class="tags-row df-scroll" role="group" aria-label="Filter by tag">
         @for (tag of allTags(); track tag) {
-          <button class="tag-chip df-mono"
+          <button type="button" class="tag-chip df-mono"
             [class.on]="activeTag() === tag"
+            [attr.aria-pressed]="activeTag() === tag"
             (click)="activeTag.set(tag)">
             {{ tag === 'All' ? 'All' : '#' + tag }}
           </button>
@@ -49,56 +50,53 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
       <!-- Results info -->
       <div class="results-bar">
-        <span class="df-mono results-count">{{ filtered().length }} {{ filtered().length === 1 ? 'result' : 'results' }}</span>
+        <span class="df-mono results-count" aria-live="polite">
+          {{ filtered().length }} {{ filtered().length === 1 ? 'result' : 'results' }}
+        </span>
       </div>
 
       <!-- Card list -->
       <div class="content df-scroll">
         @if (filtered().length === 0) {
-          <df-empty-state title="No cards match" />
+          <df-empty-state title="No cards match" icon="search" />
         } @else {
-          <div class="card-list">
+          <ul class="card-list" role="list">
             @for (card of filtered(); track card.id) {
-              <div class="card-item df-card" (click)="editCard(card)">
-                <div class="card-question">{{ card.question }}</div>
-                <div class="card-footer">
-                  <div class="card-tags">
-                    @for (tag of card.tags; track tag) {
-                      <span class="small-tag df-mono">#{{ tag }}</span>
-                    }
+              <li>
+                <button type="button" class="card-item df-card" (click)="editCard(card)">
+                  <div class="card-question">{{ card.question }}</div>
+                  <div class="card-footer">
+                    <div class="card-tags" aria-label="Tags">
+                      @for (tag of card.tags; track tag) {
+                        <span class="small-tag df-mono">#{{ tag }}</span>
+                      }
+                    </div>
                   </div>
-                </div>
-              </div>
+                </button>
+              </li>
             }
-          </div>
+          </ul>
         }
       </div>
 
       <!-- FAB -->
-      <button class="fab" (click)="addCard()">
+      <button type="button" class="df-fab" (click)="addCard()" aria-label="Add card">
         <df-icon name="plus" [size]="22" [strokeWidth]="2" />
       </button>
     </div>
   `,
   styles: [`
-    .screen {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-    }
     .top-bar {
       display: flex;
       align-items: center;
-      padding: 10px 16px;
+      padding: 0.625rem 1rem;
       border-bottom: 1px solid var(--df-outline-soft);
-      gap: 10px;
+      gap: 0.625rem;
       flex-shrink: 0;
     }
     .top-bar-center { flex: 1; min-width: 0; }
     .title {
-      font-size: 15px;
+      font-size: 0.9375rem;
       font-weight: 600;
       letter-spacing: -0.015em;
       white-space: nowrap;
@@ -106,21 +104,22 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       text-overflow: ellipsis;
     }
     .subtitle {
-      font-size: 11px;
+      font-size: 0.6875rem;
       color: var(--df-text-faint);
     }
     .search-wrap {
-      padding: 10px 20px 8px;
+      padding: 0.625rem 1.25rem 0.5rem;
       flex-shrink: 0;
     }
     .search-box {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.625rem;
       background: var(--df-surface-1);
       border: 1px solid var(--df-outline-soft);
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 0.625rem 0.75rem;
+      cursor: text;
     }
     .search-icon { color: var(--df-text-faint); flex-shrink: 0; }
     .search-input {
@@ -129,34 +128,34 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       border: 0;
       outline: none;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 0.875rem;
       color: var(--df-text);
     }
     .search-hint {
-      font-size: 11px;
+      font-size: 0.6875rem;
       color: var(--df-text-faint);
     }
     .tags-row {
       display: flex;
-      gap: 6px;
-      padding: 0 20px 10px;
+      gap: 0.375rem;
+      padding: 0 1.25rem 0.625rem;
       overflow-x: auto;
       flex-shrink: 0;
     }
     .tag-chip {
       display: inline-flex;
       align-items: center;
-      height: 30px;
-      padding: 0 12px;
-      border-radius: 999px;
-      font-size: 12px;
+      height: 1.875rem;
+      padding: 0 0.75rem;
+      border-radius: var(--df-radius-pill);
+      font-size: 0.75rem;
       font-weight: 500;
       background: var(--df-surface-1);
       color: var(--df-text-muted);
       border: 1px solid var(--df-outline-soft);
       cursor: pointer;
       white-space: nowrap;
-      transition: background 120ms, color 120ms;
+      transition: background var(--df-transition-base), color var(--df-transition-base);
     }
     .tag-chip.on {
       background: var(--df-primary-container);
@@ -164,66 +163,60 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       border-color: transparent;
     }
     .results-bar {
-      padding: 0 20px 8px;
+      padding: 0 1.25rem 0.5rem;
       flex-shrink: 0;
     }
     .results-count {
-      font-size: 11px;
+      font-size: 0.6875rem;
       color: var(--df-text-faint);
     }
     .content {
       flex: 1;
       overflow-y: auto;
-      padding: 0 20px 100px;
+      padding: 0 1.25rem var(--df-space-fab);
     }
     .card-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 0.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
     .card-item {
-      padding: 14px;
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      padding: 0.875rem;
       cursor: pointer;
-      transition: background 120ms;
+      font-family: inherit;
+      color: inherit;
+      transition: background var(--df-transition-base);
     }
     .card-item:hover { background: var(--df-surface-1); }
     .card-question {
-      font-size: 14px;
+      font-size: 0.875rem;
       line-height: 1.4;
       font-weight: 500;
       letter-spacing: -0.01em;
     }
     .card-footer {
-      margin-top: 10px;
+      margin-top: 0.625rem;
     }
     .card-tags {
       display: flex;
-      gap: 6px;
+      gap: 0.375rem;
       flex-wrap: wrap;
     }
     .small-tag {
-      font-size: 10.5px;
-      padding: 2px 7px;
-      border-radius: 999px;
+      font-size: 0.656rem;
+      padding: 0.125rem 0.4375rem;
+      border-radius: var(--df-radius-pill);
       background: var(--df-surface-1);
       color: var(--df-text-muted);
       border: 1px solid var(--df-outline-soft);
-    }
-    .fab {
-      position: absolute;
-      right: 20px;
-      bottom: 20px;
-      width: 56px;
-      height: 56px;
-      border-radius: 18px;
-      background: var(--df-primary);
-      color: var(--df-primary-ink);
-      border: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 24px -8px rgba(56, 217, 224, 0.55);
     }
   `],
 })
@@ -232,10 +225,10 @@ export class CardBrowserComponent implements OnInit {
   private router = inject(Router);
   private db = inject(DbService);
 
-  deckId = signal(0);
-  deckName = signal('');
-  cards = signal<Card[]>([]);
-  query = signal('');
+  deckId    = signal(0);
+  deckName  = signal('');
+  cards     = signal<Card[]>([]);
+  query     = signal('');
   activeTag = signal('All');
 
   allTags = computed(() => {
@@ -253,11 +246,19 @@ export class CardBrowserComponent implements OnInit {
     );
   });
 
-  ngOnInit(): void {
+  onSearchInput(event: Event): void {
+    this.query.set((event.target as HTMLInputElement).value);
+  }
+
+  async ngOnInit(): Promise<void> {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.deckId.set(id);
-    this.db.getDeck(id).subscribe(d => this.deckName.set(d?.name ?? ''));
-    this.db.getCardsByDeck(id).subscribe(cards => this.cards.set(cards));
+    const [deck, cards] = await Promise.all([
+      this.db.getDeck(id),
+      this.db.getCardsByDeck(id),
+    ]);
+    this.deckName.set(deck?.name ?? '');
+    this.cards.set(cards);
   }
 
   goBack(): void {

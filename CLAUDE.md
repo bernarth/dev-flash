@@ -71,13 +71,17 @@ These apply to every file in this project. They are not optional.
 - **`inject()`** — never constructor injection.
 - **`signal()` / `computed()`** for all reactive state. **`effect()` is a last resort** — prefer calling methods directly (see KISS above).
 - **`resource()`** for component-level async data loading (experimental, intentionally chosen).
-- **No `async/await` anywhere.** Use RxJS (`from()`, `switchMap`, etc.) for Dexie calls in services. Use `resource()` in components.
+- **`async/await` for all one-shot async operations.** Dexie, import, export — use `async/await` directly. Never wrap a Promise in `from()` just to get an Observable with no operators applied.
+- **RxJS only for genuine streams.** Use it for: debounced user input (`debounceTime` + `switchMap`), real-time data (WebSocket/Supabase), or Angular `HttpClient` pipelines where interceptors/retry/cancellation matter. If you're not applying an operator, don't use RxJS.
+- **Fire-and-forget writes** (optimistic UI updates): use `void promise` or `void Promise.all([...])` to make the intent explicit and avoid unhandled-rejection warnings. Example: `void Promise.all([db.updateCard(...), db.addReviewLog(...)])` before immediately updating UI signals.
+- **Error handling at async boundaries**: wrap `await` in `try/catch` in components when the error should surface to the user (e.g. file parse failures). For optimistic fire-and-forget mutations, explicitly accept the risk with `void`.
 - **`loadComponent()`** for all feature routes — never eagerly import feature components.
 - Services: `providedIn: 'root'`, injected with `inject()`.
-- RxJS only where operators are genuinely needed (e.g. debounced search). Signals for everything else.
+- Signals for all reactive state. RxJS only as described above.
 - **No animations package.** All transitions are native CSS (`transition`, `opacity`, `transform`).
 - **No `@HostListener`.** Use the `host` property on `@Component` instead: `host: { '(window:keydown)': 'onKey($event)' }`.
 - **No `@ViewChild` / `@ViewChildren` / `@ContentChild` / `@ContentChildren`.** Use signal queries: `viewChild()`, `viewChildren()`, `contentChild()`, `contentChildren()`.
+- **Signal Forms for real forms.** Use `form()` + `FormField` from `@angular/forms/signals` for any form with validation or multiple related fields. Never use `FormsModule`, `ngModel`, or `ReactiveFormsModule`. For single reactive controls (search inputs, selects) that don't need validation, use `[value]` + typed event handler with `signal.set()` directly.
 
 ```typescript
 // Correct Angular 21 style
@@ -353,7 +357,7 @@ Settings — sliders for new/day, reviews/day, ease. Theme toggle. Export/import
 
 | Decision | Rationale |
 |---|---|
-| No async/await | RxJS in services, resource() in components |
+| async/await + Promises | Dexie is Promise-native; `from()` wrappers added noise with zero benefit. RxJS reserved for genuine streams (debounce, real-time). |
 | resource() experimental | Signal-native, intentional — update if API changes |
 | Angular 21 standalone | No NgModules, signal APIs throughout |
 | pnpm | Strict hoisting, faster installs |

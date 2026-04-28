@@ -28,32 +28,32 @@ import { IconComponent } from '@shared/components/icon/icon.component';
   styles: [`
     .side-nav {
       display: flex; flex-direction: column; align-items: center;
-      width: 72px; height: 100%;
+      width: 4.5rem; height: 100%;
       background: var(--df-surface);
       border-right: 1px solid var(--df-outline-soft);
-      padding: 14px 0 16px;
+      padding: 0.875rem 0 1rem;
     }
     .logo {
-      width: 36px; height: 36px; border-radius: 10px;
+      width: 2.25rem; height: 2.25rem; border-radius: 10px;
       background: var(--df-primary); color: var(--df-primary-ink);
       display: flex; align-items: center; justify-content: center;
-      font-size: 15px; font-weight: 700; letter-spacing: -0.04em;
-      margin-bottom: 18px;
+      font-size: 0.9375rem; font-weight: 700; letter-spacing: -0.04em;
+      margin-bottom: 1.125rem;
     }
     .nav-item {
-      width: 44px; height: 44px; border-radius: 12px; margin-bottom: 6px;
+      width: 2.75rem; height: 2.75rem; border-radius: 12px; margin-bottom: 0.375rem;
       display: flex; align-items: center; justify-content: center;
       color: var(--df-text-muted); text-decoration: none;
-      transition: background 120ms, color 120ms;
+      transition: background var(--df-transition-base), color var(--df-transition-base);
     }
     .nav-item:hover  { background: var(--df-surface-1); color: var(--df-text); }
     .nav-item.active { background: var(--df-primary-container); color: var(--df-on-primary-container); }
     .spacer { flex: 1; }
     .theme-toggle {
-      width: 44px; height: 44px; border-radius: 12px; border: 0;
+      width: 2.75rem; height: 2.75rem; border-radius: 12px; border: 0;
       background: transparent; color: var(--df-text-muted);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: background 120ms, color 120ms;
+      cursor: pointer; transition: background var(--df-transition-base), color var(--df-transition-base);
     }
     .theme-toggle:hover { background: var(--df-surface-1); color: var(--df-text); }
   `],

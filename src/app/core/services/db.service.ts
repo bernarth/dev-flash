@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
-import { from, Observable } from 'rxjs';
 import { Card, Deck, ReviewLog, AppSettings, DEFAULT_SETTINGS } from '@models';
 import { endOfDay } from '@utils/date.utils';
 
@@ -27,121 +26,109 @@ export class DbService {
 
   // ── Decks ────────────────────────────────────────────────────────────────
 
-  getAllDecks(): Observable<Deck[]> {
-    return from(this.db.decks.orderBy('createdAt').toArray());
+  getAllDecks(): Promise<Deck[]> {
+    return this.db.decks.orderBy('createdAt').toArray();
   }
 
-  getDeck(id: number): Observable<Deck | undefined> {
-    return from(this.db.decks.get(id));
+  getDeck(id: number): Promise<Deck | undefined> {
+    return this.db.decks.get(id);
   }
 
-  createDeck(deck: Omit<Deck, 'id'>): Observable<number> {
-    return from(this.db.decks.add(deck as Deck));
+  createDeck(deck: Omit<Deck, 'id'>): Promise<number> {
+    return this.db.decks.add(deck as Deck);
   }
 
-  updateDeck(id: number, changes: Partial<Deck>): Observable<number> {
-    return from(this.db.decks.update(id, { ...changes, updatedAt: new Date() }));
+  updateDeck(id: number, changes: Partial<Deck>): Promise<number> {
+    return this.db.decks.update(id, { ...changes, updatedAt: new Date() });
   }
 
-  deleteDeck(id: number): Observable<void> {
-    return from(
-      this.db.transaction('rw', this.db.decks, this.db.cards, this.db.reviewLogs, async () => {
-        await this.db.reviewLogs.where('deckId').equals(id).delete();
-        await this.db.cards.where('deckId').equals(id).delete();
-        await this.db.decks.delete(id);
-      })
-    );
+  deleteDeck(id: number): Promise<void> {
+    return this.db.transaction('rw', this.db.decks, this.db.cards, this.db.reviewLogs, async () => {
+      await this.db.reviewLogs.where('deckId').equals(id).delete();
+      await this.db.cards.where('deckId').equals(id).delete();
+      await this.db.decks.delete(id);
+    });
   }
 
   // ── Cards ────────────────────────────────────────────────────────────────
 
-  getCardsByDeck(deckId: number): Observable<Card[]> {
-    return from(this.db.cards.where('deckId').equals(deckId).toArray());
+  getCardsByDeck(deckId: number): Promise<Card[]> {
+    return this.db.cards.where('deckId').equals(deckId).toArray();
   }
 
-  getCard(id: number): Observable<Card | undefined> {
-    return from(this.db.cards.get(id));
+  getCard(id: number): Promise<Card | undefined> {
+    return this.db.cards.get(id);
   }
 
-  getDueCards(deckId: number, maxReviews: number): Observable<Card[]> {
+  getDueCards(deckId: number, maxReviews: number): Promise<Card[]> {
     const today = endOfDay();
-    return from(
-      this.db.cards
-        .where('deckId').equals(deckId)
-        .and(c => c.nextReviewDate <= today)
-        .limit(maxReviews)
-        .toArray()
-    );
+    return this.db.cards
+      .where('deckId').equals(deckId)
+      .and(c => c.nextReviewDate <= today)
+      .limit(maxReviews)
+      .toArray();
   }
 
-  getNewCards(deckId: number, max: number): Observable<Card[]> {
-    return from(
-      this.db.cards
-        .where('deckId').equals(deckId)
-        .and(c => c.repetitions === 0)
-        .limit(max)
-        .toArray()
-    );
+  getNewCards(deckId: number, max: number): Promise<Card[]> {
+    return this.db.cards
+      .where('deckId').equals(deckId)
+      .and(c => c.repetitions === 0)
+      .limit(max)
+      .toArray();
   }
 
-  createCard(card: Omit<Card, 'id'>): Observable<number> {
-    return from(this.db.cards.add(card as Card));
+  createCard(card: Omit<Card, 'id'>): Promise<number> {
+    return this.db.cards.add(card as Card);
   }
 
-  updateCard(id: number, changes: Partial<Card>): Observable<number> {
-    return from(this.db.cards.update(id, changes));
+  updateCard(id: number, changes: Partial<Card>): Promise<number> {
+    return this.db.cards.update(id, changes);
   }
 
-  deleteCard(id: number): Observable<void> {
-    return from(
-      this.db.transaction('rw', this.db.cards, this.db.reviewLogs, async () => {
-        await this.db.reviewLogs.where('cardId').equals(id).delete();
-        await this.db.cards.delete(id);
-      })
-    );
+  deleteCard(id: number): Promise<void> {
+    return this.db.transaction('rw', this.db.cards, this.db.reviewLogs, async () => {
+      await this.db.reviewLogs.where('cardId').equals(id).delete();
+      await this.db.cards.delete(id);
+    });
   }
 
-  bulkAddCards(cards: Omit<Card, 'id'>[]): Observable<number> {
-    return from(this.db.cards.bulkAdd(cards as Card[]));
+  bulkAddCards(cards: Omit<Card, 'id'>[]): Promise<number> {
+    return this.db.cards.bulkAdd(cards as Card[]);
   }
 
-  getCardCount(deckId: number): Observable<number> {
-    return from(this.db.cards.where('deckId').equals(deckId).count());
+  getCardCount(deckId: number): Promise<number> {
+    return this.db.cards.where('deckId').equals(deckId).count();
   }
 
-  getDueCount(deckId: number): Observable<number> {
+  getDueCount(deckId: number): Promise<number> {
     const today = endOfDay();
-    return from(
-      this.db.cards
-        .where('deckId').equals(deckId)
-        .and(c => c.nextReviewDate <= today)
-        .count()
-    );
+    return this.db.cards
+      .where('deckId').equals(deckId)
+      .and(c => c.nextReviewDate <= today)
+      .count();
   }
 
   // ── Review Logs ──────────────────────────────────────────────────────────
 
-  addReviewLog(log: Omit<ReviewLog, 'id'>): Observable<number> {
-    return from(this.db.reviewLogs.add(log as ReviewLog));
+  addReviewLog(log: Omit<ReviewLog, 'id'>): Promise<number> {
+    return this.db.reviewLogs.add(log as ReviewLog);
   }
 
-  getReviewLogs(deckId: number, since?: Date): Observable<ReviewLog[]> {
-    let query = this.db.reviewLogs.where('deckId').equals(deckId);
-    return from(query.toArray().then(logs =>
-      since ? logs.filter(l => l.reviewedAt >= since) : logs
-    ));
+  getReviewLogs(deckId: number, since?: Date): Promise<ReviewLog[]> {
+    return this.db.reviewLogs
+      .where('deckId').equals(deckId)
+      .toArray()
+      .then(logs => since ? logs.filter(l => l.reviewedAt >= since) : logs);
   }
 
   // ── Settings ─────────────────────────────────────────────────────────────
 
-  getSettings(): Observable<AppSettings> {
-    return from(
-      this.db.settings.get(1).then(s => s ?? { id: 1, ...DEFAULT_SETTINGS })
-    );
+  getSettings(): Promise<AppSettings> {
+    return this.db.settings.get(1).then(s => s ?? { id: 1, ...DEFAULT_SETTINGS });
   }
 
-  saveSettings(settings: AppSettings): Observable<number> {
-    return from(this.db.settings.put({ id: 1, ...settings }));
+  saveSettings(settings: AppSettings): Promise<number> {
+    return this.db.settings.put({ id: 1, ...settings });
   }
 
   // ── Storage info ─────────────────────────────────────────────────────────
@@ -154,29 +141,27 @@ export class DbService {
     return { usage: 0, quota: 0 };
   }
 
-  getCardCountAll(): Observable<number> {
-    return from(this.db.cards.count());
+  getCardCountAll(): Promise<number> {
+    return this.db.cards.count();
   }
 
-  getDeckCountAll(): Observable<number> {
-    return from(this.db.decks.count());
+  getDeckCountAll(): Promise<number> {
+    return this.db.decks.count();
   }
 
-  getReviewLogCountAll(): Observable<number> {
-    return from(this.db.reviewLogs.count());
+  getReviewLogCountAll(): Promise<number> {
+    return this.db.reviewLogs.count();
   }
 
   // ── Nuke ─────────────────────────────────────────────────────────────────
 
-  deleteAllData(): Observable<void> {
-    return from(
-      this.db.transaction('rw', this.db.decks, this.db.cards, this.db.reviewLogs, this.db.settings, async () => {
-        await this.db.decks.clear();
-        await this.db.cards.clear();
-        await this.db.reviewLogs.clear();
-        await this.db.settings.clear();
-      })
-    );
+  deleteAllData(): Promise<void> {
+    return this.db.transaction('rw', this.db.decks, this.db.cards, this.db.reviewLogs, this.db.settings, async () => {
+      await this.db.decks.clear();
+      await this.db.cards.clear();
+      await this.db.reviewLogs.clear();
+      await this.db.settings.clear();
+    });
   }
 
   // ── Export ───────────────────────────────────────────────────────────────

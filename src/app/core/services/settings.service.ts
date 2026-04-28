@@ -5,14 +5,14 @@ import { ThemeService } from './theme.service';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  private db = inject(DbService);
+  private db    = inject(DbService);
   private theme = inject(ThemeService);
 
   readonly settings = signal<AppSettings>({ ...DEFAULT_SETTINGS });
-  readonly loaded = signal(false);
+  readonly loaded   = signal(false);
 
   constructor() {
-    this.db.getSettings().subscribe(s => {
+    this.db.getSettings().then(s => {
       this.settings.set(s);
       this.theme.setMode(s.theme);
       this.loaded.set(true);
@@ -22,6 +22,7 @@ export class SettingsService {
   save(settings: AppSettings): void {
     this.settings.set(settings);
     this.theme.setMode(settings.theme);
-    this.db.saveSettings(settings).subscribe();
+    // intentionally fire-and-forget: signal is the source of truth, DB write is persistence
+    void this.db.saveSettings(settings);
   }
 }
