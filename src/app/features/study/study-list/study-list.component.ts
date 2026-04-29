@@ -53,7 +53,7 @@ interface DeckWithDue {
                 </div>
                 <button
                   class="study-btn"
-                  [class.study-btn--dim]="item.dueCount === 0"
+                  [class.study-btn--dim]="item.totalCards === 0"
                   (click)="startStudy(item.deck.id!)"
                   [attr.aria-label]="'Study ' + item.deck.name"
                 >

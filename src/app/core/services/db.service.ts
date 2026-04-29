@@ -107,7 +107,7 @@ export class DbService {
     return this.db.cards
       .where('deckId')
       .equals(deckId)
-      .and((c) => c.nextReviewDate <= today)
+      .and((c) => c.nextReviewDate <= today || c.repetitions === 0)
       .count();
   }
 

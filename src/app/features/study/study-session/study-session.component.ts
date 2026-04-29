@@ -86,7 +86,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
         <div class="status-msg">Loading cards…</div>
       } @else {
         <div class="status-msg">
-          <p>No cards due!</p>
+          <p>This deck has no cards yet.</p>
           <button class="show-answer-btn show-answer-btn--spaced" (click)="exitStudy()">
             Back to decks
           </button>
@@ -363,7 +363,15 @@ export class StudySessionComponent implements OnInit {
       this.db.getNewCards(deckId, newCardsPerDay),
     ]);
     const seen = new Set(newCards.map((c) => c.id));
-    this.queue.set([...newCards, ...due.filter((c) => !seen.has(c.id))]);
+    const srsQueue = [...newCards, ...due.filter((c) => !seen.has(c.id))];
+
+    if (srsQueue.length > 0) {
+      this.queue.set(srsQueue);
+    } else {
+      // No SRS-scheduled cards — load all cards for free review
+      const all = await this.db.getCardsByDeck(deckId);
+      this.queue.set(all);
+    }
     this.loading.set(false);
   }
 

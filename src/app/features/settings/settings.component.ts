@@ -421,5 +421,6 @@ export class SettingsComponent implements OnInit {
   async deleteAll(): Promise<void> {
     await this.db.deleteAllData();
     this.confirmDelete.set(false);
+    this.loadStorageInfo();
   }
 }
