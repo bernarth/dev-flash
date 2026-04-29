@@ -96,7 +96,17 @@ import { IconComponent } from '@shared/components/icon/icon.component';
   `,
   styles: [
     `
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+      }
       .df-screen {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
         background: var(--df-bg);
       }
       .top-bar {

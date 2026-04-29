@@ -111,6 +111,16 @@ export class DbService {
       .count();
   }
 
+  async getNextReviewDate(deckId: number): Promise<Date | null> {
+    const today = endOfDay();
+    const next = await this.db.cards
+      .where('deckId')
+      .equals(deckId)
+      .and((c) => c.nextReviewDate > today)
+      .sortBy('nextReviewDate');
+    return next[0]?.nextReviewDate ?? null;
+  }
+
   // ── Review Logs ──────────────────────────────────────────────────────────
 
   addReviewLog(log: Omit<ReviewLog, 'id'>): Promise<number> {

@@ -76,6 +76,12 @@ const DECK_COLORS = ['#38D9E0', '#C678DD', '#F2A84A', '#6FD78B', '#F26D6D', '#61
   `,
   styles: [
     `
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+      }
       .top-bar {
         display: flex;
         align-items: center;

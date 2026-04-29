@@ -9,7 +9,6 @@ interface StorageItem {
   label: string;
   value: string;
   color: string;
-  mb: number;
 }
 
 @Component({
@@ -51,7 +50,7 @@ interface StorageItem {
         </div>
 
         <div class="df-card breakdown-card">
-          @for (item of storageBreakdown; track item.label) {
+          @for (item of storageBreakdown(); track item.label) {
             <div class="breakdown-row">
               <span class="breakdown-dot" [style.background]="item.color"></span>
               <div class="breakdown-info">
@@ -371,11 +370,11 @@ export class SettingsComponent implements OnInit {
     { label: 'Dark', value: 'dark' as const },
   ];
 
-  readonly storageBreakdown: StorageItem[] = [
-    { label: 'Cards', value: '~', color: 'var(--df-primary)', mb: 0 },
-    { label: 'Review log', value: '~', color: 'var(--df-hard)', mb: 0 },
-    { label: 'App cache', value: '~', color: 'var(--df-text-faint)', mb: 0 },
-  ];
+  storageBreakdown = signal<StorageItem[]>([
+    { label: 'Decks', value: '…', color: 'var(--df-easy)' },
+    { label: 'Cards', value: '…', color: 'var(--df-primary)' },
+    { label: 'Review log', value: '…', color: 'var(--df-hard)' },
+  ]);
 
   ngOnInit(): void {
     this.localSettings.set({ ...this.settingsService.settings() });
@@ -383,12 +382,22 @@ export class SettingsComponent implements OnInit {
   }
 
   private loadStorageInfo(): void {
-    this.db.getStorageEstimate().then(({ usage, quota }) => {
+    void Promise.all([
+      this.db.getStorageEstimate(),
+      this.db.getDeckCountAll(),
+      this.db.getCardCountAll(),
+      this.db.getReviewLogCountAll(),
+    ]).then(([{ usage, quota }, deckCount, cardCount, reviewCount]) => {
       const usedMb = usage / (1024 * 1024);
       const quotaMb = Math.min(quota / (1024 * 1024), 1024);
       this.storageUsedMb.set(usedMb);
       this.storageQuotaMb.set(Math.round(quotaMb));
       this.storagePercent.set(quotaMb > 0 ? (usedMb / quotaMb) * 100 : 0);
+      this.storageBreakdown.set([
+        { label: 'Decks', value: `${deckCount} deck${deckCount !== 1 ? 's' : ''}`, color: 'var(--df-easy)' },
+        { label: 'Cards', value: `${cardCount} card${cardCount !== 1 ? 's' : ''}`, color: 'var(--df-primary)' },
+        { label: 'Review log', value: `${reviewCount} entr${reviewCount !== 1 ? 'ies' : 'y'}`, color: 'var(--df-hard)' },
+      ]);
     });
   }
 

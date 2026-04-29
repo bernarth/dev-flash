@@ -32,9 +32,9 @@ export const routes: Routes = [
       import('@features/cards/card-editor/card-editor.component').then(m => m.CardEditorComponent),
   },
   {
-    path: 'browse',
+    path: 'study',
     loadComponent: () =>
-      import('@features/cards/card-browser/card-browser.component').then(m => m.CardBrowserComponent),
+      import('@features/study/study-list/study-list.component').then(m => m.StudyListComponent),
   },
   {
     path: 'import',

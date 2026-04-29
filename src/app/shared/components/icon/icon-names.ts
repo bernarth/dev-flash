@@ -18,6 +18,7 @@ export type IconName =
   | 'moon'
   | 'more'
   | 'notes'
+  | 'play'
   | 'plus'
   | 'search'
   | 'settings'

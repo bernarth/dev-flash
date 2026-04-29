@@ -72,6 +72,12 @@ import { IconComponent } from '@shared/components/icon/icon.component';
   `,
   styles: [
     `
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+      }
       .title {
         font-weight: 600;
         font-size: 1rem;
