@@ -11,9 +11,9 @@ import { IconComponent } from '@shared/components/icon/icon.component';
         <df-icon name="stack" [size]="22" />
         <span>Decks</span>
       </a>
-      <a class="nav-item" routerLink="/browse" routerLinkActive="active">
-        <df-icon name="search" [size]="22" />
-        <span>Browse</span>
+      <a class="nav-item" routerLink="/study" routerLinkActive="active">
+        <df-icon name="play" [size]="22" />
+        <span>Study</span>
       </a>
       <a class="nav-item" routerLink="/import" routerLinkActive="active">
         <df-icon name="upload" [size]="22" />

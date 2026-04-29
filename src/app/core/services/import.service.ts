@@ -25,7 +25,13 @@ export class ImportService {
         header: true,
         skipEmptyLines: true,
         complete: (result) => {
-          resolve(this.processRows(result.data as Record<string, string>[], result.meta.fields ?? [], deckId));
+          resolve(
+            this.processRows(
+              result.data as Record<string, string>[],
+              result.meta.fields ?? [],
+              deckId,
+            ),
+          );
         },
         error: (err) => reject(new Error(err.message)),
       });
@@ -35,19 +41,21 @@ export class ImportService {
   private processRows(
     rows: Record<string, string>[],
     fields: string[],
-    deckId: number
+    deckId: number,
   ): ImportResult {
     const imported: Omit<Card, 'id'>[] = [];
     const skipped: { row: number; reason: string }[] = [];
     const warnings: string[] = [];
 
-    const lowerFields = fields.map(f => f.toLowerCase().trim());
+    const lowerFields = fields.map((f) => f.toLowerCase().trim());
+
     if (!lowerFields.includes('question') || !lowerFields.includes('answer')) {
       throw new Error('CSV must have "question" and "answer" columns');
     }
 
     const knownCols = ['question', 'answer', 'notes', 'tags'];
-    const unknownCols = lowerFields.filter(f => !knownCols.includes(f));
+    const unknownCols = lowerFields.filter((f) => !knownCols.includes(f));
+
     if (unknownCols.length) {
       warnings.push(`Unknown columns ignored: ${unknownCols.join(', ')}`);
     }
@@ -68,7 +76,10 @@ export class ImportService {
 
       const rawTags = (row['tags'] ?? row['Tags'] ?? '').trim();
       const tags = rawTags
-        ? rawTags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean)
+        ? rawTags
+            .split(',')
+            .map((t) => t.trim().toLowerCase())
+            .filter(Boolean)
         : [];
 
       const notes = (row['notes'] ?? row['Notes'] ?? '').trim() || undefined;
@@ -79,7 +90,9 @@ export class ImportService {
         answer,
         notes,
         tags,
-        ...this.srs.newCardDefaults() as Required<Pick<Card, 'interval' | 'easeFactor' | 'repetitions' | 'nextReviewDate'>>,
+        ...(this.srs.newCardDefaults() as Required<
+          Pick<Card, 'interval' | 'easeFactor' | 'repetitions' | 'nextReviewDate'>
+        >),
       });
     });
 

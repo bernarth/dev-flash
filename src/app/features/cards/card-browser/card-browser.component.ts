@@ -89,6 +89,12 @@ import { IconComponent } from '@shared/components/icon/icon.component';
   `,
   styles: [
     `
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+      }
       .top-bar {
         display: flex;
         align-items: center;

@@ -13,8 +13,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       <a class="nav-item" routerLink="/decks" routerLinkActive="active" title="Decks">
         <df-icon name="stack"
       /></a>
-      <a class="nav-item" routerLink="/browse" routerLinkActive="active" title="Browse">
-        <df-icon name="search"
+      <a class="nav-item" routerLink="/study" routerLinkActive="active" title="Study">
+        <df-icon name="play"
       /></a>
       <a class="nav-item" routerLink="/import" routerLinkActive="active" title="Import">
         <df-icon name="upload"
