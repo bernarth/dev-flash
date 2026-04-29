@@ -6,7 +6,6 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-deck-create',
-  standalone: true,
   imports: [IconComponent, FormField],
   template: `
     <form class="df-screen" (submit)="$event.preventDefault(); save()">
@@ -21,29 +20,58 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       <div class="content">
         <label class="field">
           <span class="df-label">Name</span>
-          <input class="df-input" [formField]="deckForm.name" placeholder="e.g. C# Fundamentals" autofocus />
+          <input
+            class="df-input"
+            [formField]="deckForm.name"
+            placeholder="e.g. C# Fundamentals"
+            autofocus
+          />
         </label>
 
         <label class="field">
           <span class="df-label">Description <span class="optional">(optional)</span></span>
-          <textarea class="df-textarea" [formField]="deckForm.description" rows="3" placeholder="What's this deck for?"></textarea>
+          <textarea
+            class="df-textarea"
+            [formField]="deckForm.description"
+            rows="3"
+            placeholder="What's this deck for?"
+          ></textarea>
         </label>
       </div>
     </form>
   `,
-  styles: [`
-    .title { flex: 1; font-weight: 600; font-size: 1rem; letter-spacing: -0.02em; }
-    .content { flex: 1; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    label.field { display: flex; flex-direction: column; }
-    .optional { font-weight: 400; color: var(--df-text-faint); }
-  `],
+  styles: [
+    `
+      .title {
+        flex: 1;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+      }
+      .content {
+        flex: 1;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+      label.field {
+        display: flex;
+        flex-direction: column;
+      }
+      .optional {
+        font-weight: 400;
+        color: var(--df-text-faint);
+      }
+    `,
+  ],
 })
 export class DeckCreateComponent {
-  private db     = inject(DbService);
+  private db = inject(DbService);
   private router = inject(Router);
 
   deckModel = signal({ name: '', description: '' });
-  deckForm  = form(this.deckModel, (s) => {
+  deckForm = form(this.deckModel, (s) => {
     required(s.name);
   });
 
@@ -59,6 +87,7 @@ export class DeckCreateComponent {
         updatedAt: now,
       });
     });
+
     if (success) {
       this.router.navigate(['/decks']);
     }
