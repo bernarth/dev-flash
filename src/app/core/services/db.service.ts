@@ -63,16 +63,18 @@ export class DbService {
   getDueCards(deckId: number, maxReviews: number): Promise<Card[]> {
     const today = endOfDay();
     return this.db.cards
-      .where('deckId').equals(deckId)
-      .and(c => c.nextReviewDate <= today)
+      .where('deckId')
+      .equals(deckId)
+      .and((c) => c.nextReviewDate <= today)
       .limit(maxReviews)
       .toArray();
   }
 
   getNewCards(deckId: number, max: number): Promise<Card[]> {
     return this.db.cards
-      .where('deckId').equals(deckId)
-      .and(c => c.repetitions === 0)
+      .where('deckId')
+      .equals(deckId)
+      .and((c) => c.repetitions === 0)
       .limit(max)
       .toArray();
   }
@@ -103,8 +105,9 @@ export class DbService {
   getDueCount(deckId: number): Promise<number> {
     const today = endOfDay();
     return this.db.cards
-      .where('deckId').equals(deckId)
-      .and(c => c.nextReviewDate <= today)
+      .where('deckId')
+      .equals(deckId)
+      .and((c) => c.nextReviewDate <= today)
       .count();
   }
 
@@ -116,15 +119,16 @@ export class DbService {
 
   getReviewLogs(deckId: number, since?: Date): Promise<ReviewLog[]> {
     return this.db.reviewLogs
-      .where('deckId').equals(deckId)
+      .where('deckId')
+      .equals(deckId)
       .toArray()
-      .then(logs => since ? logs.filter(l => l.reviewedAt >= since) : logs);
+      .then((logs) => (since ? logs.filter((l) => l.reviewedAt >= since) : logs));
   }
 
   // ── Settings ─────────────────────────────────────────────────────────────
 
   getSettings(): Promise<AppSettings> {
-    return this.db.settings.get(1).then(s => s ?? { id: 1, ...DEFAULT_SETTINGS });
+    return this.db.settings.get(1).then((s) => s ?? { id: 1, ...DEFAULT_SETTINGS });
   }
 
   saveSettings(settings: AppSettings): Promise<number> {
@@ -136,8 +140,10 @@ export class DbService {
   async getStorageEstimate(): Promise<{ usage: number; quota: number }> {
     if ('storage' in navigator && 'estimate' in navigator.storage) {
       const est = await navigator.storage.estimate();
+
       return { usage: est.usage ?? 0, quota: est.quota ?? 0 };
     }
+
     return { usage: 0, quota: 0 };
   }
 
@@ -156,12 +162,19 @@ export class DbService {
   // ── Nuke ─────────────────────────────────────────────────────────────────
 
   deleteAllData(): Promise<void> {
-    return this.db.transaction('rw', this.db.decks, this.db.cards, this.db.reviewLogs, this.db.settings, async () => {
-      await this.db.decks.clear();
-      await this.db.cards.clear();
-      await this.db.reviewLogs.clear();
-      await this.db.settings.clear();
-    });
+    return this.db.transaction(
+      'rw',
+      this.db.decks,
+      this.db.cards,
+      this.db.reviewLogs,
+      this.db.settings,
+      async () => {
+        await this.db.decks.clear();
+        await this.db.cards.clear();
+        await this.db.reviewLogs.clear();
+        await this.db.settings.clear();
+      },
+    );
   }
 
   // ── Export ───────────────────────────────────────────────────────────────
@@ -172,6 +185,7 @@ export class DbService {
       this.db.cards.toArray(),
       this.db.reviewLogs.toArray(),
     ]);
+
     return { decks, cards, reviewLogs };
   }
 }

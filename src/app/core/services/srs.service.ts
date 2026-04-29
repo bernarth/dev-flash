@@ -49,6 +49,7 @@ export class SrsService {
   newCardDefaults(): Partial<Card> {
     const tomorrow = startOfDay();
     tomorrow.setDate(tomorrow.getDate() + 1);
+
     return {
       interval: 1,
       easeFactor: 2.5,
