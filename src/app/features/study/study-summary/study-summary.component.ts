@@ -7,7 +7,6 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'df-study-summary',
-  standalone: true,
   imports: [IconComponent],
   template: `
     <div class="df-screen">
@@ -71,93 +70,106 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       </div>
     </div>
   `,
-  styles: [`
-    .title { font-weight: 600; font-size: 1rem; }
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.25rem 1.25rem 2rem;
-    }
-    .hero {
-      text-align: center;
-      padding: 1.5rem 0 1.25rem;
-    }
-    .hero-icon {
-      width: 4rem;
-      height: 4rem;
-      margin: 0 auto 0.875rem;
-      border-radius: 20px;
-      background: var(--df-primary-container);
-      color: var(--df-on-primary-container);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hero-title {
-      font-size: 1.75rem;
-      font-weight: 600;
-      letter-spacing: -0.03em;
-    }
-    .hero-sub {
-      font-size: 0.8125rem;
-      color: var(--df-text-muted);
-      margin-top: 0.25rem;
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.625rem;
-      margin-bottom: 0.875rem;
-    }
-    .stat-card { padding: 0.875rem; }
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-    .breakdown-card {
-      padding: 1rem;
-      margin-bottom: 1.25rem;
-    }
-    .seg-bar {
-      display: flex;
-      gap: 0.125rem;
-      height: 0.625rem;
-      border-radius: var(--df-radius-pill);
-      overflow: hidden;
-      margin-bottom: 0.875rem;
-      background: var(--df-surface-2);
-    }
-    .breakdown-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.625rem;
-    }
-    .breakdown-row {
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-    }
-    .breakdown-dot {
-      width: 0.625rem;
-      height: 0.625rem;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-    .breakdown-label { flex: 1; font-size: 0.8125rem; }
-    .breakdown-count { font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
-    .breakdown-pct {
-      font-size: 0.6875rem;
-      color: var(--df-text-faint);
-      width: 2.25rem;
-      text-align: right;
-    }
-    .actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.625rem;
-    }
-  `],
+  styles: [
+    `
+      .title {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.25rem 1.25rem 2rem;
+      }
+      .hero {
+        text-align: center;
+        padding: 1.5rem 0 1.25rem;
+      }
+      .hero-icon {
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 0.875rem;
+        border-radius: 20px;
+        background: var(--df-primary-container);
+        color: var(--df-on-primary-container);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hero-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+      .hero-sub {
+        font-size: 0.8125rem;
+        color: var(--df-text-muted);
+        margin-top: 0.25rem;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.625rem;
+        margin-bottom: 0.875rem;
+      }
+      .stat-card {
+        padding: 0.875rem;
+      }
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .breakdown-card {
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+      }
+      .seg-bar {
+        display: flex;
+        gap: 0.125rem;
+        height: 0.625rem;
+        border-radius: var(--df-radius-pill);
+        overflow: hidden;
+        margin-bottom: 0.875rem;
+        background: var(--df-surface-2);
+      }
+      .breakdown-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+      .breakdown-row {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+      }
+      .breakdown-dot {
+        width: 0.625rem;
+        height: 0.625rem;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+      .breakdown-label {
+        flex: 1;
+        font-size: 0.8125rem;
+      }
+      .breakdown-count {
+        font-size: 0.8125rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .breakdown-pct {
+        font-size: 0.6875rem;
+        color: var(--df-text-faint);
+        width: 2.25rem;
+        text-align: right;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+    `,
+  ],
 })
 export class StudySummaryComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -169,25 +181,25 @@ export class StudySummaryComponent implements OnInit {
 
   breakdown = computed(() => {
     const ls = this.logs();
-    const count = (r: Rating) => ls.filter(l => l.rating === r).length;
-    return RATING_CONFIG.map(r => ({ ...r, count: count(r.key) }));
+    const count = (r: Rating) => ls.filter((l) => l.rating === r).length;
+    return RATING_CONFIG.map((r) => ({ ...r, count: count(r.key) }));
   });
 
   total = computed(() => this.logs().length);
 
   breakdownWithPct = computed(() => {
     const t = this.total();
-    return this.breakdown().map(r => ({
+    return this.breakdown().map((r) => ({
       ...r,
-      pct: t ? Math.round(r.count / t * 100) : 0,
+      pct: t ? Math.round((r.count / t) * 100) : 0,
     }));
   });
 
   retentionPct = computed(() => {
     const t = this.total();
     if (!t) return 0;
-    const good = this.logs().filter(l => l.rating === 'good' || l.rating === 'easy').length;
-    return Math.round(good / t * 100);
+    const good = this.logs().filter((l) => l.rating === 'good' || l.rating === 'easy').length;
+    return Math.round((good / t) * 100);
   });
 
   async ngOnInit(): Promise<void> {

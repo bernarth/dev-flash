@@ -4,7 +4,6 @@ import { IconName } from '@shared/components/icon/icon-names';
 
 @Component({
   selector: 'df-empty-state',
-  standalone: true,
   imports: [IconComponent],
   template: `
     <div class="empty-state">
@@ -17,33 +16,35 @@ import { IconName } from '@shared/components/icon/icon-names';
       }
     </div>
   `,
-  styles: [`
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 1.5rem;
-      text-align: center;
-      gap: 0.5rem;
-    }
-    .empty-icon {
-      color: var(--df-text-faint);
-      margin-bottom: 0.5rem;
-    }
-    .empty-title {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--df-text-muted);
-    }
-    .empty-subtitle {
-      font-size: 0.8125rem;
-      color: var(--df-text-faint);
-    }
-  `],
+  styles: [
+    `
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1.5rem;
+        text-align: center;
+        gap: 0.5rem;
+      }
+      .empty-icon {
+        color: var(--df-text-faint);
+        margin-bottom: 0.5rem;
+      }
+      .empty-title {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--df-text-muted);
+      }
+      .empty-subtitle {
+        font-size: 0.8125rem;
+        color: var(--df-text-faint);
+      }
+    `,
+  ],
 })
 export class EmptyStateComponent {
-  title    = input('Nothing here yet');
+  title = input('Nothing here yet');
   subtitle = input('');
-  icon     = input<IconName>('stack');
+  icon = input<IconName>('stack');
 }

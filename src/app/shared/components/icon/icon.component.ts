@@ -23,7 +23,6 @@ import { ICON_PATHS } from './icon-paths';
  */
 @Component({
   selector: 'df-icon',
-  standalone: true,
   template: `
     <svg
       [attr.width]="size()"
@@ -36,7 +35,8 @@ import { ICON_PATHS } from './icon-paths';
       stroke-linejoin="round"
       [attr.aria-hidden]="label() ? null : 'true'"
       [attr.aria-label]="label() || null"
-      [attr.role]="label() ? 'img' : null">
+      [attr.role]="label() ? 'img' : null"
+    >
       <g [innerHTML]="svgContent()"></g>
     </svg>
   `,
@@ -45,12 +45,12 @@ import { ICON_PATHS } from './icon-paths';
 export class IconComponent {
   private sanitizer = inject(DomSanitizer);
 
-  name        = input.required<IconName>();
-  size        = input<number>(20);
+  name = input.required<IconName>();
+  size = input<number>(20);
   strokeWidth = input<number>(1.75);
-  label       = input<string>('');
+  label = input<string>('');
 
   svgContent = computed<SafeHtml>(() =>
-    this.sanitizer.bypassSecurityTrustHtml(ICON_PATHS[this.name()])
+    this.sanitizer.bypassSecurityTrustHtml(ICON_PATHS[this.name()]),
   );
 }
