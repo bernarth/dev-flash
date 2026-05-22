@@ -2,75 +2,53 @@ import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { form, FormField, submit, required } from '@angular/forms/signals';
 import { DbService } from '@services/db.service';
-import { IconComponent } from '@shared/components/icon/icon.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'df-deck-create',
-  imports: [IconComponent, FormField],
+  imports: [MatIconModule, MatToolbarModule, MatFormFieldModule, MatInputModule, MatButtonModule, FormField],
   template: `
-    <form class="df-screen" (submit)="$event.preventDefault(); save()">
-      <header class="df-top-bar">
-        <button type="button" class="icon-btn" (click)="cancel()" aria-label="Cancel">
-          <df-icon name="close" />
+    <form class="screen" (submit)="$event.preventDefault(); save()">
+      <mat-toolbar>
+        <button mat-icon-button type="button" (click)="cancel()" aria-label="Cancel">
+          <mat-icon>close</mat-icon>
         </button>
-        <div class="title">New deck</div>
-        <button type="submit" class="df-save-btn" [disabled]="deckForm().invalid()">Save</button>
-      </header>
+        <span>New deck</span>
+        <span class="spacer"></span>
+        <button mat-flat-button type="submit" [disabled]="deckForm().invalid()">Save</button>
+      </mat-toolbar>
 
       <div class="content">
-        <label class="field">
-          <span class="df-label">Name</span>
-          <input
-            class="df-input"
-            [formField]="deckForm.name"
-            placeholder="e.g. C# Fundamentals"
-            autofocus
-          />
-        </label>
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput [formField]="deckForm.name" placeholder="e.g. C# Fundamentals" autofocus />
+        </mat-form-field>
 
-        <label class="field">
-          <span class="df-label">Description <span class="optional">(optional)</span></span>
-          <textarea
-            class="df-textarea"
-            [formField]="deckForm.description"
-            rows="3"
-            placeholder="What's this deck for?"
-          ></textarea>
-        </label>
+        <mat-form-field appearance="outline">
+          <mat-label>Description (optional)</mat-label>
+          <textarea matInput [formField]="deckForm.description" rows="3"
+                    placeholder="What's this deck for?"></textarea>
+        </mat-form-field>
       </div>
     </form>
   `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-      }
-      .title {
-        flex: 1;
-        font-weight: 600;
-        font-size: 1rem;
-        letter-spacing: -0.02em;
-      }
-      .content {
-        flex: 1;
-        padding: 1.25rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-      }
-      label.field {
-        display: flex;
-        flex-direction: column;
-      }
-      .optional {
-        font-weight: 400;
-        color: var(--df-text-faint);
-      }
-    `,
-  ],
+  styles: [`
+    :host { display: flex; flex-direction: column; height: 100%; }
+    .screen { display: flex; flex-direction: column; height: 100%; }
+    .spacer { flex: 1; }
+    .content {
+      flex: 1;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    mat-form-field { width: 100%; }
+  `],
 })
 export class DeckCreateComponent {
   private db = inject(DbService);

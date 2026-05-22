@@ -1,26 +1,26 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IconComponent } from '@shared/components/icon/icon.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'df-bottom-nav',
-  imports: [RouterLink, RouterLinkActive, IconComponent],
+  imports: [RouterLink, RouterLinkActive, MatIconModule],
   template: `
     <nav class="bottom-nav">
       <a class="nav-item" routerLink="/decks" routerLinkActive="active">
-        <df-icon name="stack" [size]="22" />
+        <mat-icon>style</mat-icon>
         <span>Decks</span>
       </a>
       <a class="nav-item" routerLink="/study" routerLinkActive="active">
-        <df-icon name="play" [size]="22" />
+        <mat-icon>play_arrow</mat-icon>
         <span>Study</span>
       </a>
       <a class="nav-item" routerLink="/import" routerLinkActive="active">
-        <df-icon name="upload" [size]="22" />
+        <mat-icon>upload_file</mat-icon>
         <span>Import</span>
       </a>
       <a class="nav-item" routerLink="/settings" routerLinkActive="active">
-        <df-icon name="settings" [size]="22" />
+        <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </a>
     </nav>
@@ -30,8 +30,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       .bottom-nav {
         display: flex;
         align-items: center;
-        background: var(--df-surface);
-        border-top: 1px solid var(--df-outline-soft);
+        background: var(--mat-sys-surface);
+        border-top: 1px solid var(--mat-sys-outline-variant);
         padding: 0.5rem 0 env(safe-area-inset-bottom, 0.5rem);
       }
       .nav-item {
@@ -41,15 +41,20 @@ import { IconComponent } from '@shared/components/icon/icon.component';
         align-items: center;
         gap: 0.25rem;
         padding: 0.375rem 0;
-        color: var(--df-text-faint);
+        color: var(--mat-sys-on-surface-variant);
         text-decoration: none;
         font-size: 0.625rem;
         font-weight: 500;
         letter-spacing: 0.03em;
         transition: color 150ms;
       }
+      .nav-item mat-icon {
+        font-size: 1.375rem;
+        width: 1.375rem;
+        height: 1.375rem;
+      }
       .nav-item.active {
-        color: var(--df-primary);
+        color: var(--mat-sys-primary);
       }
     `,
   ],

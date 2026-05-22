@@ -3,46 +3,47 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DbService } from '@services/db.service';
 import { ReviewLog, Rating } from '@models';
 import { RATING_CONFIG } from '@core/constants/rating-config';
-import { IconComponent } from '@shared/components/icon/icon.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'df-study-summary',
-  imports: [IconComponent],
+  imports: [MatIconModule, MatToolbarModule, MatCardModule, MatListModule, MatButtonModule],
   template: `
-    <div class="df-screen">
-      <header class="df-top-bar">
-        <button class="icon-btn" (click)="goBack()">
-          <df-icon name="close" [size]="20" />
-        </button>
-        <div class="title">Session complete</div>
-      </header>
+    <mat-toolbar>
+      <button mat-icon-button (click)="goBack()" aria-label="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+      <span>Session complete</span>
+    </mat-toolbar>
 
-      <div class="content df-scroll">
-        <!-- Hero -->
-        <div class="hero">
-          <div class="hero-icon">
-            <df-icon name="check" [size]="30" [strokeWidth]="2" />
-          </div>
-          <div class="hero-title">Nice work.</div>
-          <div class="hero-sub">{{ total() }} cards reviewed</div>
-        </div>
+    <div class="content">
+      <div class="hero">
+        <mat-icon class="hero-icon">check_circle</mat-icon>
+        <div class="hero-title">Nice work.</div>
+        <div class="hero-sub">{{ total() }} cards reviewed</div>
+      </div>
 
-        <!-- Stats -->
-        <div class="stats-grid">
-          <div class="stat-card df-card">
-            <div class="df-label">retention</div>
+      <div class="stats-grid">
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="stat-label">retention</div>
             <div class="stat-value df-mono">{{ retentionPct() }}%</div>
-          </div>
-          <div class="stat-card df-card">
-            <div class="df-label">reviewed</div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="stat-label">reviewed</div>
             <div class="stat-value df-mono">{{ total() }}</div>
-          </div>
-        </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
 
-        <!-- Breakdown -->
-        <div class="df-card breakdown-card">
-          <div class="df-label">Breakdown</div>
-          <!-- Segmented bar -->
+      <mat-card appearance="outlined">
+        <mat-card-content>
           <div class="seg-bar">
             @for (r of breakdownWithPct(); track r.key) {
               @if (r.count > 0) {
@@ -50,132 +51,52 @@ import { IconComponent } from '@shared/components/icon/icon.component';
               }
             }
           </div>
-          <div class="breakdown-list">
+          <mat-list>
             @for (r of breakdownWithPct(); track r.key) {
-              <div class="breakdown-row">
-                <span class="breakdown-dot" [style.background]="r.color"></span>
-                <span class="breakdown-label">{{ r.label }}</span>
-                <span class="breakdown-count df-mono">{{ r.count }}</span>
-                <span class="breakdown-pct df-mono">{{ r.pct }}%</span>
-              </div>
+              <mat-list-item>
+                <span class="breakdown-dot" matListItemIcon [style.background]="r.color"></span>
+                <span matListItemTitle>{{ r.label }}</span>
+                <span matListItemMeta class="df-mono">{{ r.count }} ({{ r.pct }}%)</span>
+              </mat-list-item>
             }
-          </div>
-        </div>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
 
-        <!-- Actions -->
-        <div class="actions">
-          <button class="df-btn-primary" (click)="studyAgain()">Study again</button>
-          <button class="df-btn-outline" (click)="goBack()">Back to decks</button>
-        </div>
+      <div class="actions">
+        <button mat-flat-button (click)="studyAgain()">Study again</button>
+        <button mat-stroked-button (click)="goBack()">Back to decks</button>
       </div>
     </div>
   `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
-      }
-      .title {
-        font-weight: 600;
-        font-size: 1rem;
-      }
-      .content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 0.25rem 1.25rem 2rem;
-      }
-      .hero {
-        text-align: center;
-        padding: 1.5rem 0 1.25rem;
-      }
-      .hero-icon {
-        width: 4rem;
-        height: 4rem;
-        margin: 0 auto 0.875rem;
-        border-radius: 20px;
-        background: var(--df-primary-container);
-        color: var(--df-on-primary-container);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .hero-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-      }
-      .hero-sub {
-        font-size: 0.8125rem;
-        color: var(--df-text-muted);
-        margin-top: 0.25rem;
-      }
-      .stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.625rem;
-        margin-bottom: 0.875rem;
-      }
-      .stat-card {
-        padding: 0.875rem;
-      }
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-      }
-      .breakdown-card {
-        padding: 1rem;
-        margin-bottom: 1.25rem;
-      }
-      .seg-bar {
-        display: flex;
-        gap: 0.125rem;
-        height: 0.625rem;
-        border-radius: var(--df-radius-pill);
-        overflow: hidden;
-        margin-bottom: 0.875rem;
-        background: var(--df-surface-2);
-      }
-      .breakdown-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.625rem;
-      }
-      .breakdown-row {
-        display: flex;
-        align-items: center;
-        gap: 0.625rem;
-      }
-      .breakdown-dot {
-        width: 0.625rem;
-        height: 0.625rem;
-        border-radius: 3px;
-        flex-shrink: 0;
-      }
-      .breakdown-label {
-        flex: 1;
-        font-size: 0.8125rem;
-      }
-      .breakdown-count {
-        font-size: 0.8125rem;
-        font-variant-numeric: tabular-nums;
-      }
-      .breakdown-pct {
-        font-size: 0.6875rem;
-        color: var(--df-text-faint);
-        width: 2.25rem;
-        text-align: right;
-      }
-      .actions {
-        display: flex;
-        flex-direction: column;
-        gap: 0.625rem;
-      }
-    `,
-  ],
+  styles: [`
+    :host { display: flex; flex-direction: column; height: 100%; }
+    .content { flex: 1; overflow-y: auto; padding: 0 1rem 2rem; }
+    .hero { text-align: center; padding: 2rem 0 1.5rem; }
+    .hero-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      color: var(--mat-sys-primary);
+    }
+    .hero-title { font-size: 1.75rem; font-weight: 600; margin-top: 0.5rem; }
+    .hero-sub { font-size: 0.875rem; opacity: 0.6; margin-top: 0.25rem; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
+    .stat-label { font-size: 0.75rem; opacity: 0.6; }
+    .stat-value { font-size: 1.5rem; font-weight: 600; }
+    .seg-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+      gap: 2px;
+      background: var(--mat-sys-surface-variant, #1b2129);
+    }
+    .breakdown-dot { width: 0.625rem; height: 0.625rem; border-radius: 3px; flex-shrink: 0; }
+    .actions { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .actions button { width: 100%; }
+  `],
 })
 export class StudySummaryComponent implements OnInit {
   private route = inject(ActivatedRoute);

@@ -1,11 +1,14 @@
 @use '@angular/material' as mat;
 @use 'styles/variables';
 
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
 // ─── Angular Material M3 theme ───────────────────────────────────────────────
 $df-theme: mat.define-theme((
   color: (
     theme-type: dark,
     primary: mat.$cyan-palette,
+    use-system-variables: true,
   ),
   typography: (
     brand-family: 'Geist, system-ui, sans-serif',
@@ -15,19 +18,20 @@ $df-theme: mat.define-theme((
 
 html {
   @include mat.all-component-themes($df-theme);
+  @include mat.system-level-colors($df-theme);
+  @include mat.system-level-typography($df-theme);
 }
 
 // ─── Web fonts ───────────────────────────────────────────────────────────────
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-// ─── Base reset + typography ─────────────────────────────────────────────────
+// ─── Base reset ───────────────────────────────────────────────────────────────
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-// rem base: 1rem = 16px (browser default). Body text is 14px = 0.875rem.
 html {
   font-size: 100%;
   height: 100%;
@@ -39,215 +43,19 @@ body {
   height: 100%;
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-  background: var(--df-bg);
-  color: var(--df-text);
-  font-size: 0.875rem;  // 14px
+  font-size: 0.875rem;
   line-height: 1.45;
   letter-spacing: -0.005em;
+  background: var(--mat-sys-background);
+  color: var(--mat-sys-on-background);
 }
 
-// ─── Utility classes ─────────────────────────────────────────────────────────
+// ─── Utilities ────────────────────────────────────────────────────────────────
 .df-mono {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-feature-settings: 'calt' 1, 'liga' 1;
 }
 
-.df-card {
-  background: var(--df-surface);
-  border: 1px solid var(--df-outline-soft);
-  border-radius: var(--df-radius);
-}
-
-.df-label {
-  font-size: 0.6875rem;  // 11px
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--df-text-faint);
-  margin-bottom: 0.5rem;  // 8px
-}
-
-.df-hr {
-  height: 1px;
-  background: var(--df-outline-soft);
-  border: 0;
-  margin: 0;
-}
-
-.df-scroll {
-  &::-webkit-scrollbar {
-    width: 0.25rem;   // 4px
-    height: 0.25rem;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: var(--df-outline);
-    border-radius: var(--df-radius-pill);
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-}
-
-// ─── Screen shell ─────────────────────────────────────────────────────────────
-// Full-height flex column used by every feature screen.
-.df-screen {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-// ─── Top bar ─────────────────────────────────────────────────────────────────
-// Standard compact header: back/close button + title + optional right action.
-.df-top-bar {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1.25rem;  // 12px 20px
-  border-bottom: 1px solid var(--df-outline-soft);
-  gap: 0.75rem;  // 12px
-  flex-shrink: 0;
-}
-
-// ─── Form controls ───────────────────────────────────────────────────────────
-// df- prefix signals these are global. Remove any local copies in components.
-.df-input,
-.df-textarea,
-.df-select {
-  width: 100%;
-  background: var(--df-surface-1);
-  color: var(--df-text);
-  border: 1px solid var(--df-outline-soft);
-  border-radius: 12px;
-  padding: 0.75rem 0.875rem;  // 12px 14px
-  font-family: inherit;
-  font-size: 0.875rem;  // 14px
-  outline: none;
-  transition: border-color var(--df-transition-base);
-  resize: none;
-
-  &:focus { border-color: var(--df-primary); }
-}
-
-.df-input {
-  resize: initial;
-}
-
-// Monospace variant for code/answer textareas
-.df-textarea.df-mono {
-  font-size: 0.8125rem;  // 13px
-  line-height: 1.55;
-}
-
-// ─── Section spacing ──────────────────────────────────────────────────────────
-// Apply to df-label or section wrappers that need 20px top margin.
-.df-section {
-  margin-top: 1.25rem;  // 20px
-}
-
-// ─── Buttons ─────────────────────────────────────────────────────────────────
-// Save / confirm button used in top-bar headers.
-.df-save-btn {
-  height: 2rem;          // 32px
-  padding: 0 0.875rem;   // 0 14px
-  border-radius: 10px;
-  border: 0;
-  background: var(--df-primary);
-  color: var(--df-primary-ink);
-  font-family: inherit;
-  font-weight: 500;
-  font-size: 0.8125rem;  // 13px
-  cursor: pointer;
-
-  &:disabled { opacity: 0.45; cursor: default; }
-}
-
-// Full-width primary CTA (48px tall, used in summary / import footer / dialog).
-.df-btn-primary {
-  height: 3rem;  // 48px
-  border-radius: var(--df-radius);
-  border: 0;
-  background: var(--df-primary);
-  color: var(--df-primary-ink);
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform var(--df-transition-base);
-
-  &:active  { transform: scale(0.98); }
-  &:disabled { opacity: 0.45; cursor: default; }
-}
-
-// Secondary outline CTA (48px tall, paired with df-btn-primary).
-.df-btn-outline {
-  height: 3rem;  // 48px
-  border-radius: var(--df-radius);
-  border: 1px solid var(--df-outline);
-  background: transparent;
-  color: var(--df-text);
-  font-family: inherit;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-// ─── FAB ─────────────────────────────────────────────────────────────────────
-// Base FAB (icon-only, 56×56).
-.df-fab {
-  position: absolute;
-  right: 1.25rem;   // 20px
-  bottom: 1.25rem;  // 20px
-  width: 3.5rem;    // 56px
-  height: 3.5rem;   // 56px
-  border-radius: var(--df-radius-fab);
-  background: var(--df-primary);
-  color: var(--df-primary-ink);
-  border: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--df-shadow-fab-simple);
-  transition: transform var(--df-transition-base);
-
-  &:active { transform: scale(0.97); }
-}
-
-// Extended FAB variant (icon + text label).
-.df-fab--extended {
-  width: auto;
-  min-width: 3.5rem;
-  padding: 0 1.25rem;
-  gap: 0.5rem;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 0.875rem;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  box-shadow: var(--df-shadow-fab);
-}
-
-// ─── Icon button ─────────────────────────────────────────────────────────────
-.icon-btn {
-  width: 2.25rem;    // 36px
-  height: 2.25rem;   // 36px
-  border-radius: 10px;
-  border: 0;
-  background: transparent;
-  color: var(--df-text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  text-decoration: none;
-  transition: background var(--df-transition-base);
-
-  &:hover { background: var(--df-surface-1); }
-}
-
-// ─── Accessibility ────────────────────────────────────────────────────────────
-// Hides element visually while keeping it accessible to screen readers.
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -260,25 +68,11 @@ body {
   border: 0;
 }
 
-// ─── Dots background ─────────────────────────────────────────────────────────
-.df-dots {
-  background-image: radial-gradient(var(--df-outline-soft) 1px, transparent 1px);
-  background-size: 0.875rem 0.875rem;  // 14px
-}
-
 // ─── Syntax highlight tokens ──────────────────────────────────────────────────
 .tok-kw  { color: #c678dd; }
 .tok-fn  { color: #61afef; }
 .tok-str { color: #98c379; }
 .tok-num { color: #d19a66; }
-.tok-com { color: var(--df-text-faint); font-style: italic; }
+.tok-com { color: var(--mat-sys-on-surface-variant); font-style: italic; }
 .tok-ty  { color: #e5c07b; }
-.tok-pu  { color: var(--df-text-muted); }
-
-.df-light {
-  .tok-kw  { color: #a626a4; }
-  .tok-fn  { color: #4078f2; }
-  .tok-str { color: #50a14f; }
-  .tok-num { color: #986801; }
-  .tok-ty  { color: #c18401; }
-}
+.tok-pu  { color: var(--mat-sys-on-surface-variant); }

@@ -1,37 +1,26 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { ThemeService } from '@services/theme.service';
-import { IconComponent } from '@shared/components/icon/icon.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'df-side-nav',
-  imports: [RouterLink, RouterLinkActive, IconComponent],
+  imports: [RouterLink, RouterLinkActive, MatIconModule],
   template: `
     <nav class="side-nav">
       <div class="logo df-mono">DF</div>
 
       <a class="nav-item" routerLink="/decks" routerLinkActive="active" title="Decks">
-        <df-icon name="stack"
-      /></a>
+        <mat-icon>style</mat-icon>
+      </a>
       <a class="nav-item" routerLink="/study" routerLinkActive="active" title="Study">
-        <df-icon name="play"
-      /></a>
+        <mat-icon>play_arrow</mat-icon>
+      </a>
       <a class="nav-item" routerLink="/import" routerLinkActive="active" title="Import">
-        <df-icon name="upload"
-      /></a>
+        <mat-icon>upload_file</mat-icon>
+      </a>
       <a class="nav-item" routerLink="/settings" routerLinkActive="active" title="Settings">
-        <df-icon name="settings"
-      /></a>
-
-      <div class="spacer"></div>
-
-      <button
-        class="theme-toggle"
-        (click)="toggleTheme()"
-        [title]="isDark() ? 'Switch to light' : 'Switch to dark'"
-      >
-        <df-icon [name]="isDark() ? 'sun' : 'moon'" [size]="18" />
-      </button>
+        <mat-icon>settings</mat-icon>
+      </a>
     </nav>
   `,
   styles: [
@@ -42,16 +31,16 @@ import { IconComponent } from '@shared/components/icon/icon.component';
         align-items: center;
         width: 4.5rem;
         height: 100%;
-        background: var(--df-surface);
-        border-right: 1px solid var(--df-outline-soft);
+        background: var(--mat-sys-surface);
+        border-right: 1px solid var(--mat-sys-outline-variant);
         padding: 0.875rem 0 1rem;
       }
       .logo {
         width: 2.25rem;
         height: 2.25rem;
         border-radius: 10px;
-        background: var(--df-primary);
-        color: var(--df-primary-ink);
+        background: var(--mat-sys-primary);
+        color: var(--mat-sys-on-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -68,50 +57,21 @@ import { IconComponent } from '@shared/components/icon/icon.component';
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--df-text-muted);
+        color: var(--mat-sys-on-surface-variant);
         text-decoration: none;
         transition:
-          background var(--df-transition-base),
-          color var(--df-transition-base);
+          background 150ms,
+          color 150ms;
       }
       .nav-item:hover {
-        background: var(--df-surface-1);
-        color: var(--df-text);
+        background: var(--mat-sys-surface-container-low);
+        color: var(--mat-sys-on-surface);
       }
       .nav-item.active {
-        background: var(--df-primary-container);
-        color: var(--df-on-primary-container);
-      }
-      .spacer {
-        flex: 1;
-      }
-      .theme-toggle {
-        width: 2.75rem;
-        height: 2.75rem;
-        border-radius: 12px;
-        border: 0;
-        background: transparent;
-        color: var(--df-text-muted);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition:
-          background var(--df-transition-base),
-          color var(--df-transition-base);
-      }
-      .theme-toggle:hover {
-        background: var(--df-surface-1);
-        color: var(--df-text);
+        background: var(--mat-sys-primary-container);
+        color: var(--mat-sys-on-primary-container);
       }
     `,
   ],
 })
-export class SideNavComponent {
-  private themeService = inject(ThemeService);
-  readonly isDark = this.themeService.resolvedDark;
-
-  toggleTheme(): void {
-    this.themeService.setMode(this.isDark() ? 'light' : 'dark');
-  }
-}
+export class SideNavComponent {}
