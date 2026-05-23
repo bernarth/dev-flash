@@ -201,6 +201,7 @@ export interface Deck {
   name: string;
   description?: string;
   tags: string[];
+  sessionCount: number;  // number of completed study sessions for this deck
   createdAt: Date;
   updatedAt: Date;
 }
@@ -212,11 +213,8 @@ export interface Card {
   answer: string;        // Markdown + fenced code blocks
   notes?: string;        // Optional — hidden in review by default
   tags: string[];
-  interval: number;
-  easeFactor: number;    // starts at 2.5
-  repetitions: number;
-  nextReviewDate: Date;
-  lastReviewDate?: Date;
+  nextSession: number;   // deck session when card is next due (0 = new/always due)
+  lastReviewedAt?: Date;
 }
 
 export interface ReviewLog {
@@ -228,30 +226,28 @@ export interface ReviewLog {
 }
 
 export interface AppSettings {
-  newCardsPerDay: number;       // default 10
-  maxReviewsPerDay: number;     // default 50
-  startingEaseFactor: number;   // default 2.5
-  theme: 'system' | 'light' | 'dark';
+  hardInterval: number;   // default 1 (next session)
+  goodInterval: number;   // default 3
+  easyInterval: number;   // default 5
 }
 ```
 
 ---
 
-## SRS — Simplified SM-2
+## SRS — Session-Based
 
-SrsService.applyRating(card, rating): Partial<Card> — pure, no side effects.
+SrsService.applyRating(rating, currentSession, settings): Partial<Card> — pure, no side effects.
 
 ```
-again  interval=1, repetitions=0, ease=max(1.3, ease-0.20)
-hard   interval=ceil(interval x 1.2), ease=max(1.3, ease-0.15)
-good   interval=ceil(interval x ease)
-easy   interval=ceil(interval x ease x 1.3), ease=min(2.5, ease+0.10)
-
-nextReviewDate = today + interval days (at midnight)
+again  → re-queue at end of current session (no DB write to card)
+hard   → nextSession = currentSession + hardInterval (default 1)
+good   → nextSession = currentSession + goodInterval (default 3)
+easy   → nextSession = currentSession + easyInterval (default 5)
 ```
 
-Session queue: new cards first (capped at newCardsPerDay) then due cards
-(nextReviewDate <= today, total <= maxReviewsPerDay). "Again" cards re-queued at end.
+Session queue: all cards where `nextSession <= deck.sessionCount` (includes new cards with nextSession=0).
+When session ends, `deck.sessionCount` is incremented by 1.
+No per-day limits — all due cards are shown in each session.
 
 ---
 
@@ -364,7 +360,10 @@ Settings — sliders for new/day, reviews/day, ease. Theme toggle. Export/import
 | No backend | IndexedDB only. Supabase if sync ever needed. |
 | PapaParse + custom validation | Handles CSV edge cases; ImportService owns schema rules |
 | No Web Worker for CSV | Files are small; revisit for 10k+ row bulk import |
-| No difficulty labels on cards | SRS ratings handle this implicitly |
+| Session-based SRS (not SM-2) | Simplified: Again/Hard/Good/Easy map to session offsets. No ease factor, no day-based scheduling. Intervals are configurable in Settings. Chosen to keep focus on learning content, not algorithm tuning. |
+| sessionCount per Deck | Tracks completed sessions per deck independently. Stored on the Deck model, incremented when a study session finishes. |
+| No per-day limits | Removed newCardsPerDay / maxReviewsPerDay. All due cards shown every session. |
+| Unified study session | Merged learn-session + study-session into one. /decks/:id/learn redirects to /decks/:id/study. |
 | Layout shell pattern | Nav persists across routes, no re-mount flicker |
 | Centralised icon component | DRY — all SVGs live in `shared/components/icon/`. `IconName` union type enforces valid names at compile time. `bypassSecurityTrustHtml` is safe because content comes from a hardcoded constant, not user input. |
 | No `effect()` in ThemeService | KISS — `setMode()` calls `applyTheme()` directly; `effect()` would add reactive indirection for a plain DOM class toggle. |

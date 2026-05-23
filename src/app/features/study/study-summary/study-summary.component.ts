@@ -42,29 +42,30 @@ import { MatButtonModule } from '@angular/material/button';
         </mat-card>
       </div>
 
-      <mat-card appearance="outlined">
-        <mat-card-content>
-          <div class="seg-bar">
-            @for (r of breakdownWithPct(); track r.key) {
-              @if (r.count > 0) {
-                <div [style.flex]="r.count" [style.background]="r.color"></div>
+      @if (total() > 0) {
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <div class="seg-bar">
+              @for (r of breakdownWithPct(); track r.key) {
+                @if (r.count > 0) {
+                  <div [style.flex]="r.count" [style.background]="r.color"></div>
+                }
               }
-            }
-          </div>
-          <mat-list>
-            @for (r of breakdownWithPct(); track r.key) {
-              <mat-list-item>
-                <span class="breakdown-dot" matListItemIcon [style.background]="r.color"></span>
-                <span matListItemTitle>{{ r.label }}</span>
-                <span matListItemMeta class="df-mono">{{ r.count }} ({{ r.pct }}%)</span>
-              </mat-list-item>
-            }
-          </mat-list>
-        </mat-card-content>
-      </mat-card>
+            </div>
+            <mat-list>
+              @for (r of breakdownWithPct(); track r.key) {
+                <mat-list-item>
+                  <span class="breakdown-dot" matListItemIcon [style.background]="r.color"></span>
+                  <span matListItemTitle>{{ r.label }}</span>
+                  <span matListItemMeta class="df-mono">{{ r.count }} ({{ r.pct }}%)</span>
+                </mat-list-item>
+              }
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+      }
 
       <div class="actions">
-        <button mat-flat-button (click)="studyAgain()">Study again</button>
         <button mat-stroked-button (click)="goBack()">Back to decks</button>
       </div>
     </div>
@@ -138,11 +139,7 @@ export class StudySummaryComponent implements OnInit {
     this.logs.set(logs);
   }
 
-  studyAgain(): void {
-    this.router.navigate(['/decks', this.deckId(), 'study']);
-  }
-
   goBack(): void {
-    this.router.navigate(['/decks']);
+    void this.router.navigate(['/decks']);
   }
 }

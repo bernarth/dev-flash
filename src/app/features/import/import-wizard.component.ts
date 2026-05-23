@@ -58,21 +58,19 @@ import { MatStepperModule } from '@angular/material/stepper';
               </mat-select>
             </mat-form-field>
 
-            <div class="drop-zone" role="button" tabindex="0"
-                 aria-label="Drop a CSV file here or press Enter to browse"
-                 (click)="fileInput.click()" (keydown.enter)="fileInput.click()"
-                 (keydown.space)="$event.preventDefault(); fileInput.click()"
-                 (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
-              <mat-icon>upload_file</mat-icon>
-              <div>Drop a .csv file here</div>
-              <div class="drop-sub">or tap to browse</div>
-              <button mat-stroked-button type="button"
-                      (click)="$event.stopPropagation(); fileInput.click()">
-                Choose file
-              </button>
-            </div>
-            <input #fileInput type="file" accept=".csv" class="visually-hidden" aria-label="CSV file"
-                   (change)="onFileSelect($event)" />
+            @if (!selectedFile()) {
+              <label class="drop-zone" tabindex="0"
+                     [class.drag-over]="dragOver()"
+                     (dragover)="$event.preventDefault(); dragOver.set(true)"
+                     (dragleave)="dragOver.set(false)"
+                     (drop)="onDrop($event); dragOver.set(false)">
+                <input type="file" accept=".csv" class="visually-hidden" (change)="onFileSelect($event)" />
+                <mat-icon>upload_file</mat-icon>
+                <div>Drop a .csv file here</div>
+                <div class="drop-sub">or tap to browse</div>
+                <span class="choose-btn">Choose file</span>
+              </label>
+            }
 
             @if (selectedFile()) {
               <mat-card appearance="outlined">
@@ -82,7 +80,9 @@ import { MatStepperModule } from '@angular/material/stepper';
                     <div class="df-mono file-name">{{ selectedFile()!.name }}</div>
                     <div class="file-size">{{ formatSize(selectedFile()!.size) }}</div>
                   </div>
-                  <mat-icon class="icon-good">check_circle</mat-icon>
+                  <button mat-icon-button aria-label="Remove file" (click)="clearFile()">
+                    <mat-icon>close</mat-icon>
+                  </button>
                 </mat-card-content>
               </mat-card>
             }
@@ -218,6 +218,7 @@ export class ImportWizardComponent implements OnInit {
   selectedFile = signal<File | null>(null);
   importResult = signal<ImportResult | null>(null);
   error = signal('');
+  dragOver = signal(false);
 
   readonly columnMap = [
     ['question', 'Question'],
@@ -247,21 +248,34 @@ export class ImportWizardComponent implements OnInit {
     return true;
   });
 
+  clearFile(): void {
+    this.selectedFile.set(null);
+    this.error.set('');
+  }
+
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files?.[0]) {
-      this.selectedFile.set(input.files[0]);
-      this.error.set('');
+    const file = input.files?.[0];
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      this.error.set('Only .csv files are accepted.');
+      input.value = '';
+      return;
     }
+    this.selectedFile.set(file);
+    this.error.set('');
   }
 
   onDrop(event: DragEvent): void {
     event.preventDefault();
     const file = event.dataTransfer?.files[0];
-    if (file) {
-      this.selectedFile.set(file);
-      this.error.set('');
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      this.error.set('Only .csv files are accepted.');
+      return;
     }
+    this.selectedFile.set(file);
+    this.error.set('');
   }
 
   async nextStep(): Promise<void> {

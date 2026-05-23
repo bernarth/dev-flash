@@ -67,6 +67,7 @@ export class DeckCreateComponent {
         name: name.trim(),
         description: description.trim() || undefined,
         tags: [],
+        sessionCount: 0,
         createdAt: now,
         updatedAt: now,
       });

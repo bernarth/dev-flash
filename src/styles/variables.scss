@@ -1,12 +1,9 @@
-// ─── SCSS breakpoints ────────────────────────────────────────────────────────
-$df-breakpoint-mobile:  767px;
-$df-breakpoint-desktop: 768px;
-
-// ─── SRS rating colors ───────────────────────────────────────────────────────
-// No Material equivalent — used directly in components for color-coded ratings.
 :root {
   --df-again: #f26d6d;
-  --df-hard:  #f2a84a;
-  --df-good:  #6fd78b;
-  --df-easy:  #38d9e0;
+  --df-hard: #f2a84a;
+  --df-good: #6fd78b;
+  --df-easy: #38d9e0;
 }
+
+$df-breakpoint-mobile: 767px;
+$df-breakpoint-desktop: 768px;

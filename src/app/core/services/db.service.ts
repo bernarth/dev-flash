@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { Card, Deck, ReviewLog, AppSettings, DEFAULT_SETTINGS } from '@models';
-import { endOfDay } from '@utils/date.utils';
 
 class DevFlashDb extends Dexie {
   decks!: Table<Deck, number>;
@@ -13,7 +12,7 @@ class DevFlashDb extends Dexie {
     super('DevFlashDb');
     this.version(1).stores({
       decks: '++id, name, createdAt, updatedAt',
-      cards: '++id, deckId, nextReviewDate, lastReviewDate, *tags',
+      cards: '++id, deckId, nextSession, *tags',
       reviewLogs: '++id, cardId, deckId, reviewedAt',
       settings: '++id',
     });
@@ -23,8 +22,6 @@ class DevFlashDb extends Dexie {
 @Injectable({ providedIn: 'root' })
 export class DbService {
   private db = new DevFlashDb();
-
-  // ── Decks ────────────────────────────────────────────────────────────────
 
   getAllDecks(): Promise<Deck[]> {
     return this.db.decks.orderBy('createdAt').toArray();
@@ -50,8 +47,6 @@ export class DbService {
     });
   }
 
-  // ── Cards ────────────────────────────────────────────────────────────────
-
   getCardsByDeck(deckId: number): Promise<Card[]> {
     return this.db.cards.where('deckId').equals(deckId).toArray();
   }
@@ -60,23 +55,20 @@ export class DbService {
     return this.db.cards.get(id);
   }
 
-  getDueCards(deckId: number, maxReviews: number): Promise<Card[]> {
-    const today = endOfDay();
+  getDueCards(deckId: number, currentSession: number): Promise<Card[]> {
     return this.db.cards
       .where('deckId')
       .equals(deckId)
-      .and((c) => c.nextReviewDate <= today)
-      .limit(maxReviews)
+      .and((c) => c.nextSession <= currentSession)
       .toArray();
   }
 
-  getNewCards(deckId: number, max: number): Promise<Card[]> {
+  getDueCount(deckId: number, currentSession: number): Promise<number> {
     return this.db.cards
       .where('deckId')
       .equals(deckId)
-      .and((c) => c.repetitions === 0)
-      .limit(max)
-      .toArray();
+      .and((c) => c.nextSession <= currentSession)
+      .count();
   }
 
   createCard(card: Omit<Card, 'id'>): Promise<number> {
@@ -102,27 +94,6 @@ export class DbService {
     return this.db.cards.where('deckId').equals(deckId).count();
   }
 
-  getDueCount(deckId: number): Promise<number> {
-    const today = endOfDay();
-    return this.db.cards
-      .where('deckId')
-      .equals(deckId)
-      .and((c) => c.nextReviewDate <= today || c.repetitions === 0)
-      .count();
-  }
-
-  async getNextReviewDate(deckId: number): Promise<Date | null> {
-    const today = endOfDay();
-    const next = await this.db.cards
-      .where('deckId')
-      .equals(deckId)
-      .and((c) => c.nextReviewDate > today)
-      .sortBy('nextReviewDate');
-    return next[0]?.nextReviewDate ?? null;
-  }
-
-  // ── Review Logs ──────────────────────────────────────────────────────────
-
   addReviewLog(log: Omit<ReviewLog, 'id'>): Promise<number> {
     return this.db.reviewLogs.add(log as ReviewLog);
   }
@@ -135,8 +106,6 @@ export class DbService {
       .then((logs) => (since ? logs.filter((l) => l.reviewedAt >= since) : logs));
   }
 
-  // ── Settings ─────────────────────────────────────────────────────────────
-
   getSettings(): Promise<AppSettings> {
     return this.db.settings.get(1).then((s) => s ?? { id: 1, ...DEFAULT_SETTINGS });
   }
@@ -145,15 +114,11 @@ export class DbService {
     return this.db.settings.put({ id: 1, ...settings });
   }
 
-  // ── Storage info ─────────────────────────────────────────────────────────
-
   async getStorageEstimate(): Promise<{ usage: number; quota: number }> {
     if ('storage' in navigator && 'estimate' in navigator.storage) {
       const est = await navigator.storage.estimate();
-
       return { usage: est.usage ?? 0, quota: est.quota ?? 0 };
     }
-
     return { usage: 0, quota: 0 };
   }
 
@@ -168,8 +133,6 @@ export class DbService {
   getReviewLogCountAll(): Promise<number> {
     return this.db.reviewLogs.count();
   }
-
-  // ── Nuke ─────────────────────────────────────────────────────────────────
 
   deleteAllData(): Promise<void> {
     return this.db.transaction(
@@ -187,15 +150,12 @@ export class DbService {
     );
   }
 
-  // ── Export ───────────────────────────────────────────────────────────────
-
   async exportAll(): Promise<{ decks: Deck[]; cards: Card[]; reviewLogs: ReviewLog[] }> {
     const [decks, cards, reviewLogs] = await Promise.all([
       this.db.decks.toArray(),
       this.db.cards.toArray(),
       this.db.reviewLogs.toArray(),
     ]);
-
     return { decks, cards, reviewLogs };
   }
 }

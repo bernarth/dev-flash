@@ -2,19 +2,16 @@
 @use 'styles/variables';
 
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-// ─── Angular Material M3 theme ───────────────────────────────────────────────
-$df-theme: mat.define-theme((
-  color: (
-    theme-type: dark,
-    primary: mat.$cyan-palette,
-    use-system-variables: true,
-  ),
-  typography: (
-    brand-family: 'Geist, system-ui, sans-serif',
-    plain-family: 'Geist, system-ui, sans-serif',
-  ),
-));
+$df-theme: mat.define-theme((color: (theme-type: dark,
+        primary: mat.$cyan-palette,
+        use-system-variables: true,
+      ),
+      typography: (brand-family: 'Geist, system-ui, sans-serif',
+        plain-family: 'Geist, system-ui, sans-serif',
+      ),
+    ));
 
 html {
   @include mat.all-component-themes($df-theme);
@@ -22,10 +19,6 @@ html {
   @include mat.system-level-typography($df-theme);
 }
 
-// ─── Web fonts ───────────────────────────────────────────────────────────────
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
-// ─── Base reset ───────────────────────────────────────────────────────────────
 *,
 *::before,
 *::after {
@@ -50,7 +43,6 @@ body {
   color: var(--mat-sys-on-background);
 }
 
-// ─── Utilities ────────────────────────────────────────────────────────────────
 .df-mono {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-feature-settings: 'calt' 1, 'liga' 1;
@@ -68,11 +60,31 @@ body {
   border: 0;
 }
 
-// ─── Syntax highlight tokens ──────────────────────────────────────────────────
-.tok-kw  { color: #c678dd; }
-.tok-fn  { color: #61afef; }
-.tok-str { color: #98c379; }
-.tok-num { color: #d19a66; }
-.tok-com { color: var(--mat-sys-on-surface-variant); font-style: italic; }
-.tok-ty  { color: #e5c07b; }
-.tok-pu  { color: var(--mat-sys-on-surface-variant); }
+.tok-kw {
+  color: #c678dd;
+}
+
+.tok-fn {
+  color: #61afef;
+}
+
+.tok-str {
+  color: #98c379;
+}
+
+.tok-num {
+  color: #d19a66;
+}
+
+.tok-com {
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}
+
+.tok-ty {
+  color: #e5c07b;
+}
+
+.tok-pu {
+  color: var(--mat-sys-on-surface-variant);
+}

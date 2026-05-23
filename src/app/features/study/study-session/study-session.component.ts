@@ -21,7 +21,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
         </button>
         <span class="deck-name">{{ deckName() }}</span>
         <span class="spacer"></span>
-        <span class="card-counter df-mono">{{ currentIdx() + 1 }}/{{ queue().length }}</span>
+        <span class="card-counter df-mono">{{ doneCount() }}/{{ totalCount() }}</span>
       </mat-toolbar>
 
       <mat-progress-bar mode="determinate" [value]="progressPct()"></mat-progress-bar>
@@ -70,7 +70,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
             </button>
           } @else {
             <div class="rating-grid">
-              @for (r of ratings; track r.key) {
+              @for (r of ratingButtons(); track r.key) {
                 <button mat-stroked-button class="rating-btn" (click)="rate(r.key)">
                   <span class="rating-dot" [style.background]="r.color"></span>
                   <span class="rating-label">{{ r.label }}</span>
@@ -84,7 +84,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
         <div class="status-msg">Loading cards…</div>
       } @else {
         <div class="status-msg">
-          <p>This deck has no cards yet.</p>
+          <p>{{ emptyMessage() }}</p>
           <button mat-flat-button class="status-btn" (click)="exitStudy()">Back to decks</button>
         </div>
       }
@@ -119,7 +119,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       position: relative;
       min-height: 0;
     }
-    /* 3D card flip — no Material equivalent, keep as custom CSS */
     .flip-face {
       position: absolute;
       inset: 0;
@@ -239,43 +238,45 @@ export class StudySessionComponent implements OnInit {
 
   deckId = signal(0);
   deckName = signal('');
+  currentSession = signal(0);
   queue = signal<Card[]>([]);
   currentIdx = signal(0);
+  doneCount = signal(0);
   flipped = signal(false);
   showNotes = signal(false);
   loading = signal(true);
+  deckHasCards = signal(false);
 
   currentCard = computed(() => this.queue()[this.currentIdx()] ?? null);
+  totalCount = computed(() => this.doneCount() + this.queue().length);
   progressPct = computed(() => {
-    const total = this.queue().length;
-    return total ? (this.currentIdx() / total) * 100 : 0;
+    const total = this.totalCount();
+    return total ? (this.doneCount() / total) * 100 : 0;
   });
+  emptyMessage = computed(() =>
+    this.deckHasCards() ? 'All caught up! Come back after your next session.' : 'This deck has no cards yet.'
+  );
 
-  readonly ratings = RATING_CONFIG;
+  ratingButtons = computed(() => {
+    const { hardInterval, goodInterval, easyInterval } = this.settingsService.settings();
+    return [
+      { ...RATING_CONFIG[0], interval: 'now' },
+      { ...RATING_CONFIG[1], interval: `+${hardInterval}` },
+      { ...RATING_CONFIG[2], interval: `+${goodInterval}` },
+      { ...RATING_CONFIG[3], interval: `+${easyInterval}` },
+    ];
+  });
 
   async ngOnInit(): Promise<void> {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.deckId.set(id);
-    const deck = await this.db.getDeck(id);
+    const [deck, cardCount] = await Promise.all([this.db.getDeck(id), this.db.getCardCount(id)]);
     this.deckName.set(deck?.name ?? '');
-    await this.loadQueue(id);
-  }
-
-  private async loadQueue(deckId: number): Promise<void> {
-    const { maxReviewsPerDay, newCardsPerDay } = this.settingsService.settings();
-    const [due, newCards] = await Promise.all([
-      this.db.getDueCards(deckId, maxReviewsPerDay),
-      this.db.getNewCards(deckId, newCardsPerDay),
-    ]);
-    const seen = new Set(newCards.map((c) => c.id));
-    const srsQueue = [...newCards, ...due.filter((c) => !seen.has(c.id))];
-
-    if (srsQueue.length > 0) {
-      this.queue.set(srsQueue);
-    } else {
-      const all = await this.db.getCardsByDeck(deckId);
-      this.queue.set(all);
-    }
+    this.deckHasCards.set(cardCount > 0);
+    const session = deck?.sessionCount ?? 0;
+    this.currentSession.set(session);
+    const cards = await this.db.getDueCards(id, session);
+    this.queue.set(cards);
     this.loading.set(false);
   }
 
@@ -287,30 +288,34 @@ export class StudySessionComponent implements OnInit {
     const card = this.currentCard();
     if (!card) return;
 
-    void Promise.all([
-      this.db.updateCard(card.id!, this.srs.applyRating(card, rating)),
-      this.db.addReviewLog({
-        cardId: card.id!,
-        deckId: this.deckId(),
-        rating,
-        reviewedAt: new Date(),
-      }),
-    ]);
+    void this.db.addReviewLog({ cardId: card.id!, deckId: this.deckId(), rating, reviewedAt: new Date() });
 
     if (rating === 'again') {
       const q = [...this.queue()];
       q.push(q.splice(this.currentIdx(), 1)[0]);
       this.queue.set(q);
-    }
-
-    const next = this.currentIdx() + (rating === 'again' ? 0 : 1);
-    if (next >= this.queue().length) {
-      this.router.navigate(['/decks', this.deckId(), 'summary']);
-    } else {
-      this.currentIdx.set(next);
       this.flipped.set(false);
       this.showNotes.set(false);
+      return;
     }
+
+    void this.db.updateCard(card.id!, this.srs.applyRating(rating, this.currentSession(), this.settingsService.settings()));
+
+    const remaining = [...this.queue()];
+    remaining.splice(this.currentIdx(), 1);
+    this.queue.set(remaining);
+    this.doneCount.update((n) => n + 1);
+
+    if (remaining.length === 0) {
+      void this.db.updateDeck(this.deckId(), { sessionCount: this.currentSession() + 1 });
+      void this.router.navigate(['/decks', this.deckId(), 'summary']);
+      return;
+    }
+
+    const nextIdx = Math.min(this.currentIdx(), remaining.length - 1);
+    this.currentIdx.set(nextIdx);
+    this.flipped.set(false);
+    this.showNotes.set(false);
   }
 
   exitStudy(): void {

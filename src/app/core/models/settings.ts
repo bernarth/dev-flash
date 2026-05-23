@@ -1,11 +1,11 @@
 export interface AppSettings {
-  newCardsPerDay: number;
-  maxReviewsPerDay: number;
-  startingEaseFactor: number;
+  hardInterval: number;
+  goodInterval: number;
+  easyInterval: number;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  newCardsPerDay: 10,
-  maxReviewsPerDay: 50,
-  startingEaseFactor: 2.5,
+  hardInterval: 1,
+  goodInterval: 3,
+  easyInterval: 5,
 };

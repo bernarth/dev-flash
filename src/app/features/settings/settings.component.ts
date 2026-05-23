@@ -4,9 +4,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
-import { MatSliderModule } from '@angular/material/slider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { SettingsService } from '@services/settings.service';
 import { DbService } from '@services/db.service';
 import { AppSettings } from '@models';
@@ -22,9 +23,10 @@ import {
     MatToolbarModule,
     MatCardModule,
     MatListModule,
-    MatSliderModule,
     MatButtonModule,
     MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   template: `
     <mat-toolbar>Settings</mat-toolbar>
@@ -47,27 +49,40 @@ import {
 
       <mat-card appearance="outlined">
         <mat-card-header>
-          <mat-card-title>Study settings</mat-card-title>
+          <mat-card-title>Session intervals</mat-card-title>
+          <mat-card-subtitle>Sessions before a card comes back</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <div class="slider-row">
-            <span>New cards per day</span>
-            <strong>{{ localSettings().newCardsPerDay }}</strong>
+          <div class="intervals-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Hard</mat-label>
+              <input matInput type="number" min="1" max="10"
+                     [value]="localSettings().hardInterval"
+                     (input)="onIntervalInput('hardInterval', $event)" />
+              <mat-hint>sessions</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Good</mat-label>
+              <input matInput type="number" min="2" max="20"
+                     [value]="localSettings().goodInterval"
+                     (input)="onIntervalInput('goodInterval', $event)" />
+              <mat-hint>sessions</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Easy</mat-label>
+              <input matInput type="number" min="3" max="30"
+                     [value]="localSettings().easyInterval"
+                     (input)="onIntervalInput('easyInterval', $event)" />
+              <mat-hint>sessions</mat-hint>
+            </mat-form-field>
           </div>
-          <mat-slider min="1" max="50" step="1">
-            <input #s1="matSliderThumb" matSliderThumb [value]="localSettings().newCardsPerDay"
-                   (change)="onNewCardsChange(s1.value)" />
-          </mat-slider>
-          <mat-divider />
-          <div class="slider-row">
-            <span>Max reviews per day</span>
-            <strong>{{ localSettings().maxReviewsPerDay }}</strong>
-          </div>
-          <mat-slider min="10" max="200" step="10">
-            <input #s2="matSliderThumb" matSliderThumb [value]="localSettings().maxReviewsPerDay"
-                   (change)="onMaxReviewsChange(s2.value)" />
-          </mat-slider>
         </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-flat-button (click)="saveSettings()">
+            <mat-icon>save</mat-icon>
+            Save
+          </button>
+        </mat-card-actions>
       </mat-card>
 
       <mat-card appearance="outlined">
@@ -102,14 +117,15 @@ import {
       flex-direction: column;
       gap: 1rem;
     }
-    .slider-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 0 0.25rem;
+    .intervals-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding-top: 0.5rem;
     }
-    mat-slider { width: 100%; margin-bottom: 0.5rem; }
-    mat-divider { margin: 0.5rem 0 1rem; }
+    @media (max-width: 360px) {
+      .intervals-grid { grid-template-columns: 1fr; }
+    }
     .version { text-align: center; font-size: 0.75rem; opacity: 0.5; margin-bottom: 2rem; }
   `],
 })
@@ -148,13 +164,14 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  onNewCardsChange(value: number): void {
-    this.localSettings.update((s) => ({ ...s, newCardsPerDay: value }));
-    this.settingsService.save(this.localSettings());
+  onIntervalInput(key: 'hardInterval' | 'goodInterval' | 'easyInterval', event: Event): void {
+    const value = parseInt((event.target as HTMLInputElement).value, 10);
+    if (!isNaN(value) && value > 0) {
+      this.localSettings.update((s) => ({ ...s, [key]: value }));
+    }
   }
 
-  onMaxReviewsChange(value: number): void {
-    this.localSettings.update((s) => ({ ...s, maxReviewsPerDay: value }));
+  saveSettings(): void {
     this.settingsService.save(this.localSettings());
   }
 

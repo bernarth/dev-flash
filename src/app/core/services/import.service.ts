@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import Papa from 'papaparse';
 import { Card } from '@models/card';
-import { SrsService } from './srs.service';
-import { inject } from '@angular/core';
 
 export interface ImportResult {
   imported: Omit<Card, 'id'>[];
@@ -12,7 +10,6 @@ export interface ImportResult {
 
 @Injectable({ providedIn: 'root' })
 export class ImportService {
-  private srs = inject(SrsService);
 
   parse(file: File, deckId: number): Promise<ImportResult> {
     return new Promise((resolve, reject) => {
@@ -90,9 +87,7 @@ export class ImportService {
         answer,
         notes,
         tags,
-        ...(this.srs.newCardDefaults() as Required<
-          Pick<Card, 'interval' | 'easeFactor' | 'repetitions' | 'nextReviewDate'>
-        >),
+        nextSession: 0,
       });
     });
 

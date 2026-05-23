@@ -2,7 +2,6 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { form, FormField, submit, required } from '@angular/forms/signals';
 import { DbService } from '@services/db.service';
-import { SrsService } from '@services/srs.service';
 import { Card } from '@models';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -114,7 +113,6 @@ export class CardEditorComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private db = inject(DbService);
-  private srs = inject(SrsService);
 
   readonly separatorKeyCodes = [ENTER, COMMA] as const;
 
@@ -166,17 +164,13 @@ export class CardEditorComponent implements OnInit {
   async save(): Promise<void> {
     const success = await submit(this.cardForm, async () => {
       const { question, answer, notes } = this.cardModel();
-      const defaults = this.srs.newCardDefaults();
       const cardData: Omit<Card, 'id'> = {
         deckId: this.deckId(),
         question: question.trim(),
         answer: answer.trim(),
         notes: notes.trim() || undefined,
         tags: this.tags(),
-        interval: defaults.interval!,
-        easeFactor: defaults.easeFactor!,
-        repetitions: defaults.repetitions!,
-        nextReviewDate: defaults.nextReviewDate!,
+        nextSession: 0,
       };
 
       if (this.isNew()) {

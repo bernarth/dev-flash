@@ -5,7 +5,7 @@ import { SideNavComponent } from '@layout/side-nav/side-nav.component';
 import { SettingsService } from '@services/settings.service';
 
 @Component({
-  selector: 'app-root',
+  selector: 'df-root',
   imports: [RouterOutlet, BottomNavComponent, SideNavComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

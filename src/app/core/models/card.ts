@@ -5,9 +5,6 @@ export interface Card {
   answer: string;
   notes?: string;
   tags: string[];
-  interval: number;
-  easeFactor: number;
-  repetitions: number;
-  nextReviewDate: Date;
-  lastReviewDate?: Date;
+  nextSession: number;
+  lastReviewedAt?: Date;
 }

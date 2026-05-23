@@ -22,7 +22,7 @@ interface DeckViewModel extends Deck {
       <span>Decks</span>
       <span class="spacer"></span>
       @if (decks().length) {
-        <span class="subtitle">{{ totalDue() }} due today</span>
+        <span class="subtitle">{{ totalDue() }} due</span>
       }
       <a mat-icon-button routerLink="/settings" aria-label="Settings">
         <mat-icon>settings</mat-icon>
@@ -40,7 +40,9 @@ interface DeckViewModel extends Deck {
               <span matListItemTitle>{{ deck.name }}</span>
               <span matListItemLine>
                 {{ deck.cardCount }} cards · {{ deck.updatedAt | relativeDate }}
-                @if (deck.dueCount > 0) { · <strong class="due">{{ deck.dueCount }} due</strong> }
+                @if (deck.dueCount > 0) {
+                  · <strong class="due">{{ deck.dueCount }} due</strong>
+                }
               </span>
             </mat-list-item>
           }
@@ -81,7 +83,7 @@ export class DeckListComponent implements OnInit {
       rawDecks.map(async (deck) => {
         const [cardCount, dueCount] = await Promise.all([
           this.db.getCardCount(deck.id!),
-          this.db.getDueCount(deck.id!),
+          this.db.getDueCount(deck.id!, deck.sessionCount),
         ]);
         return { ...deck, cardCount, dueCount };
       }),
@@ -90,12 +92,14 @@ export class DeckListComponent implements OnInit {
   }
 
   openDeck(deck: DeckViewModel): void {
-    this.router.navigate(
-      deck.dueCount > 0 ? ['/decks', deck.id, 'study'] : ['/decks', deck.id, 'browse'],
-    );
+    if (deck.dueCount > 0) {
+      void this.router.navigate(['/decks', deck.id, 'study']);
+    } else {
+      void this.router.navigate(['/decks', deck.id, 'browse']);
+    }
   }
 
   createDeck(): void {
-    this.router.navigate(['/decks', 'create']);
+    void this.router.navigate(['/decks', 'create']);
   }
 }
