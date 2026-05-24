@@ -64,7 +64,11 @@ interface DeckStudyInfo {
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; }
     .content { flex: 1; overflow-y: auto; }
-    .loading { display: flex; justify-content: center; padding: 4rem 1rem; }
+    .loading { 
+      display: flex;
+      justify-content: center; 
+      padding: 4rem 1rem; 
+    }
     .due { color: var(--mat-sys-primary); font-weight: var(--df-font-weight-semibold); }
     .deck-actions { display: flex; gap: 0.375rem; align-items: center; }
     .study-btn {

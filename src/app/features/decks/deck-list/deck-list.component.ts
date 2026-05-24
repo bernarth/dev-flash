@@ -1,4 +1,4 @@
-import { Component, inject, computed, input, resource } from '@angular/core';
+import { Component, inject, computed, resource, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DeckListItem } from '@models';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
@@ -87,6 +87,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         flex: 1;
         overflow-y: auto;
       }
+      .loading {
+        display: flex;
+        justify-content: center; 
+        padding: 4rem 1rem; 
+      }
       .fab {
         position: absolute;
         bottom: 1.5rem;
@@ -94,6 +99,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckListComponent {
   private readonly router = inject(Router);
