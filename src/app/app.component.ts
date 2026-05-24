@@ -9,9 +9,9 @@ import { SideNavComponent } from '@layout/side-nav/side-nav.component';
   template: `
     <div class="app-shell">
       <df-side-nav class="side-nav-desktop" />
-      <div class="content-area">
+      <main class="content-area">
         <router-outlet />
-      </div>
+      </main>
       <df-bottom-nav class="bottom-nav-mobile" />
     </div>
   `,

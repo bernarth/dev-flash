@@ -3,13 +3,15 @@
 A focused flashcard PWA for developers preparing for technical interviews.
 Works offline. No account needed. Runs on your phone.
 
+**Live app:** [dev-flash.netlify.app](https://dev-flash.netlify.app/decks)
+
 ---
 
 ## Why DevFlash?
 
 Anki is powerful but complex. DevFlash is built for one thing: helping developers study programming concepts efficiently, with just the features that matter.
 
-- **Spaced repetition** — Again / Hard / Good / Easy scheduling that adapts to you
+- **Session-based scheduling** — Again / Hard / Good / Easy ratings control when a card comes back (measured in sessions, not days)
 - **Code-aware cards** — questions and answers render syntax-highlighted code blocks
 - **CSV import** — build decks in Excel or Google Sheets and import in seconds
 - **100% offline** — install it on your phone, study anywhere
@@ -27,9 +29,8 @@ Anki is powerful but complex. DevFlash is built for one thing: helping developer
 
 ### Install & Run
 
-First clone this repository
-
 ```bash
+git clone <repo>
 cd dev-flash
 pnpm install
 pnpm start
@@ -84,15 +85,7 @@ question,answer,notes,tags
 
 Then in the app: tap **+** → **Import CSV** → select your file → preview → import.
 
-### Option 2: Ask Claude to generate a CSV
-
-Prompt Claude (claude.ai) with something like:
-
-> "Generate a DevFlash CSV deck on the topic of system design fundamentals. Include 20 cards. Use the format: question, answer, notes, tags. Output as a CSV code block."
-
-Copy the CSV, save as a `.csv` file, and import it into the app.
-
-### Option 3: Add cards manually
+### Option 2: Add cards manually
 
 Tap any deck → **Add Card** → fill in question, answer, and optional notes/tags.
 
@@ -107,33 +100,15 @@ Tap any deck → **Add Card** → fill in question, answer, and optional notes/t
 
 | Button | Meaning | Next review |
 |---|---|---|
-| **Again** | Didn't know it | Later today |
-| **Hard** | Knew it, struggled | Slightly sooner |
-| **Good** | Knew it well | Standard interval |
-| **Easy** | Knew it immediately | Longer interval |
+| **Again** | Didn't know it | Re-queued later in this session |
+| **Hard** | Knew it, struggled | After `hardInterval` sessions (default 1) |
+| **Good** | Knew it well | After `goodInterval` sessions (default 3) |
+| **Easy** | Knew it immediately | After `easyInterval` sessions (default 5) |
 
 5. After the answer is revealed, tap **Show notes** for extra context (hidden by default)
 6. Finish the session → see your summary
 
-The app remembers your ratings and schedules each card individually. Cards you find hard come back sooner. Cards you know well come back later.
-
----
-
-## Card Format — Code Blocks
-
-Questions and answers support full Markdown, including syntax-highlighted code:
-
-````
-What is the time complexity of this operation?
-
-```python
-def find(arr, target):
-    for i in range(len(arr)):
-        if arr[i] == target:
-            return i
-    return -1
-```
-````
+The app tracks how many sessions each card needs before it returns. Cards rated **Again** stay in the current session; everything else is scheduled by session offset.
 
 ---
 
@@ -154,68 +129,35 @@ You can filter by tag in the Card Browser to study a specific area.
 
 | Setting | Default | Description |
 |---|---|---|
-| New cards per day | 10 | Max new cards introduced per day |
-| Max reviews per day | 50 | Cap on total reviews per day |
-| Starting ease | 2.5 | Initial scheduling ease factor |
+| Hard interval | 1 | Sessions before a Hard-rated card comes back |
+| Good interval | 3 | Sessions before a Good-rated card comes back |
+| Easy interval | 5 | Sessions before an Easy-rated card comes back |
 
-You can also export your data as JSON (backup) or import a previous backup.
-
----
-
-## Suggested Topics to Build Decks For
-
-| Topic | Study focus |
-|---|---|
-| Big-O / Complexity | Time and space complexity of common operations |
-| Data Structures | Arrays, linked lists, trees, graphs, heaps, tries |
-| Algorithms | Sorting, searching, dynamic programming, recursion |
-| System Design | CAP theorem, load balancing, caching, databases |
-| OOP & Design Patterns | SOLID, factory, singleton, observer, etc. |
-| Databases | SQL vs NoSQL, indexing, transactions, normalization |
-| Networking | HTTP, REST, WebSockets, DNS, TCP/IP |
-| Behavioral | STAR method, common behavioral questions |
-| Language-specific | JavaScript quirks, Python built-ins, C# features |
+Settings also show local storage usage (decks, cards, review log) and a danger-zone reset that wipes all data from the device.
 
 ---
 
-## Sharing Decks with Colleagues
+## Lighthouse Metrics
 
-1. Export your deck as a CSV (or just share the original file)
-2. Your colleague opens the app, imports the CSV
-3. Their progress is tracked independently on their own device
-
-No server. No sync. No accounts. Just a file.
-
----
-
-## Data & Privacy
-
-All your data is stored locally in your browser's IndexedDB. Nothing is sent to any server. To back up or move your data, use **Settings → Export JSON**.
-
-The plan in the future is to update and use a BaaS like Supabase and finally a dedicated backend.
+![Lighthouse metrics](./docs/lighthouse.png)
 
 ---
 
 ## Tech Stack
 
-- **Angular** — frontend framework
+- **Angular 21** — standalone, signal-native
 - **Dexie.js** — IndexedDB wrapper for offline storage
 - **PapaParse** — CSV parsing
 - **highlight.js** — syntax highlighting for code blocks
 - **marked.js** — Markdown rendering
 - **@angular/pwa** — service worker & installability
-- **Angular Material** — UI components
+- **Angular Material 3** — UI components
 
 ---
 
 ## Contributing
 
 This project is intentionally simple. Before adding a feature, ask: *does this make studying easier, or does it add friction?*
-
-```bash
-pnpm test          # run unit tests
-pnpm build         # production build
-```
 
 ---
 

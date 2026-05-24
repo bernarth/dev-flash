@@ -1,9 +1,6 @@
 @use '@angular/material' as mat;
 @use 'styles/variables';
 
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 $df-theme: mat.define-theme((color: (theme-type: dark,
         primary: mat.$cyan-palette,
         use-system-variables: true,
@@ -14,9 +11,26 @@ $df-theme: mat.define-theme((color: (theme-type: dark,
     ));
 
 html {
-  @include mat.all-component-themes($df-theme);
+  @include mat.core-theme($df-theme);
+  @include mat.button-theme($df-theme);
+  @include mat.card-theme($df-theme);
+  @include mat.chips-theme($df-theme);
+  @include mat.dialog-theme($df-theme);
+  @include mat.divider-theme($df-theme);
+  @include mat.expansion-theme($df-theme);
+  @include mat.form-field-theme($df-theme);
+  @include mat.icon-theme($df-theme);
+  @include mat.input-theme($df-theme);
+  @include mat.list-theme($df-theme);
+  @include mat.option-theme($df-theme);
+  @include mat.progress-bar-theme($df-theme);
+  @include mat.progress-spinner-theme($df-theme);
+  @include mat.select-theme($df-theme);
+  @include mat.stepper-theme($df-theme);
+  @include mat.toolbar-theme($df-theme);
   @include mat.system-level-colors($df-theme);
   @include mat.system-level-typography($df-theme);
+  @include mat.fab-theme($df-theme);
 }
 
 *,

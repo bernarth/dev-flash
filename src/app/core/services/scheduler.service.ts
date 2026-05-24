@@ -3,7 +3,7 @@ import { Rating } from '@models/rating';
 import { AppSettings } from '@models/settings';
 
 @Injectable({ providedIn: 'root' })
-export class SrsService {
+export class SchedulerService {
   applyRating(rating: Exclude<Rating, 'again'>, currentSession: number, settings: AppSettings): Partial<import('@models/card').Card> {
     const offsets: Record<Exclude<Rating, 'again'>, number> = {
       hard: settings.hardInterval,

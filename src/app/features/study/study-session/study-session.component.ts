@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DbService } from '@services/db.service';
-import { SrsService } from '@services/srs.service';
+import { SchedulerService } from '@services/scheduler.service';
 import { SettingsService } from '@services/settings.service';
 import { AppSettings, Card, DEFAULT_SETTINGS, Rating } from '@models';
 import { RATING_CONFIG } from '@core/constants/rating-config';
@@ -242,7 +242,7 @@ export class StudySessionComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private db = inject(DbService);
-  private srs = inject(SrsService);
+  private srs = inject(SchedulerService);
   private settingsService = inject(SettingsService);
 
   deckId = signal(0);
