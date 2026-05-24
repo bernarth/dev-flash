@@ -52,9 +52,9 @@ export interface ConfirmDialogData {
         gap: 0.5rem;
       }
       .dialog-icon {
-        font-size: 1.25rem;
-        width: 1.25rem;
-        height: 1.25rem;
+        font-size: var(--df-font-size-lg);
+        width: var(--df-font-size-lg);
+        height: var(--df-font-size-lg);
       }
       .dialog-icon--danger { color: var(--df-again); }
       .dialog-icon--warning { color: var(--df-hard); }

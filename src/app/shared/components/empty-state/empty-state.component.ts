@@ -25,19 +25,19 @@ import { MatIcon } from '@angular/material/icon';
         gap: 0.5rem;
       }
       .empty-icon {
-        font-size: 2.5rem;
-        width: 2.5rem;
-        height: 2.5rem;
+        font-size: var(--df-icon-size-lg);
+        width: var(--df-icon-size-lg);
+        height: var(--df-icon-size-lg);
         color: var(--mat-sys-outline);
         margin-bottom: 0.5rem;
       }
       .empty-title {
-        font-size: 0.9375rem;
+        font-size: var(--df-font-size-md);
         font-weight: var(--df-font-weight-semibold);
         color: var(--mat-sys-on-surface-variant);
       }
       .empty-subtitle {
-        font-size: 0.8125rem;
+        font-size: var(--df-font-size-sm);
         color: var(--mat-sys-outline);
       }
     `,

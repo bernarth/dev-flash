@@ -70,7 +70,7 @@ interface DeckStudyInfo {
     .study-btn {
       min-width: 0 !important;
       padding: 0 0.625rem !important;
-      font-size: 0.75rem !important;
+      font-size: var(--df-font-size-xs) !important;
       height: 2rem !important;
       line-height: 2rem !important;
     }
@@ -83,7 +83,7 @@ interface DeckStudyInfo {
       border-radius: 999px;
       background: currentColor;
       color: var(--mat-sys-surface);
-      font-size: 0.625rem;
+      font-size: var(--df-font-size-2xs);
       font-weight: var(--df-font-weight-bold);
       margin-left: 0.25rem;
       opacity: 0.9;

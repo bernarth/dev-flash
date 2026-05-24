@@ -105,14 +105,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     }
     .spacer { flex: 1; }
     .deck-name {
-      font-size: 0.875rem;
+      font-size: var(--df-font-size-base);
       font-weight: var(--df-font-weight-medium);
       opacity: 0.7;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .card-counter { font-size: 0.75rem; opacity: 0.6; flex-shrink: 0; }
+    .card-counter { font-size: var(--df-font-size-xs); opacity: 0.6; flex-shrink: 0; }
     .card-area {
       flex: 1;
       padding: 0.75rem 1.25rem;
@@ -160,28 +160,28 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     }
     .tags { display: flex; gap: 0.375rem; flex-wrap: wrap; }
     .tag {
-      font-size: 0.6875rem;
+      font-size: var(--df-font-size-xs);
       padding: 0.1875rem 0.5625rem;
       border-radius: 999px;
       background: var(--mat-sys-surface-variant, #1b2129);
       opacity: 0.8;
     }
     .face-label {
-      font-size: 0.6875rem;
+      font-size: var(--df-font-size-xs);
       font-weight: var(--df-font-weight-semibold);
       letter-spacing: 0.1em;
       opacity: 0.5;
     }
     .answer-label { color: var(--mat-sys-primary); opacity: 1; }
     .question-text {
-      font-size: 1.25rem;
+      font-size: var(--df-font-size-lg);
       line-height: 1.35;
       letter-spacing: -0.015em;
       font-weight: var(--df-font-weight-medium);
       flex: 1;
     }
-    .answer-text { font-size: 0.906rem; line-height: 1.55; }
-    .flip-hint { font-size: 0.75rem; opacity: 0.4; text-align: center; }
+    .answer-text { font-size: var(--df-font-size-base); line-height: 1.55; }
+    .flip-hint { font-size: var(--df-font-size-xs); opacity: 0.4; text-align: center; }
     .notes-toggle {
       display: inline-flex;
       align-items: center;
@@ -191,22 +191,31 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       opacity: 0.7;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.8125rem;
+      font-size: var(--df-font-size-sm);
       font-weight: var(--df-font-weight-medium);
       padding: 0.5rem 0;
     }
-    .notes-toggle mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+    .notes-toggle mat-icon {
+      font-size: var(--df-icon-size-sm);
+      width: var(--df-icon-size-sm);
+      height: var(--df-icon-size-sm);
+    }
     .notes-icon { transition: transform 180ms ease; }
     .notes-panel {
       background: var(--mat-sys-surface-variant, #1b2129);
       border-left: 2px solid var(--mat-sys-primary);
       border-radius: 10px;
       padding: 0.75rem 0.875rem;
-      font-size: 0.8125rem;
+      font-size: var(--df-font-size-sm);
       line-height: 1.6;
     }
     .action-area { padding: 0.75rem 1.25rem 1.25rem; flex-shrink: 0; }
-    .show-answer-btn { width: 100%; height: 3.25rem; font-size: 0.9375rem; font-weight: var(--df-font-weight-semibold); }
+    .show-answer-btn {
+      width: 100%;
+      height: 3.25rem;
+      font-size: var(--df-font-size-md);
+      font-weight: var(--df-font-weight-semibold);
+    }
     .rating-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
     .rating-btn {
       flex-direction: column !important;
@@ -215,8 +224,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       min-width: 0 !important;
     }
     .rating-dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; }
-    .rating-label { font-size: 0.8125rem; font-weight: var(--df-font-weight-semibold); }
-    .rating-interval { font-size: 0.625rem; opacity: 0.6; }
+    .rating-label { font-size: var(--df-font-size-sm); font-weight: var(--df-font-weight-semibold); }
+    .rating-interval { font-size: var(--df-font-size-2xs); opacity: 0.6; }
     .status-msg {
       flex: 1;
       display: flex;
@@ -224,7 +233,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       align-items: center;
       justify-content: center;
       opacity: 0.6;
-      font-size: 0.875rem;
+      font-size: var(--df-font-size-base);
     }
     .status-btn { margin-top: 1rem; }
   `],

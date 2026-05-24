@@ -75,16 +75,20 @@ import { MatButtonModule } from '@angular/material/button';
     .content { flex: 1; overflow-y: auto; padding: 0 1rem 2rem; }
     .hero { text-align: center; padding: 2rem 0 1.5rem; }
     .hero-icon {
-      font-size: 3rem;
-      width: 3rem;
-      height: 3rem;
+      font-size: var(--df-icon-size-display);
+      width: var(--df-icon-size-display);
+      height: var(--df-icon-size-display);
       color: var(--mat-sys-primary);
     }
-    .hero-title { font-size: 1.75rem; font-weight: var(--df-font-weight-semibold); margin-top: 0.5rem; }
-    .hero-sub { font-size: 0.875rem; opacity: 0.6; margin-top: 0.25rem; }
+    .hero-title {
+      font-size: var(--df-font-size-2xl);
+      font-weight: var(--df-font-weight-semibold);
+      margin-top: 0.5rem;
+    }
+    .hero-sub { font-size: var(--df-font-size-base); opacity: 0.6; margin-top: 0.25rem; }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
-    .stat-label { font-size: 0.75rem; opacity: 0.6; }
-    .stat-value { font-size: 1.5rem; font-weight: var(--df-font-weight-semibold); }
+    .stat-label { font-size: var(--df-font-size-xs); opacity: 0.6; }
+    .stat-value { font-size: var(--df-font-size-xl); font-weight: var(--df-font-weight-semibold); }
     .seg-bar {
       display: flex;
       height: 8px;

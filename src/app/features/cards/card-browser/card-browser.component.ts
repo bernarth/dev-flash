@@ -90,7 +90,7 @@ import { MatButtonModule } from '@angular/material/button';
     }
 
     .subtitle {
-      font-size: 0.6875rem;
+      font-size: var(--df-font-size-xs);
       opacity: 0.6;
       line-height: 1;
     }
@@ -106,7 +106,7 @@ import { MatButtonModule } from '@angular/material/button';
       flex-shrink: 0; 
     }
     .results-count { 
-      font-size: 0.75rem; 
+      font-size: var(--df-font-size-xs); 
       opacity: 0.5; 
       padding: 0 1rem 0.25rem; 
       margin: 0; 

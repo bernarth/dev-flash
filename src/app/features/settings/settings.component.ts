@@ -126,7 +126,7 @@ import {
     @media (max-width: 360px) {
       .intervals-grid { grid-template-columns: 1fr; }
     }
-    .version { text-align: center; font-size: 0.75rem; opacity: 0.5; margin-bottom: 2rem; }
+    .version { text-align: center; font-size: var(--df-font-size-xs); opacity: 0.5; margin-bottom: 2rem; }
   `],
 })
 export class SettingsComponent implements OnInit {

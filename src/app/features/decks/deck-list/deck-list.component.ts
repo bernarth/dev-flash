@@ -63,7 +63,7 @@ interface DeckViewModel extends Deck {
       position: relative;
     }
     .spacer { flex: 1; }
-    .subtitle { font-size: 0.75rem; opacity: 0.6; margin-right: 0.5rem; }
+    .subtitle { font-size: var(--df-font-size-xs); opacity: 0.6; margin-right: 0.5rem; }
     .due { color: var(--mat-sys-primary); font-weight: var(--df-font-weight-semibold); }
     .content { flex: 1; overflow-y: auto; }
     .fab { position: absolute; bottom: 1.5rem; right: 1.5rem; }

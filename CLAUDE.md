@@ -288,6 +288,14 @@ Always show ImportResult preview. User confirms -> DbService.bulkAddCards(). Can
 - Card flip: CSS 3D transform (perspective + rotateY) — no JS animation.
 - Design: clean, developer-focused. Monospace for code. No decorative chrome.
 
+### Typography
+
+- **No raw `font-size` or `font-weight` in feature/shared components** — use `--df-font-size-*` and `--df-font-weight-*` from `src/styles/variables.scss`.
+- **Icons** (`mat-icon` dimensions): use `--df-icon-size-*`, not text size tokens.
+- **Body default:** `--df-font-size-base` (0.875rem / 14px).
+- **Scale:** `2xs` · `xs` · `sm` · `base` · `md` · `lg` · `xl` · `2xl` · `display` (text); `sm` · `md` · `lg` · `display` (icons).
+- **Material forms/lists** may use M3 typography; custom UI (study card, import wizard, empty states) uses DevFlash tokens.
+
 ---
 
 ## Key Screens
@@ -367,6 +375,7 @@ Settings — sliders for new/day, reviews/day, ease. Theme toggle. Export/import
 | Layout shell pattern | Nav persists across routes, no re-mount flicker |
 | Centralised icon component | DRY — all SVGs live in `shared/components/icon/`. `IconName` union type enforces valid names at compile time. `bypassSecurityTrustHtml` is safe because content comes from a hardcoded constant, not user input. |
 | No `effect()` in ThemeService | KISS — `setMode()` calls `applyTheme()` directly; `effect()` would add reactive indirection for a plain DOM class toggle. |
+| Typography tokens (`--df-font-size-*`, `--df-icon-size-*`) | Single rem scale (2xs→display, 2xl kept at 1.75rem); near-duplicates collapsed to closest step; icons sized separately from text. |
 
 ---
 

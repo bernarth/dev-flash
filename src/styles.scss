@@ -37,7 +37,7 @@ body {
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
   font-weight: var(--df-font-weight-normal);
   -webkit-font-smoothing: antialiased;
-  font-size: 0.875rem;
+  font-size: var(--df-font-size-base);
   line-height: 1.45;
   letter-spacing: -0.005em;
   background: var(--mat-sys-background);
