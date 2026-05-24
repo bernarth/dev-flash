@@ -1,6 +1,5 @@
-import { Component, inject, signal, computed, OnInit, input } from '@angular/core';
+import { Component, inject, computed, input, resource } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { DbService } from '@services/db.service';
 import { DeckListItem } from '@models';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
@@ -8,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
+import { DeckService } from '@core/services/deck.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'df-deck-list',
@@ -19,12 +20,13 @@ import { MatButtonModule } from '@angular/material/button';
     MatToolbarModule,
     MatListModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
   ],
   template: `
     <mat-toolbar>
       <span>Decks</span>
       <span class="spacer"></span>
-      @if (decks().length) {
+      @if (decks.value()?.length) {
         <span class="subtitle">{{ totalDue() }} due</span>
       }
       <a mat-icon-button routerLink="/settings" aria-label="Settings">
@@ -33,11 +35,13 @@ import { MatButtonModule } from '@angular/material/button';
     </mat-toolbar>
 
     <div class="content">
-      @if (decks().length === 0) {
+      @if (decks.isLoading()) {
+        <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
+      } @else if (decks.value()?.length === 0) {
         <df-empty-state title="No decks yet" subtitle="Create a deck or import a CSV" />
       } @else {
         <mat-nav-list>
-          @for (deck of decks(); track deck.id) {
+          @for (deck of decks.value(); track deck.id) {
             <mat-list-item (click)="openDeck(deck)">
               <mat-icon matListItemIcon>style</mat-icon>
               <span matListItemTitle>{{ deck.name }}</span>
@@ -93,10 +97,13 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class DeckListComponent {
   private readonly router = inject(Router);
+  private readonly deckService = inject(DeckService);
 
-  protected readonly decks = input.required<DeckListItem[]>();
+  protected readonly decks = resource<DeckListItem[], unknown>({
+    loader: async () => await this.deckService.getDeckList(),
+  });
   protected readonly totalDue = computed(
-    () => this.decks().reduce((acc, deck) => acc + deck.dueCount, 0) ?? 0,
+    () => this.decks.value()?.reduce((acc, deck) => acc + deck.dueCount, 0) ?? 0,
   );
 
   openDeck(deck: DeckListItem): void {

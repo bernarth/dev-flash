@@ -1,14 +1,10 @@
 import { Routes } from '@angular/router';
-import { deckListResolver } from '@core/resolvers/deck.resolver';
 
 export const routes: Routes = [
   {
     path: 'decks',
     loadComponent: () =>
       import('@features/decks/deck-list/deck-list.component').then((m) => m.DeckListComponent),
-    resolve: {
-      decks: deckListResolver,
-    },
   },
   {
     path: 'decks/create',
