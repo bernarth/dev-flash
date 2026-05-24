@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SettingsService } from '@services/settings.service';
 import { DbService } from '@services/db.service';
-import { AppSettings } from '@models';
+import { AppSettings, DEFAULT_SETTINGS } from '@models';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
@@ -135,7 +135,7 @@ export class SettingsComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   storageUsedMb = signal(0);
-  localSettings = signal<AppSettings>({ ...this.settingsService.settings() });
+  localSettings = signal<AppSettings>({ ...DEFAULT_SETTINGS });
 
   storageBreakdown = signal<{ label: string; value: string }[]>([
     { label: 'Decks', value: '…' },
@@ -143,8 +143,9 @@ export class SettingsComponent implements OnInit {
     { label: 'Review log', value: '…' },
   ]);
 
-  ngOnInit(): void {
-    this.localSettings.set({ ...this.settingsService.settings() });
+  async ngOnInit(): Promise<void> {
+    const s = await this.settingsService.getSettings();
+    this.localSettings.set({ ...s });
     this.loadStorageInfo();
   }
 

@@ -1,15 +1,20 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BottomNavComponent } from '@layout/bottom-nav/bottom-nav.component';
 import { SideNavComponent } from '@layout/side-nav/side-nav.component';
-import { SettingsService } from '@services/settings.service';
 
 @Component({
   selector: 'df-root',
   imports: [RouterOutlet, BottomNavComponent, SideNavComponent],
-  templateUrl: './app.component.html',
+  template: `
+    <div class="app-shell">
+      <df-side-nav class="side-nav-desktop" />
+      <div class="content-area">
+        <router-outlet />
+      </div>
+      <df-bottom-nav class="bottom-nav-mobile" />
+    </div>
+  `,
   styleUrl: './app.component.scss',
 })
-export class App {
-  private _settings = inject(SettingsService);
-}
+export class App { }

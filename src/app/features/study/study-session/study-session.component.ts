@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DbService } from '@services/db.service';
 import { SrsService } from '@services/srs.service';
 import { SettingsService } from '@services/settings.service';
-import { Card, Rating } from '@models';
+import { AppSettings, Card, DEFAULT_SETTINGS, Rating } from '@models';
 import { RATING_CONFIG } from '@core/constants/rating-config';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -239,6 +239,7 @@ export class StudySessionComponent implements OnInit {
   deckId = signal(0);
   deckName = signal('');
   currentSession = signal(0);
+  settings = signal<AppSettings>({ ...DEFAULT_SETTINGS });
   queue = signal<Card[]>([]);
   currentIdx = signal(0);
   doneCount = signal(0);
@@ -258,7 +259,7 @@ export class StudySessionComponent implements OnInit {
   );
 
   ratingButtons = computed(() => {
-    const { hardInterval, goodInterval, easyInterval } = this.settingsService.settings();
+    const { hardInterval, goodInterval, easyInterval } = this.settings();
     return [
       { ...RATING_CONFIG[0], interval: 'now' },
       { ...RATING_CONFIG[1], interval: `+${hardInterval}` },
@@ -270,9 +271,14 @@ export class StudySessionComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.deckId.set(id);
-    const [deck, cardCount] = await Promise.all([this.db.getDeck(id), this.db.getCardCount(id)]);
+    const [deck, cardCount, settings] = await Promise.all([
+      this.db.getDeck(id),
+      this.db.getCardCount(id),
+      this.settingsService.getSettings(),
+    ]);
     this.deckName.set(deck?.name ?? '');
     this.deckHasCards.set(cardCount > 0);
+    this.settings.set(settings);
     const session = deck?.sessionCount ?? 0;
     this.currentSession.set(session);
     const cards = await this.db.getDueCards(id, session);
@@ -299,7 +305,7 @@ export class StudySessionComponent implements OnInit {
       return;
     }
 
-    void this.db.updateCard(card.id!, this.srs.applyRating(rating, this.currentSession(), this.settingsService.settings()));
+    void this.db.updateCard(card.id!, this.srs.applyRating(rating, this.currentSession(), this.settings()));
 
     const remaining = [...this.queue()];
     remaining.splice(this.currentIdx(), 1);
