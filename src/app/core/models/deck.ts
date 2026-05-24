@@ -7,3 +7,8 @@ export interface Deck {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface DeckListItem extends Deck {
+  cardCount: number;
+  dueCount: number;
+}
