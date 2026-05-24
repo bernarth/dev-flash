@@ -4,7 +4,9 @@ export const routes: Routes = [
   {
     path: 'decks',
     loadComponent: () =>
-      import('@features/decks/deck-list/deck-list.component').then((m) => m.DeckListComponent),
+      import('@features/decks/deck-list/deck-list.component').then(
+        (m) => m.DeckListComponent
+      ),
   },
   {
     path: 'decks/create',
