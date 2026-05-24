@@ -41,7 +41,7 @@ interface DeckViewModel extends Deck {
               <span matListItemLine>
                 {{ deck.cardCount }} cards · {{ deck.updatedAt | relativeDate }}
                 @if (deck.dueCount > 0) {
-                  · <strong class="due">{{ deck.dueCount }} due</strong>
+                  · <span class="due">{{ deck.dueCount }} due</span>
                 }
               </span>
             </mat-list-item>
@@ -64,7 +64,7 @@ interface DeckViewModel extends Deck {
     }
     .spacer { flex: 1; }
     .subtitle { font-size: 0.75rem; opacity: 0.6; margin-right: 0.5rem; }
-    .due { color: var(--mat-sys-primary); }
+    .due { color: var(--mat-sys-primary); font-weight: var(--df-font-weight-semibold); }
     .content { flex: 1; overflow-y: auto; }
     .fab { position: absolute; bottom: 1.5rem; right: 1.5rem; }
   `],

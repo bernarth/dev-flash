@@ -65,7 +65,7 @@ interface DeckStudyInfo {
     :host { display: flex; flex-direction: column; height: 100%; }
     .content { flex: 1; overflow-y: auto; }
     .loading { display: flex; justify-content: center; padding: 4rem 1rem; }
-    .due { color: var(--mat-sys-primary); font-weight: 600; }
+    .due { color: var(--mat-sys-primary); font-weight: var(--df-font-weight-semibold); }
     .deck-actions { display: flex; gap: 0.375rem; align-items: center; }
     .study-btn {
       min-width: 0 !important;
@@ -84,7 +84,7 @@ interface DeckStudyInfo {
       background: currentColor;
       color: var(--mat-sys-surface);
       font-size: 0.625rem;
-      font-weight: 700;
+      font-weight: var(--df-font-weight-bold);
       margin-left: 0.25rem;
       opacity: 0.9;
     }

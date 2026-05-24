@@ -33,7 +33,7 @@ import { MatIcon } from '@angular/material/icon';
       }
       .empty-title {
         font-size: 0.9375rem;
-        font-weight: 600;
+        font-weight: var(--df-font-weight-semibold);
         color: var(--mat-sys-on-surface-variant);
       }
       .empty-subtitle {

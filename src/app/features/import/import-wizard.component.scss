@@ -29,7 +29,7 @@
 
 .step-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: var(--df-font-weight-semibold);
 }
 
 .step-sub {
@@ -81,7 +81,7 @@ mat-form-field { width: 100%; }
   border-radius: 999px;
   border: 1px solid var(--mat-sys-outline);
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: var(--df-font-weight-medium);
   letter-spacing: 0.006em;
   color: inherit;
   margin-top: 0.25rem;
@@ -95,7 +95,7 @@ mat-form-field { width: 100%; }
 }
 
 .file-info { flex: 1; min-width: 0; }
-.file-name { font-size: 0.781rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-name { font-size: 0.781rem; font-weight: var(--df-font-weight-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .file-size { font-size: 0.6875rem; opacity: 0.5; }
 
 .error-msg {
@@ -124,7 +124,7 @@ mat-form-field { width: 100%; }
   color: var(--mat-sys-primary);
 }
 
-.success-title { font-size: 1.375rem; font-weight: 600; margin-top: 0.5rem; }
+.success-title { font-size: 1.375rem; font-weight: var(--df-font-weight-semibold); margin-top: 0.5rem; }
 .success-sub { font-size: 0.8125rem; opacity: 0.6; margin-top: 0.25rem; }
 
 .import-stats {
@@ -134,7 +134,7 @@ mat-form-field { width: 100%; }
 }
 
 .stat-box { text-align: center; padding: 0.25rem 0 !important; }
-.stat-num { font-size: 1.625rem; font-weight: 600; line-height: 1; }
+.stat-num { font-size: 1.625rem; font-weight: var(--df-font-weight-semibold); line-height: 1; }
 .stat-label { font-size: 0.75rem; opacity: 0.6; margin-top: 0.25rem; }
 .good { color: var(--df-good); }
 .hard { color: var(--df-hard); }

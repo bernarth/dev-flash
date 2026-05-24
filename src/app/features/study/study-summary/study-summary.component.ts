@@ -80,11 +80,11 @@ import { MatButtonModule } from '@angular/material/button';
       height: 3rem;
       color: var(--mat-sys-primary);
     }
-    .hero-title { font-size: 1.75rem; font-weight: 600; margin-top: 0.5rem; }
+    .hero-title { font-size: 1.75rem; font-weight: var(--df-font-weight-semibold); margin-top: 0.5rem; }
     .hero-sub { font-size: 0.875rem; opacity: 0.6; margin-top: 0.25rem; }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
     .stat-label { font-size: 0.75rem; opacity: 0.6; }
-    .stat-value { font-size: 1.5rem; font-weight: 600; }
+    .stat-value { font-size: 1.5rem; font-weight: var(--df-font-weight-semibold); }
     .seg-bar {
       display: flex;
       height: 8px;

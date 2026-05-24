@@ -16,7 +16,7 @@
   color: var(--mat-sys-on-surface-variant);
   text-decoration: none;
   font-size: 0.625rem;
-  font-weight: 500;
+  font-weight: var(--df-font-weight-medium);
   letter-spacing: 0.03em;
   transition: color 150ms;
 }
