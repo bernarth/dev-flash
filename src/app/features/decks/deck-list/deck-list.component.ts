@@ -8,7 +8,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { DeckService } from '@core/services/deck.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'df-deck-list',
@@ -20,7 +20,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatToolbarModule,
     MatListModule,
     MatButtonModule,
-    MatProgressSpinnerModule,
+    SpinnerComponent,
   ],
   template: `
     <mat-toolbar>
@@ -36,7 +36,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
     <div class="content">
       @if (decks.isLoading()) {
-        <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
+        <df-spinner />
       } @else if (decks.value()?.length === 0) {
         <df-empty-state title="No decks yet" subtitle="Create a deck or import a CSV" />
       } @else {
@@ -87,11 +87,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         flex: 1;
         overflow-y: auto;
       }
-      .loading {
-        display: flex;
-        justify-content: center; 
-        padding: 4rem 1rem; 
-      }
       .fab {
         position: absolute;
         bottom: 1.5rem;
@@ -106,7 +101,7 @@ export class DeckListComponent {
   private readonly deckService = inject(DeckService);
 
   protected readonly decks = resource<DeckListItem[], unknown>({
-    loader: async () => await this.deckService.getDeckList(),
+    loader: () => this.deckService.getDeckList(),
   });
   protected readonly totalDue = computed(
     () => this.decks.value()?.reduce((acc, deck) => acc + deck.dueCount, 0) ?? 0,

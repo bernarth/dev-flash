@@ -7,8 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 interface DeckStudyInfo {
   deck: Deck;
@@ -18,13 +18,13 @@ interface DeckStudyInfo {
 
 @Component({
   selector: 'df-study-list',
-  imports: [MatIconModule, MatToolbarModule, MatListModule, MatButtonModule, MatProgressSpinnerModule, EmptyStateComponent],
+  imports: [MatIconModule, MatToolbarModule, MatListModule, MatButtonModule, EmptyStateComponent, SpinnerComponent],
   template: `
     <mat-toolbar>Study</mat-toolbar>
 
     <div class="content">
       @if (data.isLoading()) {
-        <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
+        <df-spinner />
       } @else if (items().length === 0) {
         <df-empty-state title="No decks yet" subtitle="Create a deck or import a CSV to get started" />
       } @else {
@@ -64,11 +64,6 @@ interface DeckStudyInfo {
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; }
     .content { flex: 1; overflow-y: auto; }
-    .loading { 
-      display: flex;
-      justify-content: center; 
-      padding: 4rem 1rem; 
-    }
     .due { color: var(--mat-sys-primary); font-weight: var(--df-font-weight-semibold); }
     .deck-actions { display: flex; gap: 0.375rem; align-items: center; }
     .study-btn {
