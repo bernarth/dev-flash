@@ -10,7 +10,14 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'df-deck-create',
-  imports: [MatIconModule, MatToolbarModule, MatFormFieldModule, MatInputModule, MatButtonModule, FormField],
+  imports: [
+    MatIconModule,
+    MatToolbarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    FormField,
+  ],
   template: `
     <form class="screen" (submit)="$event.preventDefault(); save()">
       <mat-toolbar>
@@ -19,36 +26,62 @@ import { MatButtonModule } from '@angular/material/button';
         </button>
         <span>New deck</span>
         <span class="spacer"></span>
-        <button mat-flat-button type="submit" [disabled]="deckForm().invalid()">Save</button>
+        <button mat-flat-button type="submit" [disabled]="deckForm().invalid()">
+          <mat-icon>save</mat-icon>
+          Save
+        </button>
       </mat-toolbar>
 
       <div class="content">
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
-          <input matInput [formField]="deckForm.name" placeholder="e.g. C# Fundamentals" autofocus />
+          <input
+            matInput
+            [formField]="deckForm.name"
+            placeholder="e.g. C# Fundamentals"
+            autofocus
+          />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Description (optional)</mat-label>
-          <textarea matInput [formField]="deckForm.description" rows="3"
-                    placeholder="What's this deck for?"></textarea>
+          <textarea
+            matInput
+            [formField]="deckForm.description"
+            rows="3"
+            placeholder="What's this deck for?"
+          ></textarea>
         </mat-form-field>
       </div>
     </form>
   `,
-  styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; }
-    .screen { display: flex; flex-direction: column; height: 100%; }
-    .spacer { flex: 1; }
-    .content {
-      flex: 1;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    mat-form-field { width: 100%; }
-  `],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .spacer {
+        flex: 1;
+      }
+      .content {
+        flex: 1;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      mat-form-field {
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class DeckCreateComponent {
   private db = inject(DbService);

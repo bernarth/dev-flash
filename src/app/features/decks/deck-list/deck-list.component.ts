@@ -39,9 +39,9 @@ export class DeckListComponent {
 
   openDeck(deck: DeckListItem): void {
     if (deck.dueCount > 0) {
-      void this.router.navigate(['/decks', deck.id, 'study']);
+      this.router.navigate(['/decks', deck.id, 'study']);
     } else {
-      void this.router.navigate(['/decks', deck.id, 'browse']);
+      this.router.navigate(['/decks', deck.id, 'browse']);
     }
   }
 
