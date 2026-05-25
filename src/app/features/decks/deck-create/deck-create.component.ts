@@ -1,12 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { form, FormField, submit, required } from '@angular/forms/signals';
+import { form, FormField, submit, required, maxLength, minLength } from '@angular/forms/signals';
 import { DbService } from '@services/db.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { CreateDeck } from '@core/models';
 
 @Component({
   selector: 'df-deck-create',
@@ -41,6 +42,9 @@ import { MatButtonModule } from '@angular/material/button';
             placeholder="e.g. C# Fundamentals"
             autofocus
           />
+          @if (deckForm.name().invalid()) {
+            <mat-error>{{ deckForm.name().errors()[0].message }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -82,14 +86,18 @@ import { MatButtonModule } from '@angular/material/button';
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckCreateComponent {
   private db = inject(DbService);
   private router = inject(Router);
 
-  deckModel = signal({ name: '', description: '' });
-  deckForm = form(this.deckModel, (s) => {
-    required(s.name);
+  deckModel = signal<CreateDeck>({ name: '', description: '' });
+  deckForm = form(this.deckModel, (fieldPath) => {
+    required(fieldPath.name, { message: 'Name is required' });
+    minLength(fieldPath.name, 5);
+    maxLength(fieldPath.name, 100);
+    maxLength(fieldPath.description, 255);
   });
 
   async save(): Promise<void> {

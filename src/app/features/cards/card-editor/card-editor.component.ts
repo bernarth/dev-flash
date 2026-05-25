@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -20,7 +19,6 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
-    MatExpansionModule,
     MatButtonModule,
     FormField,
   ],
@@ -32,33 +30,43 @@ import { MatButtonModule } from '@angular/material/button';
         </button>
         <span>{{ isNew() ? 'New card' : 'Edit card' }}</span>
         <span class="spacer"></span>
-        <button mat-flat-button type="submit" [disabled]="cardForm().invalid()">Save</button>
+        <button mat-flat-button type="submit" [disabled]="cardForm().invalid()">
+          <mat-icon>save</mat-icon>
+          Save
+        </button>
       </mat-toolbar>
 
       <div class="content">
         <mat-form-field appearance="outline">
           <mat-label>Question</mat-label>
-          <textarea matInput [formField]="cardForm.question" rows="3"
-                    placeholder="What does… / Explain… / Difference between…"></textarea>
+          <textarea
+            matInput
+            [formField]="cardForm.question"
+            rows="3"
+            placeholder="What does… / Explain… / Difference between…"
+          ></textarea>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Answer</mat-label>
-          <textarea matInput class="df-mono" [formField]="cardForm.answer" rows="6"
-                    placeholder="The answer…"></textarea>
+          <textarea
+            matInput
+            class="df-mono"
+            [formField]="cardForm.answer"
+            rows="6"
+            placeholder="The answer…"
+          ></textarea>
         </mat-form-field>
 
-        <mat-expansion-panel [expanded]="!!cardModel().notes">
-          <mat-expansion-panel-header>
-            <mat-panel-title>Notes</mat-panel-title>
-            <mat-panel-description>optional</mat-panel-description>
-          </mat-expansion-panel-header>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Notes</mat-label>
-            <textarea matInput [formField]="cardForm.notes" rows="4"
-                      placeholder="Add context, links, gotchas…"></textarea>
-          </mat-form-field>
-        </mat-expansion-panel>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Notes</mat-label>
+          <textarea
+            matInput
+            [formField]="cardForm.notes"
+            rows="4"
+            placeholder="Add context, links, gotchas…"
+          ></textarea>
+        </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Tags</mat-label>
@@ -91,23 +99,44 @@ import { MatButtonModule } from '@angular/material/button';
       </div>
     </form>
   `,
-  styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; }
-    .screen { display: flex; flex-direction: column; height: 100%; }
-    .spacer { flex: 1; }
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    mat-form-field, mat-expansion-panel { width: 100%; }
-    .full-width { width: 100%; }
-    .danger-zone { display: flex; }
-    .danger-zone button { width: 100%; }
-  `],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .screen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .spacer {
+        flex: 1;
+      }
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      mat-form-field,
+      mat-expansion-panel {
+        width: 100%;
+      }
+      .full-width {
+        width: 100%;
+      }
+      .danger-zone {
+        display: flex;
+      }
+      .danger-zone button {
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class CardEditorComponent implements OnInit {
   private route = inject(ActivatedRoute);

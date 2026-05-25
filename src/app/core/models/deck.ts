@@ -12,3 +12,8 @@ export interface DeckListItem extends Deck {
   cardCount: number;
   dueCount: number;
 }
+
+export interface CreateDeck {
+  name: string;
+  description: string;
+}
