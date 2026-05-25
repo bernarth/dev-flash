@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+mat-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolbar-end {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subtitle {
+  font-size: var(--df-font-size-xs);
+  opacity: 0.6;
+}
+.due {
+  color: var(--mat-sys-primary);
+  font-weight: var(--df-font-weight-semibold);
+}
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+.fab {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+}

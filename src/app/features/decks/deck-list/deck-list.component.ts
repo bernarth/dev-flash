@@ -8,7 +8,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { DeckService } from '@core/services/deck.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'df-deck-list',
@@ -20,85 +20,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatToolbarModule,
     MatListModule,
     MatButtonModule,
-    MatProgressSpinnerModule,
+    SpinnerComponent,
   ],
-  template: `
-    <mat-toolbar>
-      <span>Decks</span>
-      <span class="spacer"></span>
-      @if (decks.value()?.length) {
-        <span class="subtitle">{{ totalDue() }} due</span>
-      }
-      <a mat-icon-button routerLink="/settings" aria-label="Settings">
-        <mat-icon>settings</mat-icon>
-      </a>
-    </mat-toolbar>
-
-    <div class="content">
-      @if (decks.isLoading()) {
-        <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
-      } @else if (decks.value()?.length === 0) {
-        <df-empty-state title="No decks yet" subtitle="Create a deck or import a CSV" />
-      } @else {
-        <mat-nav-list>
-          @for (deck of decks.value(); track deck.id) {
-            <mat-list-item (click)="openDeck(deck)">
-              <mat-icon matListItemIcon>style</mat-icon>
-              <span matListItemTitle>{{ deck.name }}</span>
-              <span matListItemLine>
-                {{ deck.cardCount }} cards · {{ deck.updatedAt | relativeDate }}
-                @if (deck.dueCount > 0) {
-                  · <span class="due">{{ deck.dueCount }} due</span>
-                }
-              </span>
-            </mat-list-item>
-          }
-        </mat-nav-list>
-      }
-    </div>
-
-    <button mat-fab extended class="fab" (click)="createDeck()">
-      <mat-icon>add</mat-icon>
-      New deck
-    </button>
-  `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        position: relative;
-      }
-
-      .spacer {
-        flex: 1;
-      }
-      .subtitle {
-        font-size: var(--df-font-size-xs);
-        opacity: 0.6;
-        margin-right: 0.5rem;
-      }
-      .due {
-        color: var(--mat-sys-primary);
-        font-weight: var(--df-font-weight-semibold);
-      }
-      .content {
-        flex: 1;
-        overflow-y: auto;
-      }
-      .loading {
-        display: flex;
-        justify-content: center; 
-        padding: 4rem 1rem; 
-      }
-      .fab {
-        position: absolute;
-        bottom: 1.5rem;
-        right: 1.5rem;
-      }
-    `,
-  ],
+  templateUrl: './deck-list.component.html',
+  styleUrl: './deck-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckListComponent {
@@ -106,7 +31,7 @@ export class DeckListComponent {
   private readonly deckService = inject(DeckService);
 
   protected readonly decks = resource<DeckListItem[], unknown>({
-    loader: async () => await this.deckService.getDeckList(),
+    loader: () => this.deckService.getDeckList(),
   });
   protected readonly totalDue = computed(
     () => this.decks.value()?.reduce((acc, deck) => acc + deck.dueCount, 0) ?? 0,
@@ -121,6 +46,6 @@ export class DeckListComponent {
   }
 
   createDeck(): void {
-    void this.router.navigate(['/decks', 'create']);
+    this.router.navigate(['/decks', 'create']);
   }
 }
