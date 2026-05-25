@@ -25,13 +25,14 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
   template: `
     <mat-toolbar>
       <span>Decks</span>
-      <span class="spacer"></span>
-      @if (decks.value()?.length) {
-        <span class="subtitle">{{ totalDue() }} due</span>
-      }
-      <a mat-icon-button routerLink="/settings" aria-label="Settings">
-        <mat-icon>settings</mat-icon>
-      </a>
+      <div class="toolbar-end">
+        @if (decks.value()?.length) {
+          <span class="subtitle">{{ totalDue() }} due</span>
+        }
+        <a mat-icon-button routerLink="/settings" aria-label="Settings">
+          <mat-icon>settings</mat-icon>
+        </a>
+      </div>
     </mat-toolbar>
 
     <div class="content">
@@ -46,9 +47,9 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
               <mat-icon matListItemIcon>style</mat-icon>
               <span matListItemTitle>{{ deck.name }}</span>
               <span matListItemLine>
-                {{ deck.cardCount }} cards · {{ deck.updatedAt | relativeDate }}
+                {{ deck.cardCount }} cards | {{ deck.updatedAt | relativeDate }}
                 @if (deck.dueCount > 0) {
-                  · <span class="due">{{ deck.dueCount }} due</span>
+                  | <span class="due">{{ deck.dueCount }} due</span>
                 }
               </span>
             </mat-list-item>
@@ -71,13 +72,21 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
         position: relative;
       }
 
-      .spacer {
-        flex: 1;
+      mat-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
+
+      .toolbar-end {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
       .subtitle {
         font-size: var(--df-font-size-xs);
         opacity: 0.6;
-        margin-right: 0.5rem;
       }
       .due {
         color: var(--mat-sys-primary);
@@ -116,6 +125,6 @@ export class DeckListComponent {
   }
 
   createDeck(): void {
-    void this.router.navigate(['/decks', 'create']);
+    this.router.navigate(['/decks', 'create']);
   }
 }
