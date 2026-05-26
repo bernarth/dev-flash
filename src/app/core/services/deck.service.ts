@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { DeckListItem } from '@core/models/deck';
+import { DeckListItem, DeckStudyInfo } from '@core/models/deck';
 import { DbService } from './db.service';
 
 @Injectable({ providedIn: 'root' })
@@ -24,5 +24,21 @@ export class DeckService {
     );
 
     return decks;
+  }
+
+  async getDeckStudyList(): Promise<DeckStudyInfo[]> {
+    const decks = await this.db.getAllDecks();
+    const items: DeckStudyInfo[] = await Promise.all(
+      decks.map(async (deck) => {
+        const [totalCards, dueCount] = await Promise.all([
+          this.db.getCardCount(deck.id!),
+          this.db.getDueCount(deck.id!, deck.sessionCount),
+        ]);
+
+        return { deck, totalCards, dueCount };
+      }),
+    );
+
+    return items;
   }
 }

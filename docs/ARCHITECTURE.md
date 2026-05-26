@@ -114,8 +114,6 @@ All feature components are lazy-loaded via `loadComponent()`.
 | `/decks` | Deck list |
 | `/decks/create` | Create deck |
 | `/decks/:id/study` | Study session (primary) |
-| `/decks/:id/review` | Study session (alias) |
-| `/decks/:id/learn` | Learn session (legacy entry) |
 | `/decks/:id/summary` | Post-session summary |
 | `/decks/:id/browse` | Card browser |
 | `/decks/:id/cards/:cardId` | Card editor |

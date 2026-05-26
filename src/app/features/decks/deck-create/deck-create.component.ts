@@ -19,73 +19,8 @@ import { CreateDeck } from '@core/models';
     MatButtonModule,
     FormField,
   ],
-  template: `
-    <form class="screen" (submit)="$event.preventDefault(); save()">
-      <mat-toolbar>
-        <button mat-icon-button type="button" (click)="cancel()" aria-label="Cancel">
-          <mat-icon>close</mat-icon>
-        </button>
-        <span>New deck</span>
-        <span class="spacer"></span>
-        <button mat-flat-button type="submit" [disabled]="deckForm().invalid()">
-          <mat-icon>save</mat-icon>
-          Save
-        </button>
-      </mat-toolbar>
-
-      <div class="content">
-        <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
-          <input
-            matInput
-            [formField]="deckForm.name"
-            placeholder="e.g. C# Fundamentals"
-            autofocus
-          />
-          @if (deckForm.name().invalid()) {
-            <mat-error>{{ deckForm.name().errors()[0].message }}</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Description (optional)</mat-label>
-          <textarea
-            matInput
-            [formField]="deckForm.description"
-            rows="3"
-            placeholder="What's this deck for?"
-          ></textarea>
-        </mat-form-field>
-      </div>
-    </form>
-  `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-      .screen {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-      .spacer {
-        flex: 1;
-      }
-      .content {
-        flex: 1;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      mat-form-field {
-        width: 100%;
-      }
-    `,
-  ],
+  templateUrl: './deck-create.component.html',
+  styleUrl: './deck-create.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckCreateComponent {
@@ -93,11 +28,11 @@ export class DeckCreateComponent {
   private router = inject(Router);
 
   deckModel = signal<CreateDeck>({ name: '', description: '' });
-  deckForm = form(this.deckModel, (fieldPath) => {
-    required(fieldPath.name, { message: 'Name is required' });
-    minLength(fieldPath.name, 5);
-    maxLength(fieldPath.name, 100);
-    maxLength(fieldPath.description, 255);
+  deckForm = form(this.deckModel, (schemaPath) => {
+    required(schemaPath.name, { message: 'Name is required' });
+    minLength(schemaPath.name, 5);
+    maxLength(schemaPath.name, 100);
+    maxLength(schemaPath.description, 255);
   });
 
   async save(): Promise<void> {

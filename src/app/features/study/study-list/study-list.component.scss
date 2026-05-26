@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.due {
+  color: var(--mat-sys-primary);
+  font-weight: var(--df-font-weight-semibold);
+}

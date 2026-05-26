@@ -1,13 +1,13 @@
 <mat-toolbar>
   <span>Decks</span>
-  <div class="toolbar-end">
+  <span class="toolbar-section">
     @if (decks.value()?.length) {
       <span class="subtitle">{{ totalDue() }} due</span>
     }
     <a mat-icon-button routerLink="/settings" aria-label="Settings">
       <mat-icon>settings</mat-icon>
     </a>
-  </div>
+  </span>
 </mat-toolbar>
 
 <div class="content">

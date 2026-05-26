@@ -13,6 +13,12 @@ export interface DeckListItem extends Deck {
   dueCount: number;
 }
 
+export interface DeckStudyInfo {
+  deck: Deck;
+  totalCards: number;
+  dueCount: number;
+}
+
 export interface CreateDeck {
   name: string;
   description: string;

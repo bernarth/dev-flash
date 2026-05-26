@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  position: relative;
 }
 
 mat-toolbar {
@@ -17,23 +16,20 @@ mat-toolbar {
   gap: 0.5rem;
 }
 
-.subtitle {
-  font-size: var(--df-font-size-xs);
-  opacity: 0.6;
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .content {
   flex: 1;
-  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.due {
-  color: var(--mat-sys-primary);
-  font-weight: var(--df-font-weight-semibold);
-}
-
-.fab {
-  position: absolute;
-  bottom: 1.5rem;
-  right: 1.5rem;
+mat-form-field {
+  width: 100%;
 }

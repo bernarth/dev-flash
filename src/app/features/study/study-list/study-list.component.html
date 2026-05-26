@@ -1,0 +1,40 @@
+<mat-toolbar>Study</mat-toolbar>
+
+<div class="content">
+  @if (decks.isLoading()) {
+    <df-spinner />
+  } @else if (items().length === 0) {
+    <df-empty-state
+      title="No decks yet"
+      subtitle="Create a deck and add cards manually or import a CSV to get started"
+    />
+  } @else {
+    <mat-list>
+      @for (item of items(); track item.deck.id) {
+        <mat-list-item class="deck-item">
+          <mat-icon matListItemIcon>layers</mat-icon>
+          <span matListItemTitle>{{ item.deck.name }}</span>
+          <span matListItemLine>
+            {{ item.totalCards }} cards
+            @if (item.dueCount > 0) {
+              |&nbsp;<span class="due">{{ item.dueCount }} due</span>
+            } @else {
+              |&nbsp;All caught up
+            }
+          </span>
+          <div matListItemMeta>
+            <button
+              mat-flat-button
+              [disabled]="item.dueCount === 0"
+              (click)="startStudy(item.deck.id!)"
+              [attr.aria-label]="'Study ' + item.deck.name"
+            >
+              <mat-icon>play_arrow</mat-icon>
+              Study
+            </button>
+          </div>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+</div>

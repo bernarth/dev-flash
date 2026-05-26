@@ -4,29 +4,13 @@ export const routes: Routes = [
   {
     path: 'decks',
     loadComponent: () =>
-      import('@features/decks/deck-list/deck-list.component').then(
-        (m) => m.DeckListComponent
-      ),
+      import('@features/decks/deck-list/deck-list.component').then((m) => m.DeckListComponent),
   },
   {
     path: 'decks/create',
     loadComponent: () =>
       import('@features/decks/deck-create/deck-create.component').then(
         (m) => m.DeckCreateComponent,
-      ),
-  },
-  {
-    path: 'decks/:id/learn',
-    loadComponent: () =>
-      import('@features/study/learn-session/learn-session.component').then(
-        (m) => m.LearnSessionComponent,
-      ),
-  },
-  {
-    path: 'decks/:id/review',
-    loadComponent: () =>
-      import('@features/study/study-session/study-session.component').then(
-        (m) => m.StudySessionComponent,
       ),
   },
   {
