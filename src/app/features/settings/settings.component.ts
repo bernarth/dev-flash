@@ -90,7 +90,7 @@ import { form, min, submit, FormField, max } from '@angular/forms/signals';
             [disabled]="settingsForm().submitting() || !settingsForm().dirty()"
           >
             <mat-icon>save</mat-icon>
-            Save
+            Save Session Intervals
           </button>
         </mat-card-actions>
       </mat-card>
@@ -103,7 +103,7 @@ import { form, min, submit, FormField, max } from '@angular/forms/signals';
           </mat-card-subtitle>
         </mat-card-header>
         <mat-card-actions>
-          <button mat-flat-button color="warn" (click)="openDeleteDialog()">
+          <button mat-flat-button class="danger-btn" (click)="openDeleteDialog()">
             <mat-icon>delete</mat-icon>
             Delete everything
           </button>
@@ -141,6 +141,11 @@ import { form, min, submit, FormField, max } from '@angular/forms/signals';
         .intervals-grid {
           grid-template-columns: 1fr;
         }
+      }
+
+      .danger-btn {
+        --mat-button-filled-container-color: var(--mat-sys-error);
+        --mat-button-filled-label-text-color: var(--mat-sys-on-error);
       }
 
       .version {

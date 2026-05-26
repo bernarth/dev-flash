@@ -72,13 +72,6 @@ pnpm start
 
 Open [http://localhost:4202](http://localhost:4202) (dev server port is configured in `package.json`).
 
-```bash
-pnpm build    # production build
-pnpm test     # unit tests (Vitest)
-```
-
-Deploy the `dist/` output to any static host (Netlify, Vercel, GitHub Pages).
-
 ---
 
 ## Documentation
@@ -90,6 +83,38 @@ Deploy the `dist/` output to any static host (Netlify, Vercel, GitHub Pages).
 | [Development](docs/DEVELOPMENT.md) | Contributors — conventions, scripts, path aliases |
 
 Agent-oriented project notes live in [`CLAUDE.md`](CLAUDE.md) (not required for using the app).
+
+---
+
+## Color design
+
+DevFlash uses a warm, low-strain palette designed for prolonged reading sessions.
+
+### Principles
+
+- **No pure black or white.** Pure #000000 on #FFFFFF creates the harshest contrast the eye can perceive, causing faster fatigue on long sessions. A warm off-white background (#F9F7F3) and dark charcoal text (#222222) retain readability while softening the visual load.
+- **Warm background.** A slight warm bias (F9F7F3 vs FAFAFA) reduces the blue-light emission of the screen's white point, which is the main source of eye strain under artificial light.
+- **Muted, desaturated accents.** Saturated vibrant colors demand more from the eye's color receptors. Accent colors (primary, SRS buttons) are desaturated by ≈30% from their equivalent Material defaults.
+- **WCAG AA contrast.** Every text/background pair targets a contrast ratio ≥ 4.5:1 (body text) or ≥ 3:1 (large UI labels) as required by WCAG 2.1 AA.
+
+### Palette
+
+| Token | Value | Usage |
+|---|---|---|
+| Background | `#F9F7F3` | Page background |
+| Text | `#222222` | Body and heading text |
+| Primary | Slate blue (M3 blue palette, light) | Buttons, active states, links |
+| `--df-again` | `#C0444E` | "Again" rating button |
+| `--df-hard` | `#C47C2B` | "Hard" rating button |
+| `--df-good` | `#4A9E68` | "Good" rating button |
+| `--df-easy` | `#2A9DB5` | "Easy" rating button |
+
+Code syntax tokens use darker variants of the standard programmer-palette hues (purple for keywords, blue for functions, green for strings, orange for numbers) so they remain legible on white/near-white surfaces.
+
+### References
+
+- [Creating accessible colors for human eyes](https://uxdesign.cc/creating-accessible-colors-for-human-eyes-66ed6a083230) — UX Collective
+- [WCAG 2.1 — Contrast minimum (AA)](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
 
 ---
 

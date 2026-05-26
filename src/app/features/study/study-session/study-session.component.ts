@@ -74,8 +74,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
           } @else {
             <div class="rating-grid">
               @for (r of ratingButtons(); track r.key) {
-                <button mat-stroked-button class="rating-btn" (click)="rate(r.key)">
-                  <span class="rating-dot" [style.background]="r.color"></span>
+                <button
+                  mat-stroked-button
+                  class="rating-btn"
+                  [style.--mat-button-outlined-label-text-color]="r.color"
+                  [style.--mat-button-outlined-outline-color]="r.color"
+                  (click)="rate(r.key)"
+                >
                   <span class="rating-label">{{ r.label }}</span>
                   <span class="rating-interval df-mono">{{ r.interval }}</span>
                 </button>
@@ -255,11 +260,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
         height: auto !important;
         padding: 0.625rem 0.25rem !important;
         min-width: 0 !important;
-      }
-      .rating-dot {
-        width: 0.5rem;
-        height: 0.5rem;
-        border-radius: 999px;
       }
       .rating-label {
         font-size: var(--df-font-size-sm);
