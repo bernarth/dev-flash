@@ -10,6 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
+import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { AddCardsSheetComponent } from './add-cards-sheet.component';
 
 @Component({
   selector: 'df-card-browser',
@@ -22,6 +24,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatChipsModule,
     MatListModule,
     MatButtonModule,
+    MatBottomSheetModule,
   ],
   template: `
     <mat-toolbar>
@@ -80,7 +83,7 @@ import { MatButtonModule } from '@angular/material/button';
       }
     </div>
 
-    <button mat-fab class="fab" (click)="addCard()" aria-label="Add card">
+    <button mat-fab class="fab" (click)="openAddSheet()" aria-label="Add cards">
       <mat-icon>add</mat-icon>
     </button>
   `,
@@ -136,6 +139,7 @@ export class CardBrowserComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private db = inject(DbService);
+  private bottomSheet = inject(MatBottomSheet);
 
   deckId = signal(0);
   deckName = signal('');
@@ -179,7 +183,13 @@ export class CardBrowserComponent implements OnInit {
     this.router.navigate(['/decks', this.deckId(), 'cards', card.id]);
   }
 
-  addCard(): void {
-    this.router.navigate(['/decks', this.deckId(), 'cards', 'new']);
+  openAddSheet(): void {
+    this.bottomSheet
+      .open(AddCardsSheetComponent)
+      .afterDismissed()
+      .subscribe((action: 'add' | 'import' | undefined) => {
+        if (action === 'add') this.router.navigate(['/decks', this.deckId(), 'cards', 'new']);
+        else if (action === 'import') this.router.navigate(['/decks', this.deckId(), 'import']);
+      });
   }
 }

@@ -90,6 +90,10 @@ export class DbService {
     return this.db.cards.bulkAdd(cards as Card[]);
   }
 
+  async resetDeckCards(deckId: number, sessionCount: number): Promise<void> {
+    await this.db.cards.where('deckId').equals(deckId).modify({ nextSession: sessionCount });
+  }
+
   getCardCount(deckId: number): Promise<number> {
     return this.db.cards.where('deckId').equals(deckId).count();
   }

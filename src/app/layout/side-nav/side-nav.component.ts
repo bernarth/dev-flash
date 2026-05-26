@@ -9,14 +9,11 @@ import { MatIconModule } from '@angular/material/icon';
     <nav class="side-nav">
       <div class="logo df-mono">DF</div>
 
-      <a class="nav-item" routerLink="/decks" routerLinkActive="active" title="Decks">
-        <mat-icon>style</mat-icon>
-      </a>
       <a class="nav-item" routerLink="/study" routerLinkActive="active" title="Study">
         <mat-icon>play_arrow</mat-icon>
       </a>
-      <a class="nav-item" routerLink="/import" routerLinkActive="active" title="Import">
-        <mat-icon>upload_file</mat-icon>
+      <a class="nav-item" routerLink="/decks" routerLinkActive="active" title="Decks">
+        <mat-icon>layers</mat-icon>
       </a>
       <a class="nav-item" routerLink="/settings" routerLinkActive="active" title="Settings">
         <mat-icon>settings</mat-icon>

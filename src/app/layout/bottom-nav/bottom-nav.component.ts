@@ -7,17 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [RouterLink, RouterLinkActive, MatIconModule],
   template: `
     <nav class="bottom-nav">
-      <a class="nav-item" routerLink="/decks" routerLinkActive="active">
-        <mat-icon>style</mat-icon>
-        <span>Decks</span>
-      </a>
       <a class="nav-item" routerLink="/study" routerLinkActive="active">
         <mat-icon>play_arrow</mat-icon>
         <span>Study</span>
       </a>
-      <a class="nav-item" routerLink="/import" routerLinkActive="active">
-        <mat-icon>upload_file</mat-icon>
-        <span>Import</span>
+      <a class="nav-item" routerLink="/decks" routerLinkActive="active">
+        <mat-icon>layers</mat-icon>
+        <span>Decks</span>
       </a>
       <a class="nav-item" routerLink="/settings" routerLinkActive="active">
         <mat-icon>settings</mat-icon>

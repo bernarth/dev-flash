@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, resource } from '@angular/core';
 import { Router } from '@angular/router';
-import { DeckStudyInfo } from '@models';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
@@ -10,7 +9,7 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { DeckService } from '@core/services/deck.service';
 
 @Component({
-  selector: 'df-study-list',
+  selector: 'df-browse-list',
   imports: [
     MatIconModule,
     MatToolbarModule,
@@ -19,26 +18,23 @@ import { DeckService } from '@core/services/deck.service';
     EmptyStateComponent,
     SpinnerComponent,
   ],
-  templateUrl: './study-list.component.html',
-  styleUrl: './study-list.component.scss',
+  templateUrl: './browse-list.component.html',
+  styleUrl: './browse-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StudyListComponent {
+export class BrowseListComponent {
   private readonly router = inject(Router);
   private readonly deckService = inject(DeckService);
 
   protected readonly decks = resource({
-    loader: () => this.deckService.getDeckStudyList(),
+    loader: () => this.deckService.getDeckList(),
   });
 
-  protected readonly items = () => this.decks.value() ?? [];
-
-  startStudy(deckId: number): void {
-    this.router.navigate(['/decks', deckId, 'study']);
+  browseDeck(deckId: number): void {
+    this.router.navigate(['/decks', deckId, 'browse']);
   }
 
-  async restartDeck(item: DeckStudyInfo): Promise<void> {
-    await this.deckService.restartDeck(item.deck.id!, item.deck.sessionCount);
-    this.decks.reload();
+  createDeck(): void {
+    this.router.navigate(['/decks', 'create']);
   }
 }

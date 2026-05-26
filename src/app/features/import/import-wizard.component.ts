@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ImportService, ImportResult } from '@services/import.service';
 import { DbService } from '@services/db.service';
 import { Deck } from '@models';
@@ -53,17 +53,19 @@ import { MatStepperModule } from '@angular/material/stepper';
               Columns: <span class="df-mono">question, answer, tags, notes</span>
             </div>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Target deck</mat-label>
-              <mat-select
-                [value]="selectedDeckId()"
-                (selectionChange)="selectedDeckId.set($event.value)"
-              >
-                @for (deck of decks(); track deck.id) {
-                  <mat-option [value]="deck.id">{{ deck.name }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+            @if (!hasDeckContext()) {
+              <mat-form-field appearance="outline">
+                <mat-label>Target deck</mat-label>
+                <mat-select
+                  [value]="selectedDeckId()"
+                  (selectionChange)="selectedDeckId.set($event.value)"
+                >
+                  @for (deck of decks(); track deck.id) {
+                    <mat-option [value]="deck.id">{{ deck.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            }
 
             @if (!selectedFile()) {
               <label
@@ -231,10 +233,17 @@ export class ImportWizardComponent implements OnInit {
   private importService = inject(ImportService);
   private db = inject(DbService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   decks = signal<Deck[]>([]);
+  hasDeckContext = signal(false);
 
   async ngOnInit(): Promise<void> {
+    const routeDeckId = Number(this.route.snapshot.paramMap.get('id'));
+    if (routeDeckId) {
+      this.selectedDeckId.set(routeDeckId);
+      this.hasDeckContext.set(true);
+    }
     this.decks.set(await this.db.getAllDecks());
   }
 
@@ -366,10 +375,18 @@ export class ImportWizardComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/decks']);
+    this.navigateBack();
   }
 
   done(): void {
-    this.router.navigate(['/decks']);
+    this.navigateBack();
+  }
+
+  private navigateBack(): void {
+    if (this.hasDeckContext()) {
+      this.router.navigate(['/decks', this.selectedDeckId(), 'browse']);
+    } else {
+      this.router.navigate(['/decks']);
+    }
   }
 }

@@ -2,9 +2,16 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'study',
+    loadComponent: () =>
+      import('@features/study/study-list/study-list.component').then((m) => m.StudyListComponent),
+  },
+  {
     path: 'decks',
     loadComponent: () =>
-      import('@features/decks/deck-list/deck-list.component').then((m) => m.DeckListComponent),
+      import('@features/decks/browse-list/browse-list.component').then(
+        (m) => m.BrowseListComponent,
+      ),
   },
   {
     path: 'decks/create',
@@ -28,6 +35,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'decks/:id/import',
+    loadComponent: () =>
+      import('@features/import/import-wizard.component').then((m) => m.ImportWizardComponent),
+  },
+  {
     path: 'decks/:id/browse',
     loadComponent: () =>
       import('@features/cards/card-browser/card-browser.component').then(
@@ -42,11 +54,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'study',
-    loadComponent: () =>
-      import('@features/study/study-list/study-list.component').then((m) => m.StudyListComponent),
-  },
-  {
     path: 'import',
     loadComponent: () =>
       import('@features/import/import-wizard.component').then((m) => m.ImportWizardComponent),
@@ -58,7 +65,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'decks',
+    redirectTo: 'study',
     pathMatch: 'full',
   },
   {

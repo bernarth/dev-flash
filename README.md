@@ -1,6 +1,6 @@
 # DevFlash
 
-[![Live Demo](https://img.shields.io/badge/demo-dev--flash.netlify.app-00C7B7?style=flat-square)](https://dev-flash.netlify.app/decks)
+[![Live Demo](https://img.shields.io/badge/demo-dev--flash.netlify.app-00C7B7?style=flat-square)](https://dev-flash.netlify.app/study)
 [![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
@@ -9,7 +9,7 @@
 
 Offline-first flashcard PWA for developers preparing for technical interviews. Import CSV decks, study with session based scheduling, and keep all data on your device no account, no backend.
 
-**[Try the live app ->](https://dev-flash.netlify.app/decks)**
+**[Try the live app ->](https://dev-flash.netlify.app/study)**
 
 ---
 
@@ -19,10 +19,11 @@ Anki is powerful but heavy. DevFlash focuses on one workflow: review programming
 
 | Feature | What it gives you |
 |--------|-------------------|
-| **Session based** | Again / Hard / Good / Easy control when cards return (by study session, not calendar days) |
+| **Session based** | Again / Hard / Good / Easy control when cards return (by study session and avoid not calendar days) |
+| **Restart a deck** | Once all cards are reviewed, one tap resets them all so you can go again |
 | **Code-aware cards** | Questions and answers support markdown and fenced code blocks |
-| **CSV import** | Build decks in a spreadsheet, validate, preview, then import |
-| **Local-first storage** | IndexedDB via Dexie data never leaves the browser |
+| **CSV import** | Build decks in a spreadsheet, validate, preview, then import from the card browser or globally |
+| **Local-first storage** | IndexedDB via Dexie so, data never leaves the browser |
 | **Mobile shell** | Bottom nav on small screens, side nav on desktop |
 
 ---

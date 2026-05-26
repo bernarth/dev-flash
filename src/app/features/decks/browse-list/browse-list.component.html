@@ -1,0 +1,24 @@
+<mat-toolbar>Decks</mat-toolbar>
+
+<div class="content">
+  @if (decks.isLoading()) {
+    <df-spinner />
+  } @else if (decks.value()?.length === 0) {
+    <df-empty-state title="No decks yet" subtitle="Create a deck or import a CSV to get started" />
+  } @else {
+    <mat-nav-list>
+      @for (deck of decks.value(); track deck.id) {
+        <mat-list-item (click)="browseDeck(deck.id!)">
+          <mat-icon matListItemIcon>layers</mat-icon>
+          <span matListItemTitle>{{ deck.name }}</span>
+          <span matListItemLine>{{ deck.cardCount }} cards</span>
+        </mat-list-item>
+      }
+    </mat-nav-list>
+  }
+</div>
+
+<button mat-fab extended class="fab" (click)="createDeck()" aria-label="New deck">
+  <mat-icon>add</mat-icon>
+  New deck
+</button>

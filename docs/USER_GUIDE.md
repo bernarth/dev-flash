@@ -2,7 +2,7 @@
 
 How to use DevFlash: install on your phone, create decks, study, and configure intervals.
 
-**Live app:** [dev-flash.netlify.app](https://dev-flash.netlify.app/decks)
+**Live app:** [dev-flash.netlify.app](https://dev-flash.netlify.app/study)
 
 ---
 
@@ -41,19 +41,24 @@ question,answer,notes,tags
 "What does this do?","```js\nconst x = [1,2,3].map(n => n * 2);\n```","Returns [2,4,6]","javascript"
 ```
 
-In the app: **Import** (nav) -> select file -> preview rows -> confirm import.
+In the app, there are two ways to import:
 
-Skipped rows and warnings are shown before anything is written to storage.
+- **From a deck:** open the deck in the card browser -> tap the **+** FAB -> choose **Import CSV**. The wizard is pre-scoped to that deck — no need to select a target.
+- **Global import:** tap **Decks** in the nav -> ... (accessible if needed for a fresh deck).
+
+File picker -> row preview (5 rows) -> ImportResult summary -> confirm. Skipped rows and warnings are shown before anything is written to storage.
 
 ### Add cards manually
 
-Open a deck -> browse or add -> fill question, answer, and optional notes/tags.
+Open a deck in the card browser -> tap the **+** FAB -> choose **Add card manually** -> fill in question, answer, and optional notes/tags.
 
 ---
 
 ## Studying
 
-1. Open a deck -> **Study** (or use the **Study** tab for decks with due cards).
+1. Open the **Study** tab. Each deck shows how many cards are due.
+   - Tap **Study** to start a session for that deck.
+   - If all cards have been reviewed (0 due), tap **Restart** to reset the deck and make all cards due again.
 2. Read the question.
 3. Tap **Show answer** (or tap the card) when ready.
 4. Rate how well you knew it:

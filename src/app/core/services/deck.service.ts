@@ -26,6 +26,10 @@ export class DeckService {
     return decks;
   }
 
+  async restartDeck(deckId: number, sessionCount: number): Promise<void> {
+    await this.db.resetDeckCards(deckId, sessionCount);
+  }
+
   async getDeckStudyList(): Promise<DeckStudyInfo[]> {
     const decks = await this.db.getAllDecks();
     const items: DeckStudyInfo[] = await Promise.all(

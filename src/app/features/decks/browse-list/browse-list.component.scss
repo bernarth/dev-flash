@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.fab {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+}

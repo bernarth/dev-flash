@@ -37,46 +37,38 @@ flowchart TB
 
 **Properties:**
 
-- No API, auth, or sync — all state lives in the browser
-- Features never import Dexie directly; only `DbService` touches the database
+- No API, auth, or sync. All state lives in the browser
+- Features never import Dexie directly only `DbService` touches the database
 - `SchedulerService.applyRating()` has no side effects (easy to test and reason about)
-- Optimistic UI: study session updates in-memory queue immediately; persistence uses `async/await` with explicit `void` for fire-and-forget writes where appropriate
+- Optimistic UI: study session updates in memory queue immediately; persistence uses `async/await` with explicit `void` for fire-and-forget writes where appropriate
 
 ---
 
-## Application shell
-
-Navigation is part of the root shell so it does not remount on route changes.
-
-```
-App (df-root)
-├── SideNavComponent     (desktop, >= 768px)
-├── <main>
-│     └── <router-outlet>   <- lazy feature routes
-└── BottomNavComponent   (mobile)
-```
-
-`App` composes layout chrome; feature routes render inside the outlet. Study routes use a full-screen layout inside the feature (toolbar + progress) rather than a separate layout wrapper component.
-
----
 
 ## Folder structure
 
 ```
 src/app/
 ├── core/
-│   ├── constants/          
-│   ├── models/ 
+│   ├── constants/
+│   ├── models/
 │   ├── services/
 │   └── utils/
 ├── layout/
-│   ├── bottom-nav/
+│   ├── bottom-nav/         (Study · Decks · Settings)
 │   └── side-nav/
 ├── features/
-│   ├── decks/              
+│   ├── decks/
+│   │   ├── browse-list/    (/decks -> name + card count)
+│   │   └── deck-create/
 │   ├── study/
+│   │   ├── study-list/     (/study -> due counts, Study/Restart buttons)
+│   │   ├── study-session/
+│   │   └── study-summary/
 │   ├── cards/
-│   ├── import/
+│   │   ├── card-browser/   (includes add-cards-sheet bottom sheet)
+│   │   └── card-editor/
+│   ├── import/             (ImportWizardComponent -> global + deck-scoped)
 │   └── settings/
 ├── shared/
 │   ├── components/
@@ -90,7 +82,7 @@ src/app/
 
 | Layer | Responsibility |
 |-------|------------------|
-| **core/models** | Readonly interfaces; no mutation — create new objects |
+| **core/models** | Readonly interfaces; no mutation and create new objects |
 | **core/services** | Domain and persistence; inject with `providedIn: 'root'` |
 | **features** | Route-owned screens; orchestrate services, hold UI state as signals |
 | **shared** | Presentational reuse; no business rules or DB access |
@@ -106,14 +98,15 @@ All feature components are lazy-loaded via `loadComponent()`.
 
 | Path | Feature |
 |------|---------|
-| `/decks` | Deck list |
+| `/study` | Cross-deck study list (default landing) |
+| `/decks` | Deck browser (name + card count list) |
 | `/decks/create` | Create deck |
-| `/decks/:id/study` | Study session (primary) |
+| `/decks/:id/study` | Study session |
 | `/decks/:id/summary` | Post-session summary |
+| `/decks/:id/import` | CSV import wizard scoped to a deck |
 | `/decks/:id/browse` | Card browser |
 | `/decks/:id/cards/:cardId` | Card editor |
-| `/study` | Cross-deck study list |
-| `/import` | CSV import wizard |
+| `/import` | CSV import wizard (global, deck selector shown) |
 | `/settings` | Intervals, storage info, reset |
 
 `withComponentInputBinding()` is enabled so route params can bind to component `input()`s where used.
@@ -130,7 +123,7 @@ interface Deck {
   name: string;
   description?: string;
   tags: string[];
-  sessionCount: number;  // completed study sessions for this deck
+  sessionCount: number;
   createdAt: Date;
   updatedAt: Date;
 }

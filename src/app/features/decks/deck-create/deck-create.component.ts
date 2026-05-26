@@ -36,10 +36,11 @@ export class DeckCreateComponent {
   });
 
   async save(): Promise<void> {
+    let newId = 0;
     const success = await submit(this.deckForm, async () => {
       const { name, description } = this.deckModel();
       const now = new Date();
-      await this.db.createDeck({
+      newId = await this.db.createDeck({
         name: name.trim(),
         description: description.trim() || undefined,
         tags: [],
@@ -50,7 +51,7 @@ export class DeckCreateComponent {
     });
 
     if (success) {
-      this.router.navigate(['/decks']);
+      this.router.navigate(['/decks', newId, 'browse']);
     }
   }
 

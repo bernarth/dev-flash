@@ -23,15 +23,25 @@
             }
           </span>
           <div matListItemMeta>
-            <button
-              mat-flat-button
-              [disabled]="item.dueCount === 0"
-              (click)="startStudy(item.deck.id!)"
-              [attr.aria-label]="'Study ' + item.deck.name"
-            >
-              <mat-icon>play_arrow</mat-icon>
-              Study
-            </button>
+            @if (item.dueCount > 0) {
+              <button
+                mat-flat-button
+                (click)="startStudy(item.deck.id!)"
+                [attr.aria-label]="'Study ' + item.deck.name"
+              >
+                <mat-icon>play_arrow</mat-icon>
+                Study
+              </button>
+            } @else if (item.totalCards > 0) {
+              <button
+                mat-stroked-button
+                (click)="restartDeck(item)"
+                [attr.aria-label]="'Restart ' + item.deck.name"
+              >
+                <mat-icon>refresh</mat-icon>
+                Restart
+              </button>
+            }
           </div>
         </mat-list-item>
       }
