@@ -56,9 +56,15 @@ export interface ConfirmDialogData {
         width: var(--df-font-size-lg);
         height: var(--df-font-size-lg);
       }
-      .dialog-icon--danger { color: var(--df-again); }
-      .dialog-icon--warning { color: var(--df-hard); }
-      .dialog-icon--default { color: var(--mat-sys-primary); }
+      .dialog-icon--danger {
+        color: var(--df-again);
+      }
+      .dialog-icon--warning {
+        color: var(--df-hard);
+      }
+      .dialog-icon--default {
+        color: var(--mat-sys-primary);
+      }
     `,
   ],
 })

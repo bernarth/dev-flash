@@ -1,14 +1,19 @@
 @use '@angular/material' as mat;
 @use 'styles/variables';
 
-$df-theme: mat.define-theme((color: (theme-type: light,
-        primary: mat.$blue-palette,
-        use-system-variables: true,
-      ),
-      typography: (brand-family: 'Geist, system-ui, sans-serif',
-        plain-family: 'Geist, system-ui, sans-serif',
-      ),
-    ));
+$df-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$blue-palette,
+      use-system-variables: true,
+    ),
+    typography: (
+      brand-family: 'Geist, system-ui, sans-serif',
+      plain-family: 'Geist, system-ui, sans-serif',
+    ),
+  )
+);
 
 html {
   @include mat.core-theme($df-theme);
@@ -32,7 +37,7 @@ html {
   @include mat.system-level-typography($df-theme);
   @include mat.fab-theme($df-theme);
 
-  --mat-sys-background: #F9F7F3;
+  --mat-sys-background: #f9f7f3;
   --mat-sys-on-background: #222222;
   --mat-sys-on-surface: #222222;
   --mat-sys-on-surface-variant: #555555;
@@ -53,7 +58,11 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'Geist', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Geist',
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-weight: var(--df-font-weight-normal);
   -webkit-font-smoothing: antialiased;
   font-size: var(--df-font-size-base);
@@ -65,7 +74,9 @@ body {
 
 .df-mono {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-feature-settings: 'calt' 1, 'liga' 1;
+  font-feature-settings:
+    'calt' 1,
+    'liga' 1;
 }
 
 .visually-hidden {
@@ -81,19 +92,19 @@ body {
 }
 
 .tok-kw {
-  color: #7B2FBE;
+  color: #7b2fbe;
 }
 
 .tok-fn {
-  color: #1B67BC;
+  color: #1b67bc;
 }
 
 .tok-str {
-  color: #2E7D32;
+  color: #2e7d32;
 }
 
 .tok-num {
-  color: #C56200;
+  color: #c56200;
 }
 
 .tok-com {
@@ -102,7 +113,7 @@ body {
 }
 
 .tok-ty {
-  color: #A67700;
+  color: #a67700;
 }
 
 .tok-pu {

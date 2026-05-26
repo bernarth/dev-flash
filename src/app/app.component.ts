@@ -17,4 +17,4 @@ import { SideNavComponent } from '@layout/side-nav/side-nav.component';
   `,
   styleUrl: './app.component.scss',
 })
-export class App { }
+export class App {}

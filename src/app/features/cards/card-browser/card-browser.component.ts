@@ -37,14 +37,22 @@ import { MatButtonModule } from '@angular/material/button';
     <div class="search-wrap">
       <mat-form-field appearance="outline" class="search-field">
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput [value]="query()" (input)="onSearchInput($event)"
-               placeholder="Search cards" aria-label="Search cards" />
+        <input
+          matInput
+          [value]="query()"
+          (input)="onSearchInput($event)"
+          placeholder="Search cards"
+          aria-label="Search cards"
+        />
       </mat-form-field>
     </div>
 
     <div class="tags-wrap">
-      <mat-chip-listbox [value]="activeTag()" (change)="activeTag.set($event.value ?? 'All')"
-                        aria-label="Filter by tag">
+      <mat-chip-listbox
+        [value]="activeTag()"
+        (change)="activeTag.set($event.value ?? 'All')"
+        aria-label="Filter by tag"
+      >
         @for (tag of allTags(); track tag) {
           <mat-chip-option [value]="tag">{{ tag === 'All' ? 'All' : '#' + tag }}</mat-chip-option>
         }
@@ -64,7 +72,7 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-list-item (click)="editCard(card)">
               <span matListItemTitle>{{ card.question }}</span>
               @if (card.tags.length) {
-                <span matListItemLine>{{ card.tags.map(t => '#' + t).join(' ') }}</span>
+                <span matListItemLine>{{ card.tags.map((t) => '#' + t).join(' ') }}</span>
               }
             </mat-list-item>
           }
@@ -76,44 +84,53 @@ import { MatButtonModule } from '@angular/material/button';
       <mat-icon>add</mat-icon>
     </button>
   `,
-  styles: [`
-    :host {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      position: relative;
-    }
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+      }
 
-    .toolbar-title {
-      display: flex;
-      flex-direction: column;
-    }
+      .toolbar-title {
+        display: flex;
+        flex-direction: column;
+      }
 
-    .subtitle {
-      font-size: var(--df-font-size-xs);
-      opacity: 0.6;
-      line-height: 1;
-    }
-    .search-wrap { 
-      padding: 0.5rem 1rem 0; 
-      flex-shrink: 0; 
-    }
-    .search-field { 
-      width: 100%; 
-    }
-    .tags-wrap { 
-      padding: 0 1rem; 
-      flex-shrink: 0; 
-    }
-    .results-count { 
-      font-size: var(--df-font-size-xs); 
-      opacity: 0.5; 
-      padding: 0 1rem 0.25rem; 
-      margin: 0; 
-    }
-    .content { flex: 1; overflow-y: auto; }
-    .fab { position: absolute; bottom: 1.5rem; right: 1.5rem; }
-  `],
+      .subtitle {
+        font-size: var(--df-font-size-xs);
+        opacity: 0.6;
+        line-height: 1;
+      }
+      .search-wrap {
+        padding: 0.5rem 1rem 0;
+        flex-shrink: 0;
+      }
+      .search-field {
+        width: 100%;
+      }
+      .tags-wrap {
+        padding: 0 1rem;
+        flex-shrink: 0;
+      }
+      .results-count {
+        font-size: var(--df-font-size-xs);
+        opacity: 0.5;
+        padding: 0 1rem 0.25rem;
+        margin: 0;
+      }
+      .content {
+        flex: 1;
+        overflow-y: auto;
+      }
+      .fab {
+        position: absolute;
+        bottom: 1.5rem;
+        right: 1.5rem;
+      }
+    `,
+  ],
 })
 export class CardBrowserComponent implements OnInit {
   private route = inject(ActivatedRoute);

@@ -10,7 +10,6 @@ export interface ImportResult {
 
 @Injectable({ providedIn: 'root' })
 export class ImportService {
-
   parse(file: File, deckId: number): Promise<ImportResult> {
     return new Promise((resolve, reject) => {
       if (!file.name.toLowerCase().endsWith('.csv')) {

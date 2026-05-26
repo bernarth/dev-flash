@@ -6,7 +6,11 @@
       </button>
       <span>New deck</span>
     </span>
-    <button mat-flat-button type="submit" [disabled]="deckForm().invalid() || deckForm().submitting()">
+    <button
+      mat-flat-button
+      type="submit"
+      [disabled]="deckForm().invalid() || deckForm().submitting()"
+    >
       <mat-icon>save</mat-icon>
       Save
     </button>
@@ -15,12 +19,7 @@
   <div class="content">
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
-      <input
-        matInput
-        [formField]="deckForm.name"
-        placeholder="e.g. C# Fundamentals"
-        autofocus
-      />
+      <input matInput [formField]="deckForm.name" placeholder="e.g. C# Fundamentals" autofocus />
       @if (deckForm.name().invalid()) {
         <mat-error>{{ deckForm.name().errors()[0].message }}</mat-error>
       }
