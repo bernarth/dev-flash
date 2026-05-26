@@ -1,0 +1,81 @@
+<mat-toolbar>Settings</mat-toolbar>
+
+<div class="content">
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Local storage</mat-card-title>
+      <mat-card-subtitle>
+        @if (storageUsedKb.isLoading()) {
+          Loading used storage...
+        } @else {
+          {{ storageUsedKb.value()?.toFixed(2) ?? '?' }} KB used
+        }
+      </mat-card-subtitle>
+    </mat-card-header>
+    @if (storageBreakdown.isLoading()) {
+      <mat-card-content> Loading storage... </mat-card-content>
+    } @else {
+      <mat-list>
+        @for (item of storageBreakdown.value() ?? []; track item.label) {
+          <mat-list-item>
+            <span matListItemTitle>{{ item.label }}</span>
+            <span matListItemMeta>{{ item.value }}</span>
+          </mat-list-item>
+        }
+      </mat-list>
+    }
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Session intervals</mat-card-title>
+      <mat-card-subtitle>Sessions before a card comes back</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="intervals-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Hard</mat-label>
+          <input matInput type="number" [formField]="settingsForm.hardInterval" />
+          <mat-hint>sessions</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Good</mat-label>
+          <input matInput type="number" [formField]="settingsForm.goodInterval" />
+          <mat-hint>sessions</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Easy</mat-label>
+          <input matInput type="number" [formField]="settingsForm.easyInterval" />
+          <mat-hint>sessions</mat-hint>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        mat-flat-button
+        (click)="saveSettings()"
+        [disabled]="settingsForm().submitting() || !settingsForm().dirty()"
+      >
+        <mat-icon>save</mat-icon>
+        Save Session Intervals
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Danger zone</mat-card-title>
+      <mat-card-subtitle>
+        Permanently removes all decks, cards, notes, and review history from this device.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions>
+      <button mat-flat-button class="danger-btn" (click)="openDeleteDialog()">
+        <mat-icon>delete</mat-icon>
+        Delete everything
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <p class="version">Dev Flash | v0.3.0 | Alberth B.</p>
+</div>
