@@ -21,7 +21,7 @@ pnpm install
 | Command | Description |
 |---------|-------------|
 | `pnpm start` | Dev server at [http://localhost:4202](http://localhost:4202) |
-| `pnpm build` | Production build → `dist/` |
+| `pnpm build` | Production build -> `dist/` |
 | `pnpm test` | Unit tests (Vitest via Angular CLI) |
 | `pnpm watch` | Development build in watch mode |
 
@@ -130,7 +130,7 @@ Build artifacts are static files suitable for Netlify, Vercel, GitHub Pages, or 
 pnpm build --configuration production
 ```
 
-Publish the application output directory from `dist/` (exact subfolder depends on `angular.json` `outputPath`).
+Publish the application output directory from `dist/dev-flash/browser`.
 
 ---
 

@@ -9,7 +9,7 @@
 
 Offline-first flashcard PWA for developers preparing for technical interviews. Import CSV decks, study with session-based scheduling, and keep all data on your device — no account, no backend.
 
-**[Try the live app →](https://dev-flash.netlify.app/decks)**
+**[Try the live app ->](https://dev-flash.netlify.app/decks)**
 
 ---
 
@@ -52,7 +52,7 @@ See **[Architecture](docs/ARCHITECTURE.md)** for diagrams, data flow, and design
 | Layer | Choice |
 |-------|--------|
 | Framework | Angular 21 (standalone, signals) |
-| Storage | Dexie.js → IndexedDB |
+| Storage | Dexie.js -> IndexedDB |
 | UI | Angular Material 3 + CSS custom properties (`--df-*`) |
 | CSV | PapaParse + `ImportService` validation |
 | Markdown / code | marked.js, highlight.js (integration in progress) |
@@ -139,8 +139,6 @@ Open [http://localhost:4202](http://localhost:4202) (dev server port is configur
 | [User guide](docs/USER_GUIDE.md) | End users — CSV format, studying, tags, settings |
 | [Development](docs/DEVELOPMENT.md) | Contributors — conventions, scripts, path aliases |
 
-Agent-oriented project notes live in [`CLAUDE.md`](CLAUDE.md) (not required for using the app).
-
 ---
 
 ## Color design
@@ -149,10 +147,10 @@ DevFlash uses a warm, low-strain palette designed for prolonged reading sessions
 
 ### Principles
 
-- **No pure black or white.** Pure #000000 on #FFFFFF creates the harshest contrast the eye can perceive, causing faster fatigue on long sessions. A warm off-white background (#F9F7F3) and dark charcoal text (#222222) retain readability while softening the visual load.
+- **No pure black or white.** Pure #000000 on #FFFFFF creates the harshest contrast the eye can perceive, causing faster fatigue on long sessions. A warm off white background (#F9F7F3) and dark charcoal text (#222222) retain readability while softening the visual load.
 - **Warm background.** A slight warm bias (F9F7F3 vs FAFAFA) reduces the blue-light emission of the screen's white point, which is the main source of eye strain under artificial light.
-- **Muted, desaturated accents.** Saturated vibrant colors demand more from the eye's color receptors. Accent colors (primary, SRS buttons) are desaturated by ≈30% from their equivalent Material defaults.
-- **WCAG AA contrast.** Every text/background pair targets a contrast ratio ≥ 4.5:1 (body text) or ≥ 3:1 (large UI labels) as required by WCAG 2.1 AA.
+- **Muted, desaturated accents.** Saturated vibrant colors demand more from the eye's color receptors. Accent colors (primary, SRS buttons) are desaturated by 30% approx from their equivalent Material defaults.
+- **WCAG AA contrast.** Every text/background pair targets a contrast ratio >= 4.5:1 (body text) or >= 3:1 (large UI labels) as required by WCAG 2.1 AA.
 
 ### Palette
 
@@ -166,21 +164,10 @@ DevFlash uses a warm, low-strain palette designed for prolonged reading sessions
 | `--df-good` | `#4A9E68` | "Good" rating button |
 | `--df-easy` | `#2A9DB5` | "Easy" rating button |
 
-Code syntax tokens use darker variants of the standard programmer-palette hues (purple for keywords, blue for functions, green for strings, orange for numbers) so they remain legible on white/near-white surfaces.
-
 ### References
 
 - [Creating accessible colors for human eyes](https://uxdesign.cc/creating-accessible-colors-for-human-eyes-66ed6a083230) — UX Collective
 - [WCAG 2.1 — Contrast minimum (AA)](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
-
----
-
-## Roadmap
-
-- Service worker / installable PWA (`@angular/pwa`)
-- Shared presentational library (`card-flip`, `markdown-viewer`, `rating-buttons`, central `df-icon`)
-- Theme service + JSON export/restore
-- Markdown sanitization and syntax highlighting wired through shared viewers
 
 ---
 

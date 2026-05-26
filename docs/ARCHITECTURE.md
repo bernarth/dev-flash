@@ -1,6 +1,6 @@
 # DevFlash — Architecture
 
-This document describes how DevFlash is structured today: an offline-first Angular SPA with no backend, session-based spaced repetition, and a clear split between persistence, scheduling logic, and UI.
+This document describes how DevFlash is structured today: an offline-first Angular SPA with no backend, session based spaced repetition, and a clear split between persistence, scheduling logic, and UI.
 
 ---
 
@@ -24,7 +24,7 @@ flowchart TB
     DeckSvc --> DB
     Import --> DB
     Settings --> DB
-    Sched -.->|"pure rating → interval"| UI
+    Sched -.->|"pure rating -> interval"| UI
   end
   subgraph storage["IndexedDB (Dexie)"]
     decks[(decks)]
@@ -50,9 +50,9 @@ Navigation is part of the root shell so it does not remount on route changes.
 
 ```
 App (df-root)
-├── SideNavComponent     (desktop, ≥768px)
+├── SideNavComponent     (desktop, >= 768px)
 ├── <main>
-│     └── <router-outlet>   ← lazy feature routes
+│     └── <router-outlet>   <- lazy feature routes
 └── BottomNavComponent   (mobile)
 ```
 
@@ -65,27 +65,22 @@ App (df-root)
 ```
 src/app/
 ├── core/
-│   ├── constants/          # e.g. rating button labels/colors
-│   ├── models/             # Deck, Card, ReviewLog, AppSettings, Rating
+│   ├── constants/          
+│   ├── models/ 
 │   ├── services/
-│   │   ├── db.service.ts       # sole Dexie access
-│   │   ├── deck.service.ts     # deck list aggregation
-│   │   ├── scheduler.service.ts
-│   │   ├── import.service.ts
-│   │   └── settings.service.ts
 │   └── utils/
 ├── layout/
 │   ├── bottom-nav/
 │   └── side-nav/
 ├── features/
-│   ├── decks/              # deck-list, deck-create
-│   ├── study/              # study-session, study-summary, study-list, learn-session
-│   ├── cards/              # card-browser, card-editor
-│   ├── import/             # import-wizard
+│   ├── decks/              
+│   ├── study/
+│   ├── cards/
+│   ├── import/
 │   └── settings/
 ├── shared/
-│   ├── components/         # empty-state, confirm-dialog, …
-│   └── pipes/              # relative-date
+│   ├── components/
+│   └── pipes/
 ├── app.routes.ts
 ├── app.config.ts
 └── app.component.ts
@@ -149,11 +144,11 @@ interface Deck {
 interface Card {
   id?: number;
   deckId: number;
-  question: string;   // markdown + optional fenced code
+  question: string;
   answer: string;
-  notes?: string;     // hidden during review by default
+  notes?: string;
   tags: string[];
-  nextSession: number;  // 0 = new / always due until first successful rating
+  nextSession: number;
   lastReviewedAt?: Date;
 }
 ```
@@ -177,7 +172,7 @@ Configurable session offsets: `hardInterval`, `goodInterval`, `easyInterval` (de
 | `reviewLogs` | `++id`, `cardId`, `deckId`, `reviewedAt` | |
 | `settings` | `++id` | Singleton row pattern |
 
-`deleteDeck` runs in a transaction: review logs → cards → deck.
+`deleteDeck` runs in a transaction: review logs -> cards -> deck.
 
 **Due cards query:** `nextSession <= deck.sessionCount` (includes new cards at `nextSession === 0`).
 
@@ -232,8 +227,8 @@ This separates **fast UI feedback** from **async persistence** at the component 
 `ImportService` wraps PapaParse and enforces schema rules:
 
 - `.csv` only; required `question` + `answer` columns
-- Unknown columns → warning, ignored
-- Empty question/answer rows → skipped with reason
+- Unknown columns -> warning, ignored
+- Empty question/answer rows -> skipped with reason
 - Tags sanitized, never fail the file
 
 The wizard shows a preview and `ImportResult` (`imported`, `skipped`, `warnings`) before `DbService.bulkAddCards()` on confirm.

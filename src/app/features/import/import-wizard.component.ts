@@ -117,7 +117,7 @@ import { MatStepperModule } from '@angular/material/stepper';
               @for (col of columnMap; track col[0]) {
                 <mat-chip>
                   <mat-icon matChipAvatar>check</mat-icon>
-                  {{ col[0] }} → {{ col[1] }}
+                  {{ col[0] }} -> {{ col[1] }}
                 </mat-chip>
               }
             </mat-chip-set>
