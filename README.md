@@ -4,6 +4,8 @@
 [![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular)](https://angular.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Conventional Commits](https://img.shields.io/badge/commits-conventional-FE5196?style=flat-square&logo=conventionalcommits&logoColor=white)](https://www.conventionalcommits.org)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black)](https://prettier.io)
 
 Offline-first flashcard PWA for developers preparing for technical interviews. Import CSV decks, study with session-based scheduling, and keep all data on your device — no account, no backend.
 
@@ -29,7 +31,6 @@ Anki is powerful but heavy. DevFlash focuses on one workflow: review programming
 
 Built as a portfolio-quality Angular 21 app with deliberate architecture boundaries:
 
-- **Zoneless change detection** — `provideZonelessChangeDetection()` for signal-driven updates without Zone.js overhead
 - **Standalone components** — no NgModules; lazy-loaded feature routes
 - **Signal-native UI** — `input()` / `output()` / `signal()` / `computed()` throughout features
 - **Layered services** — `DbService` owns all persistence; `SchedulerService` is pure scheduling logic; features stay presentational
@@ -56,6 +57,62 @@ See **[Architecture](docs/ARCHITECTURE.md)** for diagrams, data flow, and design
 | CSV | PapaParse + `ImportService` validation |
 | Markdown / code | marked.js, highlight.js (integration in progress) |
 | Package manager | pnpm |
+
+---
+
+## Code quality
+
+DevFlash enforces consistent quality at every commit through an automated toolchain — no manual steps required.
+
+### Formatting — Prettier + lint-staged
+
+[Prettier](https://prettier.io) is configured with project-wide rules (`.prettierrc`). A Husky pre-commit hook runs [lint-staged](https://github.com/lint-staged/lint-staged) automatically, so only the files you actually changed are formatted before they land in git — keeping commits fast without skipping anything.
+
+```bash
+# Format the entire codebase manually
+pnpm format
+```
+
+### Commit convention — Conventional Commits
+
+Every commit is validated by [commitlint](https://commitlint.js.org) against the [Conventional Commits](https://www.conventionalcommits.org) spec. A malformed message is rejected before it reaches the repository.
+
+```
+<type>(<scope>): <short description>
+
+feat(study): add progress bar to session
+fix(db): handle missing deck on delete
+refactor(srs): simplify interval calculation
+chore: upgrade angular to 21.3
+```
+
+| Type | When to use |
+|------|-------------|
+| `feat` | New feature visible to the user |
+| `fix` | Bug fix |
+| `refactor` | Code change that is neither a fix nor a feature |
+| `chore` | Tooling, dependencies, configuration |
+| `style` | Formatting or whitespace only |
+| `docs` | Documentation changes |
+| `test` | Adding or correcting tests |
+| `perf` | Performance improvement |
+
+### Interactive commit prompt
+
+Not sure which type fits? Run the guided prompt instead of `git commit`:
+
+```bash
+pnpm commit
+```
+
+[Commitizen](https://commitizen-tools.github.io/commitizen/) walks you through type -> scope -> description step by step and produces a valid message automatically.
+
+### Pre-commit summary
+
+| Hook | Trigger | What it does |
+|------|---------|--------------|
+| `pre-commit` | `git commit` | Runs Prettier on staged files via lint-staged |
+| `commit-msg` | `git commit` | Validates message format with commitlint |
 
 ---
 
