@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -26,5 +26,6 @@ import { MatIconModule } from '@angular/material/icon';
     </nav>
   `,
   styleUrl: './bottom-nav.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BottomNavComponent { }
+export class BottomNavComponent {}

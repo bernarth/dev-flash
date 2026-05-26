@@ -34,9 +34,11 @@ import { MatStepperModule } from '@angular/material/stepper';
       <span>Import cards</span>
     </mat-toolbar>
 
-    <!-- Header-only stepper — content is rendered below in .content -->
-    <mat-stepper class="wizard-stepper" [selectedIndex]="step() - 1"
-                 (selectionChange)="onStepperChange($event.selectedIndex + 1)">
+    <mat-stepper
+      class="wizard-stepper"
+      [selectedIndex]="step() - 1"
+      (selectionChange)="onStepperChange($event.selectedIndex + 1)"
+    >
       <mat-step label="Upload" [completed]="step() > 1"></mat-step>
       <mat-step label="Preview" [completed]="step() > 2"></mat-step>
       <mat-step label="Import"></mat-step>
@@ -47,11 +49,16 @@ import { MatStepperModule } from '@angular/material/stepper';
         @case (1) {
           <div class="step-content">
             <div class="step-title">Upload a CSV</div>
-            <div class="step-sub">Columns: <span class="df-mono">question, answer, tags, notes</span></div>
+            <div class="step-sub">
+              Columns: <span class="df-mono">question, answer, tags, notes</span>
+            </div>
 
             <mat-form-field appearance="outline">
               <mat-label>Target deck</mat-label>
-              <mat-select [value]="selectedDeckId()" (selectionChange)="selectedDeckId.set($event.value)">
+              <mat-select
+                [value]="selectedDeckId()"
+                (selectionChange)="selectedDeckId.set($event.value)"
+              >
                 @for (deck of decks(); track deck.id) {
                   <mat-option [value]="deck.id">{{ deck.name }}</mat-option>
                 }
@@ -59,12 +66,20 @@ import { MatStepperModule } from '@angular/material/stepper';
             </mat-form-field>
 
             @if (!selectedFile()) {
-              <label class="drop-zone" tabindex="0"
-                     [class.drag-over]="dragOver()"
-                     (dragover)="$event.preventDefault(); dragOver.set(true)"
-                     (dragleave)="dragOver.set(false)"
-                     (drop)="onDrop($event); dragOver.set(false)">
-                <input type="file" accept=".csv" class="visually-hidden" (change)="onFileSelect($event)" />
+              <label
+                class="drop-zone"
+                tabindex="0"
+                [class.drag-over]="dragOver()"
+                (dragover)="$event.preventDefault(); dragOver.set(true)"
+                (dragleave)="dragOver.set(false)"
+                (drop)="onDrop($event); dragOver.set(false)"
+              >
+                <input
+                  type="file"
+                  accept=".csv"
+                  class="visually-hidden"
+                  (change)="onFileSelect($event)"
+                />
                 <mat-icon>upload_file</mat-icon>
                 <div>Drop a .csv file here</div>
                 <div class="drop-sub">or tap to browse</div>
@@ -141,19 +156,25 @@ import { MatStepperModule } from '@angular/material/stepper';
             <div class="import-success">
               <mat-icon class="success-check-icon">check_circle</mat-icon>
               <div class="success-title">Imported</div>
-              <div class="success-sub">Added to <strong>{{ targetDeckName() }}</strong></div>
+              <div class="success-sub">
+                Added to <strong>{{ targetDeckName() }}</strong>
+              </div>
             </div>
 
             <div class="import-stats">
               <mat-card appearance="outlined">
                 <mat-card-content class="stat-box">
-                  <div class="df-mono stat-num good">{{ importResult() ? importResult()!.imported.length : 0 }}</div>
+                  <div class="df-mono stat-num good">
+                    {{ importResult() ? importResult()!.imported.length : 0 }}
+                  </div>
                   <div class="stat-label">imported</div>
                 </mat-card-content>
               </mat-card>
               <mat-card appearance="outlined">
                 <mat-card-content class="stat-box">
-                  <div class="df-mono stat-num hard">{{ importResult() ? importResult()!.skipped.length : 0 }}</div>
+                  <div class="df-mono stat-num hard">
+                    {{ importResult() ? importResult()!.skipped.length : 0 }}
+                  </div>
                   <div class="stat-label">skipped</div>
                 </mat-card-content>
               </mat-card>
@@ -191,7 +212,11 @@ import { MatStepperModule } from '@angular/material/stepper';
       }
       @if (step() < 3) {
         <button mat-flat-button class="next-btn" [disabled]="!canAdvance()" (click)="nextStep()">
-          {{ step() === 2 ? 'Import ' + (importResult() ? importResult()!.imported.length : '') + ' cards' : 'Continue' }}
+          {{
+            step() === 2
+              ? 'Import ' + (importResult() ? importResult()!.imported.length : '') + ' cards'
+              : 'Continue'
+          }}
         </button>
       } @else {
         <button mat-flat-button class="next-btn" (click)="done()">Done</button>
@@ -228,9 +253,13 @@ export class ImportWizardComponent implements OnInit {
   ];
 
   previewRows = computed(() => {
-    const r = this.importResult();
-    if (!r) return [];
-    return r.imported.slice(0, 5).map((c) => ({
+    const result = this.importResult();
+
+    if (!result) {
+      return [];
+    }
+
+    return result.imported.slice(0, 5).map((c) => ({
       question: c.question,
       answer: c.answer,
       tags: c.tags.join(','),
@@ -238,13 +267,20 @@ export class ImportWizardComponent implements OnInit {
   });
 
   targetDeckName = computed(() => {
-    const d = this.decks().find((d) => d.id === this.selectedDeckId());
-    return d?.name ?? '';
+    const decks = this.decks().find((d) => d.id === this.selectedDeckId());
+
+    return decks?.name ?? '';
   });
 
   canAdvance = computed(() => {
-    if (this.step() === 1) return !!this.selectedFile() && this.selectedDeckId() > 0;
-    if (this.step() === 2) return !!this.importResult();
+    if (this.step() === 1) {
+      return !!this.selectedFile() && this.selectedDeckId() > 0;
+    }
+
+    if (this.step() === 2) {
+      return !!this.importResult();
+    }
+
     return true;
   });
 
@@ -256,12 +292,18 @@ export class ImportWizardComponent implements OnInit {
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (!file) return;
+
+    if (!file) {
+      return;
+    }
+
     if (!file.name.toLowerCase().endsWith('.csv')) {
       this.error.set('Only .csv files are accepted.');
       input.value = '';
+
       return;
     }
+
     this.selectedFile.set(file);
     this.error.set('');
   }
@@ -269,11 +311,13 @@ export class ImportWizardComponent implements OnInit {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     const file = event.dataTransfer?.files[0];
+
     if (!file) return;
     if (!file.name.toLowerCase().endsWith('.csv')) {
       this.error.set('Only .csv files are accepted.');
       return;
     }
+
     this.selectedFile.set(file);
     this.error.set('');
   }
@@ -291,7 +335,9 @@ export class ImportWizardComponent implements OnInit {
   }
 
   onStepperChange(newStep: number): void {
-    if (newStep < this.step()) this.step.set(newStep);
+    if (newStep < this.step()) {
+      this.step.set(newStep);
+    }
   }
 
   private async parseFile(): Promise<void> {

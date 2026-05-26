@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,7 @@ import { DeckService } from '@core/services/deck.service';
   ],
   templateUrl: './study-list.component.html',
   styleUrl: './study-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudyListComponent {
   private readonly router = inject(Router);
