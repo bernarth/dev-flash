@@ -4,13 +4,33 @@ import { DbService } from './db.service';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  private db = inject(DbService);
+  private readonly db = inject(DbService);
 
   getSettings(): Promise<AppSettings> {
     return this.db.getSettings();
   }
 
-  save(settings: AppSettings): void {
-    void this.db.saveSettings(settings);
+  async save(settings: AppSettings): Promise<void> {
+    await this.db.saveSettings(settings);
+  }
+
+  async getStorageUsedInKb(): Promise<number> {
+    const { usage } = await this.db.getStorageEstimate();
+
+    return (usage ?? 0) / 1024;
+  }
+
+  async getStorageBreakdown(): Promise<{ label: string; value: string }[]> {
+    const [deckCount, cardCount, reviewCount] = await Promise.all([
+      this.db.getDeckCountAll(),
+      this.db.getCardCountAll(),
+      this.db.getReviewLogCountAll(),
+    ]);
+
+    return [
+      { label: 'Decks', value: `${deckCount} deck${deckCount !== 1 ? 's' : ''}` },
+      { label: 'Cards', value: `${cardCount} card${cardCount !== 1 ? 's' : ''}` },
+      { label: 'Review log', value: `${reviewCount} entr${reviewCount !== 1 ? 'ies' : 'y'}` },
+    ];
   }
 }

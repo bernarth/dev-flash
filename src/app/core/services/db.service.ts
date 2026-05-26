@@ -117,8 +117,10 @@ export class DbService {
   async getStorageEstimate(): Promise<{ usage: number; quota: number }> {
     if ('storage' in navigator && 'estimate' in navigator.storage) {
       const est = await navigator.storage.estimate();
+
       return { usage: est.usage ?? 0, quota: est.quota ?? 0 };
     }
+
     return { usage: 0, quota: 0 };
   }
 

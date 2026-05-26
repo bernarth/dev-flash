@@ -23,13 +23,13 @@
   background: var(--mat-sys-surface);
 }
 
-@media (max-width: 47.9375rem) {
+@media (max-width: 767px) {
   .app-shell {
     flex-direction: column;
   }
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 768px) {
   .app-shell {
     flex-direction: row;
   }
