@@ -152,26 +152,26 @@ export class StudySummaryComponent implements OnInit {
   logs = signal<ReviewLog[]>([]);
 
   breakdown = computed(() => {
-    const ls = this.logs();
-    const count = (r: Rating) => ls.filter((l) => l.rating === r).length;
+    const logs = this.logs();
+    const count = (r: Rating) => logs.filter((l) => l.rating === r).length;
     return RATING_CONFIG.map((r) => ({ ...r, count: count(r.key) }));
   });
 
   total = computed(() => this.logs().length);
 
   breakdownWithPct = computed(() => {
-    const t = this.total();
+    const total = this.total();
     return this.breakdown().map((r) => ({
       ...r,
-      pct: t ? Math.round((r.count / t) * 100) : 0,
+      pct: total ? Math.round((r.count / total) * 100) : 0,
     }));
   });
 
   retentionPct = computed(() => {
-    const t = this.total();
-    if (!t) return 0;
+    const total = this.total();
+    if (!total) return 0;
     const good = this.logs().filter((l) => l.rating === 'good' || l.rating === 'easy').length;
-    return Math.round((good / t) * 100);
+    return Math.round((good / total) * 100);
   });
 
   async ngOnInit(): Promise<void> {

@@ -37,8 +37,9 @@ export class StudyListComponent {
     this.router.navigate(['/decks', deckId, 'study']);
   }
 
-  async restartDeck(item: DeckStudyInfo): Promise<void> {
-    await this.deckService.restartDeck(item.deck.id!, item.deck.sessionCount);
-    this.decks.reload();
+  restartDeck(item: DeckStudyInfo): void {
+    this.deckService
+      .restartDeck(item.deck.id!, item.deck.sessionCount)
+      .then(() => this.decks.reload());
   }
 }
