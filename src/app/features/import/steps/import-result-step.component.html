@@ -1,0 +1,46 @@
+<div class="step-content">
+  <div class="import-success">
+    <mat-icon class="success-check-icon">check_circle</mat-icon>
+    <div class="success-title">Imported</div>
+    <div class="success-sub">
+      Added to <strong>{{ deckName() }}</strong>
+    </div>
+  </div>
+
+  <div class="import-stats">
+    <mat-card appearance="outlined">
+      <mat-card-content class="stat-box">
+        <div class="df-mono stat-num good">{{ result().imported.length }}</div>
+        <div class="stat-label">imported</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card appearance="outlined">
+      <mat-card-content class="stat-box">
+        <div class="df-mono stat-num hard">{{ result().skipped.length }}</div>
+        <div class="stat-label">skipped</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card appearance="outlined">
+      <mat-card-content class="stat-box">
+        <div class="df-mono stat-num">0</div>
+        <div class="stat-label">errors</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (result().skipped.length) {
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Skipped rows</mat-card-title>
+      </mat-card-header>
+      <mat-list>
+        @for (s of result().skipped; track s.row) {
+          <mat-list-item>
+            <span matListItemIcon class="df-mono skip-rownum">row {{ s.row }}</span>
+            <span matListItemTitle>{{ s.reason }}</span>
+          </mat-list-item>
+        }
+      </mat-list>
+    </mat-card>
+  }
+</div>

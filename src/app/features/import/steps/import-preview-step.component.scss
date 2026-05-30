@@ -1,0 +1,36 @@
+.step-content {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.step-title {
+  font-size: var(--df-font-size-md);
+  font-weight: var(--df-font-weight-semibold);
+}
+
+.step-sub {
+  font-size: var(--df-font-size-sm);
+  opacity: 0.6;
+}
+
+.preview-header-row {
+  opacity: 0.5;
+  font-size: var(--df-font-size-xs);
+}
+
+.preview-row-num {
+  font-size: var(--df-font-size-xs);
+  width: 2rem;
+  min-width: 2rem;
+}
+
+.preview-tags {
+  color: var(--mat-sys-primary);
+}
+
+.warn-msg {
+  font-size: var(--df-font-size-xs);
+  opacity: 0.6;
+}

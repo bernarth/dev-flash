@@ -1,0 +1,49 @@
+<div class="step-content">
+  <div class="step-title">Upload a CSV</div>
+  <div class="step-sub">Columns: <span class="df-mono">question, answer, tags, notes</span></div>
+
+  @if (!hasDeckContext()) {
+    <mat-form-field appearance="outline">
+      <mat-label>Target deck</mat-label>
+      <mat-select [value]="selectedDeckId()" (selectionChange)="onDeckChange($event.value)">
+        @for (deck of decks(); track deck.id) {
+          <mat-option [value]="deck.id">{{ deck.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+
+  @if (!selectedFile()) {
+    <label
+      class="drop-zone"
+      tabindex="0"
+      [class.drag-over]="dragOver()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()"
+      (drop)="onDrop($event)"
+    >
+      <input type="file" accept=".csv" class="visually-hidden" (change)="onFileSelect($event)" />
+      <mat-icon>upload_file</mat-icon>
+      <div>Drop a .csv file here</div>
+      <div class="drop-sub">or tap to browse</div>
+      <span class="choose-btn">Choose file</span>
+    </label>
+  } @else {
+    <mat-card appearance="outlined">
+      <mat-card-content class="file-preview">
+        <mat-icon>insert_drive_file</mat-icon>
+        <div class="file-info">
+          <div class="df-mono file-name">{{ selectedFile()!.name }}</div>
+          <div class="file-size">{{ formatSize(selectedFile()!.size) }}</div>
+        </div>
+        <button mat-icon-button aria-label="Remove file" (click)="clearFile()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (error()) {
+    <div class="error-msg">{{ error() }}</div>
+  }
+</div>

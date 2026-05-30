@@ -1,0 +1,65 @@
+.step-content {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.import-success {
+  text-align: center;
+  padding: 1rem 0 0.75rem;
+}
+
+.success-check-icon {
+  font-size: var(--df-icon-size-display);
+  width: var(--df-icon-size-display);
+  height: var(--df-icon-size-display);
+  color: var(--mat-sys-primary);
+}
+
+.success-title {
+  font-size: var(--df-font-size-xl);
+  font-weight: var(--df-font-weight-semibold);
+  margin-top: 0.5rem;
+}
+
+.success-sub {
+  font-size: var(--df-font-size-sm);
+  opacity: 0.6;
+  margin-top: 0.25rem;
+}
+
+.import-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.stat-box {
+  text-align: center;
+  padding: 0.25rem 0 !important;
+}
+
+.stat-num {
+  font-size: var(--df-font-size-xl);
+  font-weight: var(--df-font-weight-semibold);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: var(--df-font-size-xs);
+  opacity: 0.6;
+  margin-top: 0.25rem;
+}
+
+.good {
+  color: var(--df-good);
+}
+
+.hard {
+  color: var(--df-hard);
+}
+
+.skip-rownum {
+  font-size: var(--df-font-size-xs);
+}

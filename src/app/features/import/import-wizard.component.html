@@ -1,0 +1,53 @@
+<mat-toolbar>
+  <button mat-icon-button (click)="cancel()" aria-label="Cancel import">
+    <mat-icon>close</mat-icon>
+  </button>
+  <span>Import cards</span>
+</mat-toolbar>
+
+<mat-stepper
+  class="wizard-stepper"
+  [selectedIndex]="step() - 1"
+  (selectionChange)="onStepperChange($event.selectedIndex + 1)"
+>
+  <mat-step label="Upload" [completed]="step() > 1"></mat-step>
+  <mat-step label="Preview" [completed]="step() > 2"></mat-step>
+  <mat-step label="Import"></mat-step>
+</mat-stepper>
+
+<div class="content">
+  @switch (step()) {
+    @case (1) {
+      <df-import-upload-step
+        [decks]="decks.value() ?? []"
+        [hasDeckContext]="hasDeckContext()"
+        [(selectedDeckId)]="selectedDeckId"
+        [(selectedFile)]="selectedFile"
+        [(error)]="error"
+      />
+    }
+    @case (2) {
+      @if (importResult(); as result) {
+        <df-import-preview-step [result]="result" />
+      }
+    }
+    @case (3) {
+      @if (importResult(); as result) {
+        <df-import-result-step [result]="result" [deckName]="targetDeckName()" />
+      }
+    }
+  }
+</div>
+
+<div class="footer">
+  @if (step() === 2) {
+    <button mat-stroked-button class="back-btn" (click)="prevStep()">Back</button>
+  }
+  @if (step() < 3) {
+    <button mat-flat-button class="next-btn" [disabled]="!canAdvance()" (click)="nextStep()">
+      {{ continueLabel() }}
+    </button>
+  } @else {
+    <button mat-flat-button class="next-btn" (click)="done()">Done</button>
+  }
+</div>

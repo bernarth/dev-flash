@@ -1,339 +1,84 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ImportService, ImportResult } from '@services/import.service';
-import { DbService } from '@services/db.service';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+  resource,
+  signal,
+} from '@angular/core';
+import { Router } from '@angular/router';
 import { Deck } from '@models';
+import { DeckService } from '@core/services/deck.service';
+import { ImportResult, ImportService } from '@services/import.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
-import { choose } from '@core/utils/utils';
+import { ImportUploadStepComponent } from './steps/import-upload-step.component';
+import { ImportPreviewStepComponent } from './steps/import-preview-step.component';
+import { ImportResultStepComponent } from './steps/import-result-step.component';
 
 @Component({
   selector: 'df-import-wizard',
   imports: [
     MatIconModule,
     MatToolbarModule,
-    MatChipsModule,
-    MatCardModule,
-    MatListModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatSelectModule,
     MatStepperModule,
+    ImportUploadStepComponent,
+    ImportPreviewStepComponent,
+    ImportResultStepComponent,
   ],
-  template: `
-    <mat-toolbar>
-      <button mat-icon-button (click)="cancel()" aria-label="Cancel import">
-        <mat-icon>close</mat-icon>
-      </button>
-      <span>Import cards</span>
-    </mat-toolbar>
-
-    <mat-stepper
-      class="wizard-stepper"
-      [selectedIndex]="step() - 1"
-      (selectionChange)="onStepperChange($event.selectedIndex + 1)"
-    >
-      <mat-step label="Upload" [completed]="step() > 1"></mat-step>
-      <mat-step label="Preview" [completed]="step() > 2"></mat-step>
-      <mat-step label="Import"></mat-step>
-    </mat-stepper>
-
-    <div class="content">
-      @switch (step()) {
-        @case (1) {
-          <div class="step-content">
-            <div class="step-title">Upload a CSV</div>
-            <div class="step-sub">
-              Columns: <span class="df-mono">question, answer, tags, notes</span>
-            </div>
-
-            @if (!hasDeckContext()) {
-              <mat-form-field appearance="outline">
-                <mat-label>Target deck</mat-label>
-                <mat-select
-                  [value]="selectedDeckId()"
-                  (selectionChange)="selectedDeckId.set($event.value)"
-                >
-                  @for (deck of decks(); track deck.id) {
-                    <mat-option [value]="deck.id">{{ deck.name }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            }
-
-            @if (!selectedFile()) {
-              <label
-                class="drop-zone"
-                tabindex="0"
-                [class.drag-over]="dragOver()"
-                (dragover)="$event.preventDefault(); dragOver.set(true)"
-                (dragleave)="dragOver.set(false)"
-                (drop)="onDrop($event); dragOver.set(false)"
-              >
-                <input
-                  type="file"
-                  accept=".csv"
-                  class="visually-hidden"
-                  (change)="onFileSelect($event)"
-                />
-                <mat-icon>upload_file</mat-icon>
-                <div>Drop a .csv file here</div>
-                <div class="drop-sub">or tap to browse</div>
-                <span class="choose-btn">Choose file</span>
-              </label>
-            }
-
-            @if (selectedFile()) {
-              <mat-card appearance="outlined">
-                <mat-card-content class="file-preview">
-                  <mat-icon>insert_drive_file</mat-icon>
-                  <div class="file-info">
-                    <div class="df-mono file-name">{{ selectedFile()!.name }}</div>
-                    <div class="file-size">{{ formatSize(selectedFile()!.size) }}</div>
-                  </div>
-                  <button mat-icon-button aria-label="Remove file" (click)="clearFile()">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </mat-card-content>
-              </mat-card>
-            }
-
-            @if (error()) {
-              <div class="error-msg">{{ error() }}</div>
-            }
-          </div>
-        }
-
-        @case (2) {
-          <div class="step-content">
-            <div class="step-title">Preview</div>
-            <div class="step-sub">First 5 rows · column mapping looks good</div>
-
-            <mat-chip-set>
-              @for (col of columnMap; track col[0]) {
-                <mat-chip>
-                  <mat-icon matChipAvatar>check</mat-icon>
-                  {{ col[0] }} -> {{ col[1] }}
-                </mat-chip>
-              }
-            </mat-chip-set>
-
-            <mat-card appearance="outlined">
-              <mat-list>
-                <mat-list-item class="preview-header-row">
-                  <span class="preview-row-num df-mono" matListItemIcon>#</span>
-                  <span matListItemTitle>question / answer / tags</span>
-                </mat-list-item>
-                @for (row of previewRows(); track $index) {
-                  <mat-list-item>
-                    <span class="preview-row-num df-mono" matListItemIcon>
-                      {{ String($index + 1).padStart(2, '0') }}
-                    </span>
-                    <span matListItemTitle>{{ row.question }}</span>
-                    <span matListItemLine>{{ row.answer }}</span>
-                    @if (row.tags) {
-                      <span matListItemLine class="df-mono preview-tags">
-                        #{{ row.tags.split(',').join(' #') }}
-                      </span>
-                    }
-                  </mat-list-item>
-                }
-              </mat-list>
-            </mat-card>
-
-            @if (importResult() && importResult()!.skipped.length) {
-              <p class="warn-msg">{{ importResult()!.skipped.length }} rows will be skipped</p>
-            }
-          </div>
-        }
-
-        @case (3) {
-          <div class="step-content">
-            <div class="import-success">
-              <mat-icon class="success-check-icon">check_circle</mat-icon>
-              <div class="success-title">Imported</div>
-              <div class="success-sub">
-                Added to <strong>{{ targetDeckName() }}</strong>
-              </div>
-            </div>
-
-            <div class="import-stats">
-              <mat-card appearance="outlined">
-                <mat-card-content class="stat-box">
-                  <div class="df-mono stat-num good">
-                    {{ importResult() ? importResult()!.imported.length : 0 }}
-                  </div>
-                  <div class="stat-label">imported</div>
-                </mat-card-content>
-              </mat-card>
-              <mat-card appearance="outlined">
-                <mat-card-content class="stat-box">
-                  <div class="df-mono stat-num hard">
-                    {{ importResult() ? importResult()!.skipped.length : 0 }}
-                  </div>
-                  <div class="stat-label">skipped</div>
-                </mat-card-content>
-              </mat-card>
-              <mat-card appearance="outlined">
-                <mat-card-content class="stat-box">
-                  <div class="df-mono stat-num">0</div>
-                  <div class="stat-label">errors</div>
-                </mat-card-content>
-              </mat-card>
-            </div>
-
-            @if (importResult() && importResult()!.skipped.length) {
-              <mat-card appearance="outlined">
-                <mat-card-header>
-                  <mat-card-title>Skipped rows</mat-card-title>
-                </mat-card-header>
-                <mat-list>
-                  @for (s of importResult()!.skipped; track s.row) {
-                    <mat-list-item>
-                      <span matListItemIcon class="df-mono skip-rownum">row {{ s.row }}</span>
-                      <span matListItemTitle>{{ s.reason }}</span>
-                    </mat-list-item>
-                  }
-                </mat-list>
-              </mat-card>
-            }
-          </div>
-        }
-      }
-    </div>
-
-    <div class="footer">
-      @if (step() === 2) {
-        <button mat-stroked-button class="back-btn" (click)="prevStep()">Back</button>
-      }
-      @if (step() < 3) {
-        <button mat-flat-button class="next-btn" [disabled]="!canAdvance()" (click)="nextStep()">
-          {{
-            step() === 2
-              ? 'Import ' + (importResult() ? importResult()!.imported.length : '') + ' cards'
-              : 'Continue'
-          }}
-        </button>
-      } @else {
-        <button mat-flat-button class="next-btn" (click)="done()">Done</button>
-      }
-    </div>
-  `,
+  templateUrl: './import-wizard.component.html',
   styleUrl: './import-wizard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImportWizardComponent implements OnInit {
-  protected String = String;
+export class ImportWizardComponent {
+  private readonly importService = inject(ImportService);
+  private readonly deckService = inject(DeckService);
+  private readonly router = inject(Router);
 
-  private importService = inject(ImportService);
-  private db = inject(DbService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-
-  decks = signal<Deck[]>([]);
-  hasDeckContext = signal(false);
-
-  async ngOnInit(): Promise<void> {
-    const routeDeckId = Number(this.route.snapshot.paramMap.get('id'));
-    if (routeDeckId) {
-      this.selectedDeckId.set(routeDeckId);
-      this.hasDeckContext.set(true);
-    }
-    this.decks.set(await this.db.getAllDecks());
-  }
-
-  step = signal(1);
-  selectedDeckId = signal(0);
-  selectedFile = signal<File | null>(null);
-  importResult = signal<ImportResult | null>(null);
-  error = signal('');
-  dragOver = signal(false);
-
-  readonly columnMap = [
-    ['question', 'Question'],
-    ['answer', 'Answer'],
-    ['tags', 'Tags'],
-    ['notes', 'Notes'],
-  ];
-
-  previewRows = computed(() => {
-    const result = this.importResult();
-
-    if (!result) {
-      return [];
-    }
-
-    return result.imported.slice(0, 5).map((c) => ({
-      question: c.question,
-      answer: c.answer,
-      tags: c.tags.join(','),
-    }));
+  protected readonly id = input(0, {
+    transform: (value: string | number | null | undefined) => Number(value) || 0,
   });
 
-  targetDeckName = computed(() => {
-    const decks = this.decks().find((d) => d.id === this.selectedDeckId());
+  protected readonly hasDeckContext = computed(() => this.id() > 0);
 
-    return decks?.name ?? '';
+  protected readonly decks = resource<Deck[], unknown>({
+    loader: () => this.deckService.getAllDecks(),
   });
 
-  canAdvance = computed(() => {
-    if (this.step() === 1) {
+  protected readonly step = signal(1);
+  protected readonly selectedFile = signal<File | null>(null);
+  protected readonly importResult = signal<ImportResult | null>(null);
+  protected readonly error = signal('');
+
+  protected readonly selectedDeckId = linkedSignal(() => this.id());
+
+  protected readonly targetDeckName = computed(
+    () => (this.decks.value() ?? []).find((d) => d.id === this.selectedDeckId())?.name ?? '',
+  );
+
+  protected readonly canAdvance = computed(() => {
+    const current = this.step();
+    if (current === 1) {
       return !!this.selectedFile() && this.selectedDeckId() > 0;
     }
-
-    if (this.step() === 2) {
+    if (current === 2) {
       return !!this.importResult();
     }
-
     return true;
   });
 
-  clearFile(): void {
-    this.selectedFile.set(null);
-    this.error.set('');
-  }
-
-  onFileSelect(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-
-    if (!file) {
-      return;
+  protected readonly continueLabel = computed(() => {
+    if (this.step() !== 2) {
+      return 'Continue';
     }
-
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      this.error.set('Only .csv files are accepted.');
-      input.value = '';
-
-      return;
-    }
-
-    this.selectedFile.set(file);
-    this.error.set('');
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    const file = event.dataTransfer?.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      this.error.set('Only .csv files are accepted.');
-      return;
-    }
-
-    this.selectedFile.set(file);
-    this.error.set('');
-  }
+    const count = this.importResult()?.imported.length ?? 0;
+    return `Import ${count} cards`;
+  });
 
   async nextStep(): Promise<void> {
     if (this.step() === 1) {
@@ -351,6 +96,14 @@ export class ImportWizardComponent implements OnInit {
     if (newStep < this.step()) {
       this.step.set(newStep);
     }
+  }
+
+  cancel(): void {
+    this.navigateBack();
+  }
+
+  done(): void {
+    this.navigateBack();
   }
 
   private async parseFile(): Promise<void> {
@@ -376,33 +129,15 @@ export class ImportWizardComponent implements OnInit {
       return;
     }
 
-    await this.db.bulkAddCards(result.imported);
+    await this.importService.bulkImport(result.imported);
     this.step.set(3);
-  }
-
-  formatSize(bytes: number): string {
-    return choose(
-      [
-        { when: bytes < 1024, value: `${bytes} B` },
-        { when: bytes < 1024 * 1024, value: `${(bytes / 1024).toFixed(1)} KB` },
-      ],
-      `${(bytes / (1024 * 1024)).toFixed(1)} MB`,
-    );
-  }
-
-  cancel(): void {
-    this.navigateBack();
-  }
-
-  done(): void {
-    this.navigateBack();
   }
 
   private navigateBack(): void {
     if (this.hasDeckContext()) {
-      this.router.navigate(['/decks', this.selectedDeckId(), 'browse']);
+      void this.router.navigate(['/decks', this.id(), 'browse']);
     } else {
-      this.router.navigate(['/decks']);
+      void this.router.navigate(['/decks']);
     }
   }
 }

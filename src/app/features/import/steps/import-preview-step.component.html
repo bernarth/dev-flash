@@ -1,0 +1,38 @@
+<div class="step-content">
+  <div class="step-title">Preview</div>
+  <div class="step-sub">First 5 rows · column mapping looks good</div>
+
+  <mat-chip-set>
+    @for (col of columnMap; track col[0]) {
+      <mat-chip>
+        <mat-icon matChipAvatar>check</mat-icon>
+        {{ col[0] }} -> {{ col[1] }}
+      </mat-chip>
+    }
+  </mat-chip-set>
+
+  <mat-card appearance="outlined">
+    <mat-list>
+      <mat-list-item class="preview-header-row">
+        <span class="preview-row-num df-mono" matListItemIcon>#</span>
+        <span matListItemTitle>question / answer / tags</span>
+      </mat-list-item>
+      @for (row of previewRows(); track row.index) {
+        <mat-list-item>
+          <span class="preview-row-num df-mono" matListItemIcon>{{ row.index }}</span>
+          <span matListItemTitle>{{ row.question }}</span>
+          <span matListItemLine>{{ row.answer }}</span>
+          @if (row.tags) {
+            <span matListItemLine class="df-mono preview-tags">
+              #{{ row.tags.split(',').join(' #') }}
+            </span>
+          }
+        </mat-list-item>
+      }
+    </mat-list>
+  </mat-card>
+
+  @if (result().skipped.length) {
+    <p class="warn-msg">{{ result().skipped.length }} rows will be skipped</p>
+  }
+</div>
