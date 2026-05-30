@@ -19,6 +19,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { DeckService } from '@core/services/deck.service';
+import { CardService } from '@core/services/card.service';
 import { ReviewLogsService } from '@core/services/review-logs.service';
 
 @Component({
@@ -309,6 +310,7 @@ import { ReviewLogsService } from '@core/services/review-logs.service';
 export class StudySessionComponent {
   private router = inject(Router);
   private deckService = inject(DeckService);
+  private cardService = inject(CardService);
   private settingsService = inject(SettingsService);
   private reviewLogsService = inject(ReviewLogsService);
   private scheduler = inject(SchedulerService);
@@ -327,7 +329,7 @@ export class StudySessionComponent {
 
   protected readonly queue = resource<Card[], { deckId: number; currentSession: number }>({
     params: () => ({ deckId: this.deck().id, currentSession: this.deck().sessionCount }),
-    loader: ({ params }) => this.deckService.getDueCards(params.deckId, params.currentSession),
+    loader: ({ params }) => this.cardService.getDueCards(params.deckId, params.currentSession),
   });
 
   currentIdx = signal(0);
@@ -384,7 +386,7 @@ export class StudySessionComponent {
       return;
     }
 
-    void this.deckService.updateCard(
+    void this.cardService.updateCard(
       card.id!,
       this.scheduler.applyRating(rating, this.deckSessionCount(), this.resolvedSettings()),
     );

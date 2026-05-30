@@ -1,0 +1,60 @@
+<mat-toolbar>
+  <button mat-icon-button (click)="goBack()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+  <span>Session complete</span>
+</mat-toolbar>
+
+<div class="content">
+  @if (logs.isLoading()) {
+    <df-spinner />
+  } @else {
+    <div class="hero">
+      <mat-icon class="hero-icon">check_circle</mat-icon>
+      <div class="hero-title">Nice work.</div>
+      <div class="hero-sub">{{ total() }} cards reviewed</div>
+    </div>
+
+    <div class="stats-grid">
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <div class="stat-label">retention</div>
+          <div class="stat-value df-mono">{{ retentionPercent() }}%</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <div class="stat-label">reviewed</div>
+          <div class="stat-value df-mono">{{ total() }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    @if (total() > 0) {
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <div class="seg-bar">
+            @for (r of breakdown(); track r.key) {
+              @if (r.count > 0) {
+                <div [style.flex]="r.count" [style.background]="r.color"></div>
+              }
+            }
+          </div>
+          <mat-list>
+            @for (r of breakdown(); track r.key) {
+              <mat-list-item>
+                <span class="breakdown-dot" matListItemIcon [style.background]="r.color"></span>
+                <span matListItemTitle>{{ r.label }}</span>
+                <span matListItemMeta class="df-mono">{{ r.count }} ({{ r.percent }}%)</span>
+              </mat-list-item>
+            }
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <div class="actions">
+      <button mat-stroked-button (click)="goBack()">Back to study</button>
+    </div>
+  }
+</div>
