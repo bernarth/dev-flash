@@ -1,0 +1,49 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.toolbar-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.subtitle {
+  font-size: var(--df-font-size-xs);
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.search-wrap {
+  padding: 0.5rem 1rem 0;
+  flex-shrink: 0;
+}
+
+.search-field {
+  width: 100%;
+}
+
+.tags-wrap {
+  padding: 0 1rem;
+  flex-shrink: 0;
+}
+
+.results-count {
+  font-size: var(--df-font-size-xs);
+  opacity: 0.5;
+  padding: 0 1rem 0.25rem;
+  margin: 0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.fab {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+}

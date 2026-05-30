@@ -1,0 +1,61 @@
+<mat-toolbar>
+  <button mat-icon-button routerLink="/decks" aria-label="Go back">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="toolbar-title">
+    <span>{{ deck.value()?.name ?? '' }}</span>
+    <span class="subtitle">{{ cards.value()?.length ?? 0 }} cards</span>
+  </div>
+</mat-toolbar>
+
+<div class="search-wrap">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      [value]="query()"
+      (input)="onSearchInput($event)"
+      placeholder="Search cards"
+      aria-label="Search cards"
+    />
+  </mat-form-field>
+</div>
+
+<div class="tags-wrap">
+  <mat-chip-listbox
+    [value]="activeTag()"
+    (change)="activeTag.set($event.value ?? 'All')"
+    aria-label="Filter by tag"
+  >
+    @for (tag of allTags(); track tag) {
+      <mat-chip-option [value]="tag">{{ tag === 'All' ? 'All' : '#' + tag }}</mat-chip-option>
+    }
+  </mat-chip-listbox>
+</div>
+
+<p class="results-count" aria-live="polite">
+  {{ filtered().length }} {{ filtered().length === 1 ? 'result' : 'results' }}
+</p>
+
+<div class="content">
+  @if (cards.isLoading()) {
+    <df-spinner />
+  } @else if (filtered().length === 0) {
+    <df-empty-state title="No cards match" icon="search_off" />
+  } @else {
+    <mat-nav-list>
+      @for (card of filtered(); track card.id) {
+        <mat-list-item (click)="editCard(card)">
+          <span matListItemTitle>{{ card.question }}</span>
+          @if (card.tags.length) {
+            <span matListItemLine>{{ card.tags.map((t) => '#' + t).join(' ') }}</span>
+          }
+        </mat-list-item>
+      }
+    </mat-nav-list>
+  }
+</div>
+
+<button mat-fab class="fab" (click)="openAddSheet()" aria-label="Add cards">
+  <mat-icon>add</mat-icon>
+</button>

@@ -1,7 +1,15 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+  numberAttribute,
+} from '@angular/core';
+import { Router } from '@angular/router';
 import { form, FormField, submit, required } from '@angular/forms/signals';
-import { DbService } from '@services/db.service';
+import { CardService } from '@core/services/card.service';
 import { Card } from '@models';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -10,6 +18,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+
+interface CardFormModel {
+  question: string;
+  answer: string;
+  notes: string;
+}
+
+const EMPTY_CARD_FORM: CardFormModel = { question: '', answer: '', notes: '' };
 
 @Component({
   selector: 'df-card-editor',
@@ -22,162 +38,34 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
     FormField,
   ],
-  template: `
-    <form class="screen" (submit)="$event.preventDefault(); save()">
-      <mat-toolbar>
-        <button mat-icon-button type="button" (click)="cancel()" aria-label="Close">
-          <mat-icon>close</mat-icon>
-        </button>
-        <span>{{ isNew() ? 'New card' : 'Edit card' }}</span>
-        <span class="spacer"></span>
-        <button mat-flat-button type="submit" [disabled]="cardForm().invalid()">
-          <mat-icon>save</mat-icon>
-          Save
-        </button>
-      </mat-toolbar>
-
-      <div class="content">
-        <mat-form-field appearance="outline">
-          <mat-label>Question</mat-label>
-          <textarea
-            matInput
-            [formField]="cardForm.question"
-            rows="3"
-            placeholder="What does… / Explain… / Difference between…"
-          ></textarea>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Answer</mat-label>
-          <textarea
-            matInput
-            class="df-mono"
-            [formField]="cardForm.answer"
-            rows="6"
-            placeholder="The answer…"
-          ></textarea>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Notes</mat-label>
-          <textarea
-            matInput
-            [formField]="cardForm.notes"
-            rows="4"
-            placeholder="Add context, links, gotchas…"
-          ></textarea>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipGrid aria-label="Tags">
-            @for (tag of tags(); track tag) {
-              <mat-chip-row (removed)="removeTag(tag)">
-                #{{ tag }}
-                <button matChipRemove aria-label="Remove tag">
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-chip-row>
-            }
-          </mat-chip-grid>
-          <input
-            placeholder="Add tag…"
-            [matChipInputFor]="chipGrid"
-            [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
-            (matChipInputTokenEnd)="addTagFromInput($event)"
-          />
-        </mat-form-field>
-
-        @if (!isNew()) {
-          <div class="danger-zone">
-            <button mat-stroked-button color="warn" type="button" (click)="deleteCard()">
-              <mat-icon>delete</mat-icon>
-              Delete card
-            </button>
-          </div>
-        }
-      </div>
-    </form>
-  `,
-  styles: [
-    `
-      :host {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-      .screen {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-      .spacer {
-        flex: 1;
-      }
-      .content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-      mat-form-field,
-      mat-expansion-panel {
-        width: 100%;
-      }
-      .full-width {
-        width: 100%;
-      }
-      .danger-zone {
-        display: flex;
-      }
-      .danger-zone button {
-        width: 100%;
-      }
-    `,
-  ],
+  templateUrl: './card-editor.component.html',
+  styleUrl: './card-editor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CardEditorComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private db = inject(DbService);
+export class CardEditorComponent {
+  private readonly router = inject(Router);
+  private readonly cardService = inject(CardService);
 
-  readonly separatorKeyCodes = [ENTER, COMMA] as const;
+  protected readonly separatorKeyCodes = [ENTER, COMMA] as const;
 
-  deckId = signal(0);
-  cardId = signal<number | null>(null);
-  isNew = signal(true);
+  protected readonly id = input.required({ transform: numberAttribute });
+  protected readonly card = input<Card | null>(null);
 
-  cardModel = signal({ question: '', answer: '', notes: '' });
-  cardForm = form(this.cardModel, (s) => {
+  protected readonly isNew = computed(() => this.card() === null);
+
+  protected readonly cardModel = linkedSignal<CardFormModel>(() => {
+    const card = this.card();
+    return card
+      ? { question: card.question, answer: card.answer, notes: card.notes ?? '' }
+      : { ...EMPTY_CARD_FORM };
+  });
+
+  protected readonly cardForm = form(this.cardModel, (s) => {
     required(s.question);
     required(s.answer);
   });
 
-  tags = signal<string[]>([]);
-
-  async ngOnInit(): Promise<void> {
-    const deckId = Number(this.route.snapshot.paramMap.get('id'));
-    const cardIdParam = this.route.snapshot.paramMap.get('cardId');
-    this.deckId.set(deckId);
-
-    if (cardIdParam && cardIdParam !== 'new') {
-      const cardId = Number(cardIdParam);
-      this.cardId.set(cardId);
-      this.isNew.set(false);
-      const card = await this.db.getCard(cardId);
-
-      if (card) {
-        this.cardModel.set({
-          question: card.question,
-          answer: card.answer,
-          notes: card.notes ?? '',
-        });
-        this.tags.set([...card.tags]);
-      }
-    }
-  }
+  protected readonly tags = linkedSignal<string[]>(() => [...(this.card()?.tags ?? [])]);
 
   addTagFromInput(event: MatChipInputEvent): void {
     const value = event.value.trim().replace(/,/g, '').toLowerCase();
@@ -196,24 +84,27 @@ export class CardEditorComponent implements OnInit {
   async save(): Promise<void> {
     const success = await submit(this.cardForm, async () => {
       const { question, answer, notes } = this.cardModel();
+      const trimmedNotes = notes.trim();
       const cardData: Omit<Card, 'id'> = {
-        deckId: this.deckId(),
+        deckId: this.id(),
         question: question.trim(),
         answer: answer.trim(),
-        notes: notes.trim() || undefined,
+        notes: trimmedNotes || undefined,
         tags: this.tags(),
         nextSession: 0,
       };
 
-      if (this.isNew()) {
-        await this.db.createCard(cardData);
-      } else {
-        await this.db.updateCard(this.cardId()!, {
+      const existing = this.card();
+
+      if (existing) {
+        await this.cardService.updateCard(existing.id!, {
           question: cardData.question,
           answer: cardData.answer,
           notes: cardData.notes,
           tags: cardData.tags,
         });
+      } else {
+        await this.cardService.createCard(cardData);
       }
     });
 
@@ -223,8 +114,10 @@ export class CardEditorComponent implements OnInit {
   }
 
   async deleteCard(): Promise<void> {
-    if (this.cardId()) {
-      await this.db.deleteCard(this.cardId()!);
+    const existing = this.card();
+
+    if (existing?.id) {
+      await this.cardService.deleteCard(existing.id);
       this.goBack();
     }
   }
@@ -234,6 +127,6 @@ export class CardEditorComponent implements OnInit {
   }
 
   private goBack(): void {
-    this.router.navigate(['/decks', this.deckId(), 'browse']);
+    void this.router.navigate(['/decks', this.id(), 'browse']);
   }
 }

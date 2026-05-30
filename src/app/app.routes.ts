@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { deckHasCards, deckResolver } from '@core/resolvers/deck.resolver';
+import { cardResolver } from '@core/resolvers/card.resolver';
 
 export const routes: Routes = [
   {
@@ -57,6 +58,7 @@ export const routes: Routes = [
       import('@features/cards/card-editor/card-editor.component').then(
         (m) => m.CardEditorComponent,
       ),
+    resolve: { card: cardResolver },
   },
   {
     path: 'settings',
