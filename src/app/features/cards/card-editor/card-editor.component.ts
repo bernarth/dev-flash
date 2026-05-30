@@ -167,6 +167,7 @@ export class CardEditorComponent implements OnInit {
       this.cardId.set(cardId);
       this.isNew.set(false);
       const card = await this.db.getCard(cardId);
+
       if (card) {
         this.cardModel.set({
           question: card.question,
@@ -180,9 +181,11 @@ export class CardEditorComponent implements OnInit {
 
   addTagFromInput(event: MatChipInputEvent): void {
     const value = event.value.trim().replace(/,/g, '').toLowerCase();
+
     if (value && !this.tags().includes(value)) {
       this.tags.update((tags) => [...tags, value]);
     }
+
     event.chipInput.clear();
   }
 
@@ -213,6 +216,7 @@ export class CardEditorComponent implements OnInit {
         });
       }
     });
+
     if (success) {
       this.goBack();
     }

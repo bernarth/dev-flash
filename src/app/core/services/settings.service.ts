@@ -6,8 +6,8 @@ import { DbService } from './db.service';
 export class SettingsService {
   private readonly db = inject(DbService);
 
-  getSettings(): Promise<AppSettings> {
-    return this.db.getSettings();
+  async getSettings(): Promise<AppSettings> {
+    return await this.db.getSettings();
   }
 
   async save(settings: AppSettings): Promise<void> {

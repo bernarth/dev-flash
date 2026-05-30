@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { deckHasCards, deckResolver } from '@core/resolvers/deck.resolver';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,10 @@ export const routes: Routes = [
       import('@features/study/study-session/study-session.component').then(
         (m) => m.StudySessionComponent,
       ),
+    resolve: {
+      deck: deckResolver,
+      deckHasCards: deckHasCards,
+    },
   },
   {
     path: 'decks/:id/summary',
@@ -52,11 +57,6 @@ export const routes: Routes = [
       import('@features/cards/card-editor/card-editor.component').then(
         (m) => m.CardEditorComponent,
       ),
-  },
-  {
-    path: 'import',
-    loadComponent: () =>
-      import('@features/import/import-wizard.component').then((m) => m.ImportWizardComponent),
   },
   {
     path: 'settings',

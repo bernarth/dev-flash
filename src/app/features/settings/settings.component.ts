@@ -1,4 +1,4 @@
-import { Component, inject, resource, linkedSignal } from '@angular/core';
+import { Component, inject, resource, linkedSignal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -32,6 +32,7 @@ import { form, min, submit, FormField, max } from '@angular/forms/signals';
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent {
   private settingsService = inject(SettingsService);

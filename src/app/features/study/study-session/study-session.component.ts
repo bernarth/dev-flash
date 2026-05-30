@@ -1,14 +1,25 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  ChangeDetectionStrategy,
+  input,
+  Signal,
+  resource,
+} from '@angular/core';
+import { Router } from '@angular/router';
 import { DbService } from '@services/db.service';
 import { SchedulerService } from '@services/scheduler.service';
 import { SettingsService } from '@services/settings.service';
-import { AppSettings, Card, DEFAULT_SETTINGS, Rating } from '@models';
+import { AppSettings, Card, Deck, DEFAULT_SETTINGS, Rating } from '@models';
 import { RATING_CONFIG } from '@core/constants/rating-config';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { DeckService } from '@core/services/deck.service';
+import { ReviewLogsService } from '@core/services/review-logs.service';
 
 @Component({
   selector: 'df-study-session',
@@ -16,19 +27,19 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   template: `
     <div class="screen">
       <mat-toolbar>
-        <button mat-icon-button (click)="exitStudy()" aria-label="Exit study">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <span class="deck-name">{{ deckName() }}</span>
-        <span class="spacer"></span>
+        <span class="toolbar-section">
+          <button mat-icon-button (click)="exitStudy()" aria-label="Exit study">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="deck-name">{{ deckName() }}</span>
+        </span>
         <span class="card-counter df-mono">{{ doneCount() }}/{{ totalCount() }}</span>
       </mat-toolbar>
 
-      <mat-progress-bar mode="determinate" [value]="progressPct()"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressPercent()"></mat-progress-bar>
 
       @if (currentCard()) {
         <div class="card-area">
-          <!-- FRONT -->
           <div
             class="flip-face df-scroll front"
             [class.hidden]="flipped()"
@@ -44,7 +55,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
             <div class="flip-hint">Tap to reveal the answer</div>
           </div>
 
-          <!-- BACK -->
           <div class="flip-face df-scroll back" [class.visible]="flipped()">
             <div class="face-label answer-label">ANSWER</div>
             <div class="answer-text" [innerHTML]="currentCard()!.answer"></div>
@@ -88,12 +98,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
             </div>
           }
         </div>
-      } @else if (loading()) {
+      } @else if (queue.isLoading()) {
         <div class="status-msg">Loading cards…</div>
       } @else {
         <div class="status-msg">
           <p>{{ emptyMessage() }}</p>
-          <button mat-flat-button class="status-btn" (click)="exitStudy()">Back to decks</button>
+          <button mat-flat-button class="status-btn" (click)="exitStudy()">Back to study</button>
         </div>
       }
     </div>
@@ -106,15 +116,26 @@ import { MatToolbarModule } from '@angular/material/toolbar';
         flex: 1;
         min-height: 0;
       }
+
       .screen {
         display: flex;
         flex-direction: column;
         flex: 1;
         min-height: 0;
       }
-      .spacer {
-        flex: 1;
+
+      mat-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
+
+      .toolbar-section {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
       .deck-name {
         font-size: var(--df-font-size-base);
         font-weight: var(--df-font-weight-medium);
@@ -283,29 +304,40 @@ import { MatToolbarModule } from '@angular/material/toolbar';
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StudySessionComponent implements OnInit {
-  private route = inject(ActivatedRoute);
+export class StudySessionComponent {
   private router = inject(Router);
-  private db = inject(DbService);
-  private srs = inject(SchedulerService);
+  private deckService = inject(DeckService);
   private settingsService = inject(SettingsService);
+  private reviewLogsService = inject(ReviewLogsService);
+  private scheduler = inject(SchedulerService);
 
-  deckId = signal(0);
-  deckName = signal('');
-  currentSession = signal(0);
-  settings = signal<AppSettings>({ ...DEFAULT_SETTINGS });
-  queue = signal<Card[]>([]);
+  protected readonly deck = input.required<Deck>();
+  protected readonly deckHasCards = input.required<boolean>();
+
+  protected readonly deckId: Signal<number> = computed(() => this.deck().id);
+  protected readonly deckName = computed(() => this.deck().name);
+  protected readonly deckSessionCount: Signal<number> = computed(() => this.deck().sessionCount);
+
+  protected readonly settings = resource<AppSettings, unknown>({
+    loader: () => this.settingsService.getSettings(),
+  });
+  protected readonly resolvedSettings = computed(() => this.settings.value() ?? DEFAULT_SETTINGS);
+
+  protected readonly queue = resource<Card[], { deckId: number; currentSession: number }>({
+    params: () => ({ deckId: this.deck().id, currentSession: this.deck().sessionCount }),
+    loader: ({ params }) => this.deckService.getDueCards(params.deckId, params.currentSession),
+  });
+
   currentIdx = signal(0);
   doneCount = signal(0);
   flipped = signal(false);
   showNotes = signal(false);
-  loading = signal(true);
-  deckHasCards = signal(false);
 
-  currentCard = computed(() => this.queue()[this.currentIdx()] ?? null);
-  totalCount = computed(() => this.doneCount() + this.queue().length);
-  progressPct = computed(() => {
+  currentCard = computed(() => (this.queue.value() ?? [])[this.currentIdx()] ?? null);
+  totalCount = computed(() => this.doneCount() + (this.queue.value()?.length ?? 0));
+  progressPercent = computed(() => {
     const total = this.totalCount();
     return total ? (this.doneCount() / total) * 100 : 0;
   });
@@ -316,7 +348,7 @@ export class StudySessionComponent implements OnInit {
   );
 
   ratingButtons = computed(() => {
-    const { hardInterval, goodInterval, easyInterval } = this.settings();
+    const { hardInterval, goodInterval, easyInterval } = this.resolvedSettings();
     return [
       { ...RATING_CONFIG[0], interval: 'now' },
       { ...RATING_CONFIG[1], interval: `+${hardInterval}` },
@@ -325,33 +357,18 @@ export class StudySessionComponent implements OnInit {
     ];
   });
 
-  async ngOnInit(): Promise<void> {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.deckId.set(id);
-    const [deck, cardCount, settings] = await Promise.all([
-      this.db.getDeck(id),
-      this.db.getCardCount(id),
-      this.settingsService.getSettings(),
-    ]);
-    this.deckName.set(deck?.name ?? '');
-    this.deckHasCards.set(cardCount > 0);
-    this.settings.set(settings);
-    const session = deck?.sessionCount ?? 0;
-    this.currentSession.set(session);
-    const cards = await this.db.getDueCards(id, session);
-    this.queue.set(cards);
-    this.loading.set(false);
-  }
-
   showAnswer(): void {
     this.flipped.set(true);
   }
 
   rate(rating: Rating): void {
     const card = this.currentCard();
-    if (!card) return;
 
-    void this.db.addReviewLog({
+    if (!card) {
+      return;
+    }
+
+    void this.reviewLogsService.addReviewLog({
       cardId: card.id!,
       deckId: this.deckId(),
       rating,
@@ -359,27 +376,30 @@ export class StudySessionComponent implements OnInit {
     });
 
     if (rating === 'again') {
-      const q = [...this.queue()];
-      q.push(q.splice(this.currentIdx(), 1)[0]);
-      this.queue.set(q);
+      const queue = [...(this.queue.value() ?? [])];
+      queue.push(queue.splice(this.currentIdx(), 1)[0]);
+      this.queue.set(queue);
       this.flipped.set(false);
       this.showNotes.set(false);
       return;
     }
 
-    void this.db.updateCard(
+    void this.deckService.updateCard(
       card.id!,
-      this.srs.applyRating(rating, this.currentSession(), this.settings()),
+      this.scheduler.applyRating(rating, this.deckSessionCount(), this.resolvedSettings()),
     );
 
-    const remaining = [...this.queue()];
+    const remaining = [...(this.queue.value() ?? [])];
     remaining.splice(this.currentIdx(), 1);
     this.queue.set(remaining);
     this.doneCount.update((n) => n + 1);
 
     if (remaining.length === 0) {
-      void this.db.updateDeck(this.deckId(), { sessionCount: this.currentSession() + 1 });
+      void this.deckService.updateDeck(this.deckId(), {
+        sessionCount: this.deckSessionCount() + 1,
+      });
       void this.router.navigate(['/decks', this.deckId(), 'summary']);
+
       return;
     }
 
@@ -390,6 +410,6 @@ export class StudySessionComponent implements OnInit {
   }
 
   exitStudy(): void {
-    this.router.navigate(['/decks']);
+    this.router.navigate(['/study']);
   }
 }

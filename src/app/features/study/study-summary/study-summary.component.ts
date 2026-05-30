@@ -31,7 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-card appearance="outlined">
           <mat-card-content>
             <div class="stat-label">retention</div>
-            <div class="stat-value df-mono">{{ retentionPct() }}%</div>
+            <div class="stat-value df-mono">{{ retentionPercent() }}%</div>
           </mat-card-content>
         </mat-card>
         <mat-card appearance="outlined">
@@ -46,18 +46,18 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-card appearance="outlined">
           <mat-card-content>
             <div class="seg-bar">
-              @for (r of breakdownWithPct(); track r.key) {
+              @for (r of breakdownWithPercent(); track r.key) {
                 @if (r.count > 0) {
                   <div [style.flex]="r.count" [style.background]="r.color"></div>
                 }
               }
             </div>
             <mat-list>
-              @for (r of breakdownWithPct(); track r.key) {
+              @for (r of breakdownWithPercent(); track r.key) {
                 <mat-list-item>
                   <span class="breakdown-dot" matListItemIcon [style.background]="r.color"></span>
                   <span matListItemTitle>{{ r.label }}</span>
-                  <span matListItemMeta class="df-mono">{{ r.count }} ({{ r.pct }}%)</span>
+                  <span matListItemMeta class="df-mono">{{ r.count }} ({{ r.percent }}%)</span>
                 </mat-list-item>
               }
             </mat-list>
@@ -66,7 +66,7 @@ import { MatButtonModule } from '@angular/material/button';
       }
 
       <div class="actions">
-        <button mat-stroked-button (click)="goBack()">Back to decks</button>
+        <button mat-stroked-button (click)="goBack()">Back to study</button>
       </div>
     </div>
   `,
@@ -154,23 +154,30 @@ export class StudySummaryComponent implements OnInit {
   breakdown = computed(() => {
     const logs = this.logs();
     const count = (r: Rating) => logs.filter((l) => l.rating === r).length;
+
     return RATING_CONFIG.map((r) => ({ ...r, count: count(r.key) }));
   });
 
   total = computed(() => this.logs().length);
 
-  breakdownWithPct = computed(() => {
+  breakdownWithPercent = computed(() => {
     const total = this.total();
+
     return this.breakdown().map((r) => ({
       ...r,
-      pct: total ? Math.round((r.count / total) * 100) : 0,
+      percent: total ? Math.round((r.count / total) * 100) : 0,
     }));
   });
 
-  retentionPct = computed(() => {
+  retentionPercent = computed(() => {
     const total = this.total();
-    if (!total) return 0;
+
+    if (!total) {
+      return 0;
+    }
+
     const good = this.logs().filter((l) => l.rating === 'good' || l.rating === 'easy').length;
+
     return Math.round((good / total) * 100);
   });
 
@@ -184,6 +191,6 @@ export class StudySummaryComponent implements OnInit {
   }
 
   goBack(): void {
-    void this.router.navigate(['/decks']);
+    void this.router.navigate(['/study']);
   }
 }

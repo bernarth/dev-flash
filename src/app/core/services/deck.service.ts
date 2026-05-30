@@ -1,10 +1,31 @@
 import { inject, Injectable } from '@angular/core';
-import { DeckListItem, DeckStudyInfo } from '@core/models/deck';
+import { Deck, DeckListItem, DeckStudyInfo } from '@core/models/deck';
 import { DbService } from './db.service';
+import { Card } from '@core/models';
 
 @Injectable({ providedIn: 'root' })
 export class DeckService {
   private db = inject(DbService);
+
+  async getDeck(id: number): Promise<Deck | undefined> {
+    return await this.db.getDeck(id);
+  }
+
+  async getCardCount(id: number): Promise<number> {
+    return await this.db.getCardCount(id);
+  }
+
+  async getDueCards(deckId: number, currentSession: number) {
+    return await this.db.getDueCards(deckId, currentSession);
+  }
+
+  async updateCard(id: number, changes: Partial<Card>) {
+    return await this.db.updateCard(id, changes);
+  }
+
+  async updateDeck(id: number, changes: Partial<Deck>): Promise<number> {
+    return await this.db.updateDeck(id, changes);
+  }
 
   async getDeckList(): Promise<DeckListItem[]> {
     const rawDecks = await this.db.getAllDecks();

@@ -150,12 +150,14 @@ export class CardBrowserComponent implements OnInit {
   allTags = computed(() => {
     const tags = new Set<string>();
     this.cards().forEach((c) => c.tags.forEach((t) => tags.add(t)));
+
     return ['All', ...Array.from(tags).sort()];
   });
 
   filtered = computed(() => {
     const q = this.query().toLowerCase();
     const tag = this.activeTag();
+
     return this.cards().filter(
       (c) =>
         (tag === 'All' || c.tags.includes(tag)) &&

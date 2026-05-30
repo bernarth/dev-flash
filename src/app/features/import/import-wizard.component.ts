@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
+import { choose } from '@core/utils/utils';
 
 @Component({
   selector: 'df-import-wizard',
@@ -321,7 +322,10 @@ export class ImportWizardComponent implements OnInit {
     event.preventDefault();
     const file = event.dataTransfer?.files[0];
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
+
     if (!file.name.toLowerCase().endsWith('.csv')) {
       this.error.set('Only .csv files are accepted.');
       return;
@@ -351,7 +355,11 @@ export class ImportWizardComponent implements OnInit {
 
   private async parseFile(): Promise<void> {
     const file = this.selectedFile();
-    if (!file) return;
+
+    if (!file) {
+      return;
+    }
+
     try {
       const result = await this.importService.parse(file, this.selectedDeckId());
       this.importResult.set(result);
@@ -363,15 +371,23 @@ export class ImportWizardComponent implements OnInit {
 
   private async doImport(): Promise<void> {
     const result = this.importResult();
-    if (!result) return;
+
+    if (!result) {
+      return;
+    }
+
     await this.db.bulkAddCards(result.imported);
     this.step.set(3);
   }
 
   formatSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return choose(
+      [
+        { when: bytes < 1024, value: `${bytes} B` },
+        { when: bytes < 1024 * 1024, value: `${(bytes / 1024).toFixed(1)} KB` },
+      ],
+      `${(bytes / (1024 * 1024)).toFixed(1)} MB`,
+    );
   }
 
   cancel(): void {

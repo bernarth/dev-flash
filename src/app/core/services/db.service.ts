@@ -98,20 +98,20 @@ export class DbService {
     return this.db.cards.where('deckId').equals(deckId).count();
   }
 
-  addReviewLog(log: Omit<ReviewLog, 'id'>): Promise<number> {
-    return this.db.reviewLogs.add(log as ReviewLog);
+  async addReviewLog(log: Omit<ReviewLog, 'id'>): Promise<number> {
+    return await this.db.reviewLogs.add(log as ReviewLog);
   }
 
-  getReviewLogs(deckId: number, since?: Date): Promise<ReviewLog[]> {
-    return this.db.reviewLogs
-      .where('deckId')
-      .equals(deckId)
-      .toArray()
-      .then((logs) => (since ? logs.filter((l) => l.reviewedAt >= since) : logs));
+  async getReviewLogs(deckId: number, since?: Date): Promise<ReviewLog[]> {
+    const logs = await this.db.reviewLogs.where('deckId').equals(deckId).toArray();
+
+    return since ? logs.filter((l) => l.reviewedAt >= since) : logs;
   }
 
-  getSettings(): Promise<AppSettings> {
-    return this.db.settings.get(1).then((s) => s ?? { id: 1, ...DEFAULT_SETTINGS });
+  async getSettings(): Promise<AppSettings> {
+    const settings = await this.db.settings.get(1);
+
+    return settings ?? { id: 1, ...DEFAULT_SETTINGS };
   }
 
   saveSettings(settings: AppSettings): Promise<number> {
