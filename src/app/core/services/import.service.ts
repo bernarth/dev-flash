@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import Papa from 'papaparse';
 import { Card } from '@models/card';
+import { CardService } from './card.service';
 
 export interface ImportResult {
   imported: Omit<Card, 'id'>[];
@@ -10,6 +11,12 @@ export interface ImportResult {
 
 @Injectable({ providedIn: 'root' })
 export class ImportService {
+  private readonly cardService = inject(CardService);
+
+  bulkImport(cards: Omit<Card, 'id'>[]): Promise<number> {
+    return this.cardService.bulkAddCards(cards);
+  }
+
   parse(file: File, deckId: number): Promise<ImportResult> {
     return new Promise((resolve, reject) => {
       if (!file.name.toLowerCase().endsWith('.csv')) {

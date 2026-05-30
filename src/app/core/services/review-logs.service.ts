@@ -9,4 +9,10 @@ export class ReviewLogsService {
   async addReviewLog(log: Omit<ReviewLog, 'id'>): Promise<number> {
     return await this.db.addReviewLog(log);
   }
+
+  async getSessionLogs(deckId: number, windowMinutes = 30): Promise<ReviewLog[]> {
+    const sessionStart = new Date();
+    sessionStart.setMinutes(sessionStart.getMinutes() - windowMinutes);
+    return await this.db.getReviewLogs(deckId, sessionStart);
+  }
 }
