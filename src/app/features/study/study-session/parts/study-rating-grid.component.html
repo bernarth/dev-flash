@@ -1,0 +1,14 @@
+<div class="rating-grid">
+  @for (r of buttons(); track r.key) {
+    <button
+      mat-stroked-button
+      class="rating-btn"
+      [style.--mat-button-outlined-label-text-color]="r.color"
+      [style.--mat-button-outlined-outline-color]="r.color"
+      (click)="rated.emit(r.key)"
+    >
+      <span class="rating-label">{{ r.label }}</span>
+      <span class="rating-interval df-mono">{{ r.interval }}</span>
+    </button>
+  }
+</div>

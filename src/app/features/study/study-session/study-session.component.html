@@ -1,0 +1,36 @@
+<div class="screen">
+  <mat-toolbar>
+    <span class="toolbar-section">
+      <button mat-icon-button (click)="exitStudy()" aria-label="Exit study">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="deck-name">{{ deckName() }}</span>
+    </span>
+    <span class="card-counter df-mono">{{ doneCount() }}/{{ totalCount() }}</span>
+  </mat-toolbar>
+
+  <mat-progress-bar mode="determinate" [value]="progressPercent()"></mat-progress-bar>
+
+  @if (currentCard()) {
+    <df-study-flip-card
+      [card]="currentCard()!"
+      [flipped]="flipped()"
+      (revealAnswer)="showAnswer()"
+    />
+
+    <div class="action-area">
+      @if (!flipped()) {
+        <button mat-flat-button class="show-answer-btn" (click)="showAnswer()">Show Answer</button>
+      } @else {
+        <df-study-rating-grid [buttons]="ratingButtons()" (rated)="rate($event)" />
+      }
+    </div>
+  } @else if (queue.isLoading()) {
+    <div class="status-msg">Loading cards…</div>
+  } @else {
+    <div class="status-msg">
+      <p>{{ emptyMessage() }}</p>
+      <button mat-flat-button class="status-btn" (click)="exitStudy()">Back to study</button>
+    </div>
+  }
+</div>

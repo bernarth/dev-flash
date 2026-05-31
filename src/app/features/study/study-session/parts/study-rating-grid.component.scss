@@ -1,0 +1,26 @@
+:host {
+  display: block;
+}
+
+.rating-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.rating-btn {
+  flex-direction: column !important;
+  height: auto !important;
+  padding: 0.625rem 0.25rem !important;
+  min-width: 0 !important;
+}
+
+.rating-label {
+  font-size: var(--df-font-size-sm);
+  font-weight: var(--df-font-weight-semibold);
+}
+
+.rating-interval {
+  font-size: var(--df-font-size-2xs);
+  opacity: 0.6;
+}

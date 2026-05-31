@@ -1,0 +1,53 @@
+<div class="flip-face df-scroll front" [class.hidden]="flipped()" (click)="onFrontClick()">
+  <div class="tags">
+    @for (tag of card().tags; track tag) {
+      <span class="tag df-mono">#{{ tag }}</span>
+    }
+  </div>
+  <div class="face-label">QUESTION</div>
+  <div class="question-text" [innerHTML]="card().question"></div>
+  <div class="flip-hint">Tap to reveal the answer</div>
+</div>
+
+<div class="flip-face df-scroll back" [class.visible]="flipped()">
+  <button
+    type="button"
+    class="question-peek-toggle"
+    (click)="togglePeek()"
+    [attr.aria-expanded]="peekExpanded()"
+    aria-label="Toggle question"
+  >
+    <mat-icon
+      class="peek-icon"
+      [style.transform]="peekExpanded() ? 'rotate(0)' : 'rotate(-90deg)'"
+      >expand_more</mat-icon
+    >
+    <span class="peek-label">QUESTION</span>
+    <span
+      class="peek-preview"
+      [class.collapsed]="!peekExpanded()"
+      [innerHTML]="card().question"
+    ></span>
+  </button>
+  @if (peekExpanded()) {
+    <div class="question-peek-panel" [innerHTML]="card().question"></div>
+  }
+
+  <div class="face-label answer-label">ANSWER</div>
+  <div class="answer-text" [innerHTML]="card().answer"></div>
+
+  @if (card().notes) {
+    <button type="button" class="notes-toggle" (click)="toggleNotes()">
+      <mat-icon
+        class="notes-icon"
+        [style.transform]="showNotes() ? 'rotate(0)' : 'rotate(-90deg)'"
+        >expand_more</mat-icon
+      >
+      <mat-icon>notes</mat-icon>
+      <span>{{ showNotes() ? 'Hide notes' : 'Show notes' }}</span>
+    </button>
+    @if (showNotes()) {
+      <div class="notes-panel" [innerHTML]="card().notes!"></div>
+    }
+  }
+</div>
