@@ -17,9 +17,7 @@
     [attr.aria-expanded]="peekExpanded()"
     aria-label="Toggle question"
   >
-    <mat-icon
-      class="peek-icon"
-      [style.transform]="peekExpanded() ? 'rotate(0)' : 'rotate(-90deg)'"
+    <mat-icon class="peek-icon" [style.transform]="peekExpanded() ? 'rotate(0)' : 'rotate(-90deg)'"
       >expand_more</mat-icon
     >
     <span class="peek-label">QUESTION</span>
@@ -38,9 +36,7 @@
 
   @if (card().notes) {
     <button type="button" class="notes-toggle" (click)="toggleNotes()">
-      <mat-icon
-        class="notes-icon"
-        [style.transform]="showNotes() ? 'rotate(0)' : 'rotate(-90deg)'"
+      <mat-icon class="notes-icon" [style.transform]="showNotes() ? 'rotate(0)' : 'rotate(-90deg)'"
         >expand_more</mat-icon
       >
       <mat-icon>notes</mat-icon>
