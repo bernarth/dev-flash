@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { Card, Deck, ReviewLog, AppSettings, DEFAULT_SETTINGS } from '@models';
+import { DEFAULT_DECKS } from '@core/constants/seed-decks';
 
 class DevFlashDb extends Dexie {
   decks!: Table<Deck, number>;
@@ -16,6 +17,19 @@ class DevFlashDb extends Dexie {
       reviewLogs: '++id, cardId, deckId, reviewedAt',
       settings: '++id',
     });
+
+    // Runs exactly once, when the DB is first created. Not re-triggered after
+    // a manual "Reset all" — a user wipe is intentional.
+    this.on('populate', () => this.seedDefaultDecks());
+  }
+
+  private async seedDefaultDecks(): Promise<void> {
+    const now = new Date();
+
+    for (const { deck, cards } of DEFAULT_DECKS) {
+      const deckId = await this.decks.add({ ...deck, createdAt: now, updatedAt: now } as Deck);
+      await this.cards.bulkAdd(cards.map((card) => ({ ...card, deckId })) as Card[]);
+    }
   }
 }
 
