@@ -9,7 +9,7 @@
 
 Offline-first flashcard PWA for developers preparing for technical interviews. Import CSV decks, study with session based scheduling, and keep all data on your device no account, no backend.
 
-**[Try the live app ->](https://dev-flash.netlify.app/study)**
+**[Start here](docs/USER_GUIDE.md)**
 
 ---
 
@@ -38,7 +38,7 @@ Anki is powerful but heavy. DevFlash focuses on one workflow: review programming
 
 | Layer | Choice |
 |-------|--------|
-| Framework | Angular 21 (standalone, signals) |
+| Framework | Angular 22 (standalone, signals) |
 | Storage | Dexie.js -> IndexedDB |
 | UI | Angular Material 3 + CSS custom properties (`--df-*`) |
 | CSV | PapaParse + `ImportService` validation |
@@ -51,7 +51,7 @@ Anki is powerful but heavy. DevFlash focuses on one workflow: review programming
 
 DevFlash enforces consistent quality at every commit through an automated toolchain therefore, no manual steps are required
 
-### Formatting — Prettier + lint-staged
+### Formatting (Prettier + lint-staged)
 
 [Prettier](https://prettier.io) is configured with project-wide rules (`.prettierrc`). A Husky pre-commit hook runs [lint-staged](https://github.com/lint-staged/lint-staged) automatically so only the files you actually changed are formatted before they land in git so we are able to keep commits fast without skipping anything.
 
@@ -59,7 +59,7 @@ DevFlash enforces consistent quality at every commit through an automated toolch
 pnpm format
 ```
 
-### Commit convention — Conventional Commits
+### Commit convention and Conventional Commits
 
 Every commit is validated by [commitlint](https://commitlint.js.org) against the [Conventional Commits](https://www.conventionalcommits.org) spec. A malformed message is rejected before it reaches the repository.
 
@@ -152,8 +152,8 @@ DevFlash uses a warm, low-strain palette designed for prolonged reading sessions
 
 ### References
 
-- [Creating accessible colors for human eyes](https://uxdesign.cc/creating-accessible-colors-for-human-eyes-66ed6a083230) — UX Collective
-- [WCAG 2.1 — Contrast minimum (AA)](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
+- [Creating accessible colors for human eyes](https://uxdesign.cc/creating-accessible-colors-for-human-eyes-66ed6a083230) - UX Collective
+- [WCAG 2.1 - Contrast minimum (AA)](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
 
 ---
 
@@ -165,4 +165,4 @@ Keep the scope focused: *does this make studying easier, or add friction?* See [
 
 ## License
 
-MIT — use it, fork it, share it.
+MIT - use it, fork it, share it.

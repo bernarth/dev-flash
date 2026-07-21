@@ -44,21 +44,21 @@ export const DEFAULT_DECKS: DefaultDeckSeed[] = [
       {
         question: 'What is hoisting?',
         answer:
-          'JavaScript moves declarations (`var`, `function`) to the top of their scope before execution.\n\n`var` is hoisted initialized as `undefined`; `let`/`const` are hoisted but stay in the temporal dead zone — accessing them before declaration throws.',
+          'JavaScript moves declarations (`var`, `function`) to the top of their scope before execution.\n\n`var` is hoisted initialized as `undefined`; `let`/`const` are hoisted but stay in the temporal dead zone - accessing them before declaration throws.',
         tags: ['javascript', 'fundamentals'],
         nextSession: 0,
       },
       {
         question: 'How does the event loop handle a `setTimeout(fn, 0)`?',
         answer:
-          'The callback goes to the macrotask queue and runs only after the call stack is empty and all microtasks (promises) are done — never synchronously, even with a 0ms delay.',
+          'The callback goes to the macrotask queue and runs only after the call stack is empty and all microtasks (promises) are done - never synchronously, even with a 0ms delay.',
         tags: ['javascript', 'async'],
         nextSession: 0,
       },
       {
         question: 'What are the three states of a Promise?',
         answer:
-          'pending — not settled yet\nfulfilled — resolved with a value\nrejected — settled with an error\n\nOnce fulfilled or rejected, a promise is settled and cannot change state.',
+          'pending - not settled yet\nfulfilled - resolved with a value\nrejected - settled with an error\n\nOnce fulfilled or rejected, a promise is settled and cannot change state.',
         tags: ['javascript', 'async'],
         nextSession: 0,
       },
@@ -73,7 +73,7 @@ export const DEFAULT_DECKS: DefaultDeckSeed[] = [
   },
   {
     deck: {
-      name: 'C# Interview — Junior Level',
+      name: 'C# Interview - Junior Level',
       description: 'Core C# and .NET questions for junior-level interviews.',
       tags: ['csharp', 'dotnet', 'interview'],
       sessionCount: 0,
@@ -512,7 +512,7 @@ export const DEFAULT_DECKS: DefaultDeckSeed[] = [
   },
   {
     deck: {
-      name: 'C# Interview — Mid Level',
+      name: 'C# Interview - Mid Level',
       description:
         'Intermediate C# and .NET interview topics: generics, delegates, GC, reflection, patterns, and more.',
       tags: ['csharp', 'dotnet', 'interview'],
@@ -843,7 +843,7 @@ export const DEFAULT_DECKS: DefaultDeckSeed[] = [
         answer:
           'Coupling describes how much one module or class depends on the internal details of another; low (loose) coupling makes a codebase easier to change and test.',
         notes:
-          'The Dependency Inversion Principle — depend on abstractions, not concretions — is a key technique for reducing coupling.',
+          'The Dependency Inversion Principle - depend on abstractions, not concretions - is a key technique for reducing coupling.',
         tags: ['csharp', 'design-principles', 'solid'],
         nextSession: 0,
       },
@@ -958,7 +958,7 @@ export const DEFAULT_DECKS: DefaultDeckSeed[] = [
         answer:
           'Nullable reference types (C# 8) let the compiler track and warn about reference variables that might be null, extending to reference types the kind of nullability annotations value types already had with Nullable<T>.',
         notes:
-          "It's a compile-time analysis feature based on warnings, not a runtime enforcement mechanism — null checks can still be bypassed.",
+          "It's a compile-time analysis feature based on warnings, not a runtime enforcement mechanism - null checks can still be bypassed.",
         tags: ['csharp', 'nullable-reference-types', 'csharp8'],
         nextSession: 0,
       },

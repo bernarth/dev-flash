@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BottomNavComponent } from '@layout/bottom-nav/bottom-nav.component';
 import { SideNavComponent } from '@layout/side-nav/side-nav.component';
@@ -15,6 +15,7 @@ import { SideNavComponent } from '@layout/side-nav/side-nav.component';
       <df-bottom-nav class="bottom-nav-mobile" />
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.scss',
 })
 export class App {}

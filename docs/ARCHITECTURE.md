@@ -1,4 +1,4 @@
-# DevFlash — Architecture
+# DevFlash - Architecture
 
 This document describes how DevFlash is structured today: an offline-first Angular SPA with no backend, session based spaced repetition, and a clear split between persistence, scheduling logic, and UI.
 
@@ -8,7 +8,7 @@ This document describes how DevFlash is structured today: an offline-first Angul
 
 ```mermaid
 flowchart TB
-  subgraph client["Browser (Angular 21)"]
+  subgraph client["Browser (Angular 22)"]
     UI["Feature components"]
     Shared["Shared components & pipes"]
     DeckSvc["DeckService"]
@@ -260,17 +260,17 @@ Feature components should not set raw `font-size` / `font-weight`; use tokens.
 Tracked in project checklist (`CLAUDE.md`):
 
 - **PWA:** `@angular/pwa`, `ngsw-config`, precache shell + highlight.js themes
-- **Layout route:** optional `LayoutComponent` parent route (nav hide on study — today handled in feature CSS)
+- **Layout route:** optional `LayoutComponent` parent route (nav hide on study - today handled in feature CSS)
 - **Shared library:** `df-icon`, `card-flip`, `markdown-viewer`, `rating-buttons`, `session-progress-bar`
 - **ThemeService / ExportService:** user theme override + JSON backup
 - **Markdown pipeline:** sanitize marked output; highlight.js in `code-block`
 
-These do not change the core boundaries above — they fill in presentation and ops around the same `DbService` + `SchedulerService` core.
+These do not change the core boundaries above - they fill in presentation and ops around the same `DbService` + `SchedulerService` core.
 
 ---
 
 ## Related docs
 
-- [User guide](./USER_GUIDE.md) — CSV format and study workflow
-- [Development](./DEVELOPMENT.md) — scripts and contributor conventions
-- [README](../README.md) — portfolio overview and quick start
+- [User guide](./USER_GUIDE.md) - CSV format and study workflow
+- [Development](./DEVELOPMENT.md) - scripts and contributor conventions
+- [README](../README.md) - portfolio overview and quick start

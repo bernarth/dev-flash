@@ -1,4 +1,4 @@
-# DevFlash — Development
+# DevFlash - Development
 
 Conventions and commands for contributors and local development.
 
@@ -7,7 +7,7 @@ Conventions and commands for contributors and local development.
 ## Prerequisites
 
 - **Node.js** 18+
-- **pnpm** — this repo uses `pnpm` only (`packageManager` in `package.json`). Do not commit `package-lock.json` or `yarn.lock`.
+- **pnpm** - this repo uses `pnpm` only (`packageManager` in `package.json`). Do not commit `package-lock.json` or `yarn.lock`.
 
 ```bash
 corepack enable   # optional: use the pnpm version pinned by the project
@@ -56,24 +56,24 @@ Use aliases instead of deep relative imports (`../../../`).
 
 Full agent-oriented spec: [`CLAUDE.md`](../CLAUDE.md). Highlights:
 
-### Angular 21
+### Angular 22
 
-- Standalone components only — no NgModules
-- `input()` / `output()` / `model()` — not decorator `@Input` / `@Output`
-- `inject()` — not constructor injection
+- Standalone components only - no NgModules
+- `input()` / `output()` / `model()` - not decorator `@Input` / `@Output`
+- `inject()` - not constructor injection
 - `signal()` / `computed()` for reactive state; avoid `effect()` unless necessary (comment why)
 - Lazy `loadComponent()` for every feature route
-- Signal queries (`viewChild`, …) — not `@ViewChild`
-- `host: { '(event)': 'handler($event)' }` — not `@HostListener`
+- Signal queries (`viewChild`, …) - not `@ViewChild`
+- `host: { '(event)': 'handler($event)' }` - not `@HostListener`
 - Signal forms for multi-field validation; simple controls use `signal` + `[value]` binding
 
 ### Architecture
 
 - **Only `DbService`** talks to Dexie
-- **`SchedulerService`** is pure — no DB, no DOM
+- **`SchedulerService`** is pure - no DB, no DOM
 - **Features** orchestrate; **shared** is presentational only
 - **No cross-feature imports**
-- Readonly models — spread/update, never mutate in place
+- Readonly models - spread/update, never mutate in place
 
 ### Async
 
@@ -85,13 +85,13 @@ Full agent-oriented spec: [`CLAUDE.md`](../CLAUDE.md). Highlights:
 
 - Use `--df-font-size-*` and `--df-font-weight-*` from `src/styles/variables.scss`
 - Icons: `--df-icon-size-*`
-- No `@angular/animations` — CSS `transition` / `transform` only
+- No `@angular/animations` - CSS `transition` / `transform` only
 
 ### Components
 
 - One component per file
 - Selector prefix: `df-` (e.g. `df-study-session`)
-- Icons: central `df-icon` when added — do not inline duplicate SVGs
+- Icons: central `df-icon` when added - do not inline duplicate SVGs
 
 ---
 
@@ -99,7 +99,7 @@ Full agent-oriented spec: [`CLAUDE.md`](../CLAUDE.md). Highlights:
 
 1. Generate under `src/app/features/<area>/<name>/`.
 2. Register in `app.routes.ts` with `loadComponent: () => import('@features/...')`.
-3. Call existing services — extend `DbService` if new persistence is required.
+3. Call existing services - extend `DbService` if new persistence is required.
 4. Add shared UI only after the second duplicate (DRY).
 
 Example:

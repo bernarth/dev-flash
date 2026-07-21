@@ -8,11 +8,11 @@ How to use DevFlash: install on your phone, create decks, study, and configure i
 
 ## Install on your phone
 
-1. Open the app URL in **Chrome** (Android) or **Safari** (iOS).
-2. **Android:** use “Add to Home Screen” from the menu or install banner.
-3. **iOS:** Share -> **Add to Home Screen**.
+1. Open the app URL in **Chrome** (Android) or **Safari** (Safari is the best choice for IPhone)
+2. **Android:** use “Add to Home Screen” from the menu or install banner (The best is Chrome)
+3. **iOS:** Share -> **Add to Home Screen**
 
-After installation, the app loads from cache and works without a network connection for study sessions (once assets and data are local).
+After installation, the app loads from cache and works without a network connection for study sessions
 
 ---
 
@@ -50,7 +50,7 @@ File picker -> row preview (5 rows) -> ImportResult summary -> confirm. Skipped 
 
 ### Add cards manually
 
-Open a deck in the card browser -> tap the **+** FAB -> choose **Add card manually** -> fill in question, answer, and optional notes/tags.
+Open a deck in the card browser -> tap the **+** FAB -> choose **Add card manually** -> fill in question, answer, and optional notes/tags
 
 ---
 
@@ -58,7 +58,7 @@ Open a deck in the card browser -> tap the **+** FAB -> choose **Add card manual
 
 1. Open the **Study** tab. Each deck shows how many cards are due.
    - Tap **Study** to start a session for that deck.
-   - If all cards have been reviewed (0 due), tap **Restart** to reset the deck and make all cards due again.
+   - If all cards have been reviewed (0 due), tap **Restart** to reset the deck and make all cards due again
 2. Read the question.
 3. Tap **Show answer** (or tap the card) when ready.
 4. Rate how well you knew it:
@@ -73,7 +73,7 @@ Open a deck in the card browser -> tap the **+** FAB -> choose **Add card manual
 5. After the answer is shown, open **notes** if you need extra context (optional field on the card).
 6. Finish the session -> view the **summary** (counts and breakdown).
 
-Cards are “due” when `nextSession` is less than or equal to the deck’s completed session count. New cards (`nextSession = 0`) appear until you rate them out of the current session.
+Cards are “due” when `nextSession` is less than or equal to the deck’s completed session count. New cards (`nextSession = 0`) appear until you rate them out of the current session
 
 ---
 
