@@ -64,7 +64,7 @@ export class ImportService {
     }
 
     rows.forEach((row, idx) => {
-      const rowNum = idx + 2; // 1-indexed + header
+      const rowNum = idx + 2;
       const question = (row['question'] ?? row['Question'] ?? '').trim();
       const answer = (row['answer'] ?? row['Answer'] ?? '').trim();
 
