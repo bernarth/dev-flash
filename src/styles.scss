@@ -74,6 +74,12 @@ body {
   color: var(--mat-sys-on-background);
 }
 
+/* iOS safe-area: extend the app under the status bar / notch and keep the
+   toolbar background visible behind it. */
+mat-toolbar.mat-toolbar {
+  padding-top: env(safe-area-inset-top);
+}
+
 .df-mono {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-feature-settings:
