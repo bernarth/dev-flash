@@ -5,7 +5,7 @@
     }
   </div>
   <div class="face-label">QUESTION</div>
-  <div class="question-text" [innerHTML]="card().question"></div>
+  <df-markdown-viewer class="question-text" [content]="card().question" />
   <div class="flip-hint">Tap to reveal the answer</div>
 </div>
 
@@ -21,18 +21,14 @@
       >expand_more</mat-icon
     >
     <span class="peek-label">QUESTION</span>
-    <span
-      class="peek-preview"
-      [class.collapsed]="!peekExpanded()"
-      [innerHTML]="card().question"
-    ></span>
+    <span class="peek-preview" [class.collapsed]="!peekExpanded()">{{ card().question }}</span>
   </button>
   @if (peekExpanded()) {
-    <div class="question-peek-panel" [innerHTML]="card().question"></div>
+    <df-markdown-viewer class="question-peek-panel" [content]="card().question" />
   }
 
   <div class="face-label answer-label">ANSWER</div>
-  <div class="answer-text" [innerHTML]="card().answer"></div>
+  <df-markdown-viewer class="answer-text" [content]="card().answer" />
 
   @if (card().notes) {
     <button type="button" class="notes-toggle" (click)="toggleNotes()">
@@ -43,7 +39,7 @@
       <span>{{ showNotes() ? 'Hide notes' : 'Show notes' }}</span>
     </button>
     @if (showNotes()) {
-      <div class="notes-panel" [innerHTML]="card().notes!"></div>
+      <df-markdown-viewer class="notes-panel" [content]="card().notes!" />
     }
   }
 </div>

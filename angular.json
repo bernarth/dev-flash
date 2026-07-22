@@ -29,7 +29,7 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": ["node_modules/highlight.js/styles/github.css", "src/styles.scss"],
             "allowedCommonJsDependencies": ["papaparse"]
           },
           "configurations": {
