@@ -28,13 +28,17 @@ export class ImportService {
         header: true,
         skipEmptyLines: true,
         complete: (result) => {
-          resolve(
-            this.processRows(
-              result.data as Record<string, string>[],
-              result.meta.fields ?? [],
-              deckId,
-            ),
-          );
+          try {
+            resolve(
+              this.processRows(
+                result.data as Record<string, string>[],
+                result.meta.fields ?? [],
+                deckId,
+              ),
+            );
+          } catch (error) {
+            reject(error instanceof Error ? error : new Error(String(error)));
+          }
         },
         error: (err) => reject(new Error(err.message)),
       });
@@ -63,10 +67,12 @@ export class ImportService {
       warnings.push(`Unknown columns ignored: ${unknownCols.join(', ')}`);
     }
 
+    const columnKey = (name: string): string => fields[lowerFields.indexOf(name)] ?? name;
+
     rows.forEach((row, idx) => {
       const rowNum = idx + 2;
-      const question = (row['question'] ?? row['Question'] ?? '').trim();
-      const answer = (row['answer'] ?? row['Answer'] ?? '').trim();
+      const question = (row[columnKey('question')] ?? '').trim();
+      const answer = (row[columnKey('answer')] ?? '').trim();
 
       if (!question) {
         skipped.push({ row: rowNum, reason: 'empty question' });
@@ -77,7 +83,7 @@ export class ImportService {
         return;
       }
 
-      const rawTags = (row['tags'] ?? row['Tags'] ?? '').trim();
+      const rawTags = (row[columnKey('tags')] ?? '').trim();
       const tags = rawTags
         ? rawTags
             .split(',')
@@ -85,7 +91,7 @@ export class ImportService {
             .filter(Boolean)
         : [];
 
-      const notes = (row['notes'] ?? row['Notes'] ?? '').trim() || undefined;
+      const notes = (row[columnKey('notes')] ?? '').trim() || undefined;
 
       imported.push({
         deckId,
