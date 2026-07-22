@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, input, linkedSignal, output } from 
 import { MatIconModule } from '@angular/material/icon';
 import { Card } from '@models';
 import { MarkdownViewerComponent } from '@shared/components/markdown-viewer/markdown-viewer.component';
+import { MarkdownTextPipe } from '@shared/pipes/markdown-text.pipe';
 
 @Component({
   selector: 'df-study-flip-card',
-  imports: [MatIconModule, MarkdownViewerComponent],
+  imports: [MatIconModule, MarkdownViewerComponent, MarkdownTextPipe],
   templateUrl: './study-flip-card.component.html',
   styleUrl: './study-flip-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
